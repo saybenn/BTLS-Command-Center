@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-07-29 |
-| Current phase | Pre-development context setup |
-| Current feature | Context files and repository preparation |
-| Overall status | On track |
-| MVP progress | Planning complete; implementation not started |
-| Next implementation target | Phase 1, Feature 01 — Repository and Tooling |
+| Last updated | 2026-07-30 |
+| Current phase | Phase 1 — Project Bootstrap |
+| Current feature | Feature 01 — Repository and Tooling complete |
+| Overall status | Exit gate passed; upstream dependency risk recorded |
+| MVP progress | Feature 01 complete; Feature 02 not started |
+| Next implementation target | Await approval to plan Feature 02 — Shared UI Foundation |
 
 ---
 
@@ -34,6 +34,18 @@ A feature is complete only when its exit gate in `context/build-plan.md` passes.
 ---
 
 # Completed
+
+## Phase 1 — Feature 01: Repository and Tooling
+
+- [x] Slice 0 — Context reconciliation
+- [x] Slice 1 — Toolchain contracts
+- [x] Slice 2 — Approved structure and shadcn prerequisites
+- [x] Slice 3 — Runtime safety and diagnostic boundaries
+- [x] Slice 4 — Bootstrap interface and UI imprint
+- [x] Slice 5 — Full verification and Feature 01 handoff
+- [x] Feature 01 exit gate passed
+
+Feature 01 provides the pnpm-only application baseline, source ownership structure, tooling contracts, GitHub Actions quality workflow, safe system diagnostics, a responsive bootstrap interface, and the initial UI registry.
 
 ## Product and Architecture Context
 
@@ -64,9 +76,12 @@ A feature is complete only when its exit gate in `context/build-plan.md` passes.
 - [x] Public lead-ingestion direction established
 - [x] Dark UI direction approved
 - [x] Light theme support approved
+- [x] Existing Next.js repository and root instructions confirmed
+- [x] pnpm 11.9.0 baseline recovered and locked
 
 ## Context Files Created
 
+- [x] `context/project-overview.md`
 - [x] `context/code-standards.md`
 - [x] `context/architecture.md`
 - [x] `context/library-docs.md`
@@ -79,18 +94,7 @@ A feature is complete only when its exit gate in `context/build-plan.md` passes.
 
 # In Progress
 
-- [-] Complete the remaining context-driven development files
-- [-] Prepare the first Codex implementation prompt
-- [-] Final consistency pass across architecture and library provider names
-
-### Current consistency note
-
-`context/architecture.md` must use:
-
-- Postmark for outbound email
-- Twilio for two-way SMS
-
-Remove any remaining Resend references.
+No implementation feature is active.
 
 ---
 
@@ -98,12 +102,8 @@ Remove any remaining Resend references.
 
 ## Immediate
 
-1. [ ] Create `context/project-overview.md`
-2. [ ] Create `context/ui-registry.md`
-3. [ ] Create any required root instructions such as `AGENTS.md`
-4. [ ] Confirm all context files use matching terminology
-5. [ ] Prepare Codex prompt for Phase 1, Feature 01
-6. [ ] Initialize the repository
+1. [ ] Run `/architect` before planning Feature 02 — Shared UI Foundation
+2. [ ] Approve the Feature 02 plan before implementation
 
 ## First implementation feature
 
@@ -111,22 +111,22 @@ Remove any remaining Resend references.
 
 #### Feature 01 — Repository and Tooling
 
-- [ ] Initialize Next.js App Router application
-- [ ] Enable strict TypeScript
-- [ ] Add Tailwind CSS
-- [ ] Add shadcn/ui foundation
-- [ ] Add linting and formatting
-- [ ] Add Vitest
-- [ ] Add React Testing Library
-- [ ] Add Playwright
-- [ ] Add Zod environment validation
-- [ ] Create approved folder structure
-- [ ] Add health Route Handler
-- [ ] Add development status page
-- [ ] Add CI checks
-- [ ] Commit context files into repository
-- [ ] Run type-check, lint, tests, and production build
-- [ ] Verify Feature 01 exit gate
+- [x] Initialize Next.js App Router application
+- [x] Enable strict TypeScript
+- [x] Add Tailwind CSS
+- [x] Add shadcn/ui foundation
+- [x] Add linting and formatting
+- [x] Add Vitest
+- [x] Add React Testing Library
+- [x] Add Playwright
+- [x] Add Zod environment validation
+- [x] Create approved folder structure
+- [x] Add health Route Handler
+- [x] Add development status page
+- [x] Add CI checks
+- [x] Commit initial context files into repository
+- [x] Run type-check, lint, unit tests, Playwright, and production build
+- [x] Verify Feature 01 exit gate
 
 ---
 
@@ -134,7 +134,7 @@ Remove any remaining Resend references.
 
 ## Phase 1 — Project Bootstrap
 
-- [ ] 01 Repository and Tooling
+- [x] 01 Repository and Tooling
 - [ ] 02 Shared UI Foundation
 
 ## Phase 2 — Tenancy, Authentication, and Property Management
@@ -222,8 +222,8 @@ Example format:
 
 | Issue | Severity | Status | Owner | Next action |
 |---|---|---|---|---|
-| `architecture.md` may still reference Resend instead of Postmark | Low | Open | Project owner / Codex | Replace remaining Resend references before repository bootstrap |
-| Repository has not yet been initialized | Expected | Open | Codex | Begin Phase 1, Feature 01 |
+| Production audit reports 3 high and 1 moderate findings through Next.js 16.2.12 transitive `sharp@0.34.5` and `postcss@8.4.31` | High | Open upstream risk | Next.js / Project owner | Upgrade Next.js when a supported release updates these transitive packages; do not override them independently |
+| Full audit reports one additional high development-only `brace-expansion` finding through ESLint transitive dependencies | High | Open upstream risk | ESLint / Project owner | Upgrade supported direct tooling when its dependency graph resolves the advisory; do not use a forced override |
 | Production credentials and external provider accounts are not configured | Expected | Deferred | Project owner | Configure during relevant integration phase |
 
 Do not add normal unfinished roadmap work to Known Issues.
@@ -256,10 +256,33 @@ Record only decisions that future sessions might otherwise reopen.
 - **2026-07-29** — Light and system themes use the same semantic UI tokens.
 - **2026-07-29** — Code must favor clarity, explicitness, and junior-developer debuggability over cleverness.
 - **2026-07-29** — Revenue Operations will launch as a responsive web beta. A dedicated mobile application is a post-MVP direction and will not begin until the current web platform is complete and field workflows have been validated.
+- **2026-07-29** — pnpm 11.9.0 is the sole package manager. `pnpm-lock.yaml` is the only committed dependency lockfile.
 
 ---
 
 # Session Notes
+
+## 2026-07-30 — Phase 1, Feature 01 completion
+
+### Completed
+
+- Completed and verified all five Feature 01 slices.
+- Added CI parity for Playwright smoke tests.
+- Ran formatting, type-checking, linting, unit tests, desktop/mobile Playwright tests, and a production build.
+- Restored the approved dark-first landing surface after deferring the user-selectable theme control to Feature 02, which owns shared theme setup.
+- Hardened the global error fallback so it independently preserves the BTLS dark, semantic-token, and Inter baseline.
+- Re-ran formatting, type-checking, linting, 8 unit tests, desktop/mobile Playwright tests, and the production build; all passed.
+
+### Open risk
+
+- `pnpm audit --prod`: 3 high and 1 moderate finding through the supported Next.js dependency graph.
+- `pnpm audit`: one additional high development-only finding through ESLint transitive dependencies.
+- Both are documented upstream risks; no supported direct-dependency update is currently available within the approved recovery constraints.
+
+### Next session
+
+1. Run `/architect` for Feature 02 — Shared UI Foundation.
+2. Do not implement Feature 02 until its plan is approved.
 
 ## 2026-07-29 — Context foundation
 
@@ -275,17 +298,15 @@ Record only decisions that future sessions might otherwise reopen.
 
 ### Needs attention
 
-- Create the remaining context files
-- Correct any Resend references in `architecture.md`
-- Prepare the first implementation prompt
-- No repository exists yet
+- Complete Feature 01 in approved slices
+- Create `context/ui-registry.md` only after the first UI pattern is imprinted
+- Reassess the current Next.js upstream security advisories when a supported patched release becomes available
 
 ### Next session
 
-1. Finish `project-overview.md`
-2. Create `ui-registry.md`
-3. Prepare Phase 1, Feature 01 Codex prompt
-4. Initialize the project repository
+1. Complete Feature 01, Slice 1 — Toolchain contracts
+2. Run the Slice 1 verification checks
+3. Begin Slice 2 only after Slice 1 is verified
 
 ---
 

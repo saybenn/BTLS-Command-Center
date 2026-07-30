@@ -113,7 +113,7 @@ Shared infrastructure required by the five MVP components is allowed.
 | File storage | Supabase Storage | Public media and private attachments |
 | Background jobs | Inngest | Durable jobs, schedules, retries, and event-driven workflows |
 | AI provider | OpenAI API behind a BTLS adapter | Robin reasoning, extraction, and message generation |
-| Email | Resend behind a BTLS adapter | Transactional and lead communication email |
+| Email | Postmark behind a BTLS adapter | Transactional and lead communication email |
 | SMS | Twilio behind a BTLS adapter | Permissioned lead communication |
 | Calendar | Cronofy behind a BTLS adapter | Availability and approved appointment scheduling |
 | Web analytics | Google Analytics Data API | Website behavior and events |

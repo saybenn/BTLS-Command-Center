@@ -1,33 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BTLS Command Center
 
-## Getting Started
+BTLS Command Center is the multi-tenant operations and web-growth platform for Brought to Life Solutions.
 
-First, run the development server:
+## Development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This repository uses pnpm 11.9.0. Enable Corepack, then install dependencies:
+
+```powershell
+corepack enable
+pnpm install --frozen-lockfile
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start the development server with `pnpm dev` and open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the relevant command before opening a pull request:
 
-## Learn More
+```powershell
+pnpm format:check
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm test:e2e
+pnpm build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Run the end-to-end suite with `pnpm test:e2e` after installing the Playwright browser:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+pnpm exec playwright install chromium
+pnpm test:e2e
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The GitHub Actions workflow runs formatting, type-checking, linting, unit tests, Playwright smoke tests, and the production build.
 
 ## Deploy on Vercel
 
