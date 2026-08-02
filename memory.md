@@ -1,35 +1,49 @@
-# Memory — Phase 1, Feature 01 Complete
+# Memory — Phase 1, Feature 02 complete
 
-Last updated: 2026-07-30
+Last updated: 2026-08-02
 
 ## What was built
 
-- Completed Feature 01 on branch `feature/01-repository-tooling`: pnpm-only tooling, source ownership structure, CI quality workflow, safe environment parsing and health endpoint, development diagnostics, app boundaries, responsive bootstrap landing page, tests, and initial UI registry.
-- Added a self-contained `src/app/global-error.tsx` fallback that preserves the static dark, Inter, and semantic-token baseline when the root layout is unavailable.
-- Added unit coverage for the global error fallback and recorded its visual pattern in `context/ui-registry.md`.
+- Completed Phase 1, Feature 02 — Shared UI Foundation, including semantic dark/light tokens, local theme preference, accessible controls and field composition, feedback/data-display patterns, responsive shell/navigation, and a guarded UI Foundation catalog.
+- Added `/development-status` as the guarded internal index and `/development-status/ui-foundation` as the permanent illustrative catalog.
+- Added production and development Playwright modes, shared client-readiness support, browser failure-evidence capture, and unique generated ThemeControl label ids.
 
 ## Decisions made
 
-- `pnpm@11.9.0` is the sole package manager; `pnpm-lock.yaml` is the only lockfile.
-- `sharp` and `unrs-resolver` are the only approved dependency build scripts.
-- Dark remains the Feature 01 default. User-selectable dark/light/system preference handling is deferred to Feature 02, which owns shared theme setup.
+- `pnpm test:e2e` is the production-backed, release-gating suite on port 3001. It excludes routes intentionally guarded from production.
+- `pnpm test:e2e:dev` verifies the guarded development catalog and is diagnostic only.
+- Interactive E2E tests wait for a semantic, user-observable client-ready condition; no arbitrary sleeps, retries, private React checks, or reduced worker count are used.
 
 ## Problems solved
 
-- Recovered the project from mixed npm/pnpm tooling and restored ESLint 9.39.5 compatibility.
-- Removed an unfinished theme selector after browser verification showed its preference did not survive reload; it is not an approved Feature 01 pattern.
-- Hardened the global error fallback so it does not depend on the root layout for its visual baseline.
+- The responsive drawer Playwright failure was caused by client hydration lag after development-server navigation. The shared readiness assertion waits for the visible Theme control’s selected value before the first interaction.
+- Production E2E cannot test `/development-status` because that route correctly returns `notFound()` in production; the test modes now reflect this boundary.
+- Repeated ThemeControl instances now use React-generated IDs rather than a duplicated fixed label ID.
 
 ## Current state
 
-- Feature 01 exit gate passes. Formatting, type-checking, lint, 8 unit tests, desktop/mobile Playwright smoke tests, and production build all pass.
-- `context/progress-tracker.md` records Feature 01 as complete and Feature 02 as not started.
-- Production audit remains 3 high and 1 moderate advisory through supported Next.js transitives; full audit has one additional high development-only ESLint advisory. These are documented open upstream risks; do not use force or independent overrides.
+- Branch: `feature/02-shared-ui-foundation`.
+- Feature 02 is complete; Feature 03 has not started.
+- Work remains uncommitted. Do not stage or commit unless the user explicitly asks.
+- No schema changes, migrations, events, jobs, integrations, or new providers were added.
+- `/imprint` audit and `/review` completed with no unresolved findings.
+
+## Verification
+
+- `pnpm format:check` passed.
+- `pnpm typecheck` passed.
+- `pnpm lint` passed.
+- `pnpm test` passed: 32 tests.
+- `pnpm test:e2e:dev` passed: 16 checks.
+- `pnpm test:e2e` passed: 6 production-backed checks.
+- `pnpm build` passed.
 
 ## Next session starts with
 
-Run `/architect` for Phase 1, Feature 02 — Shared UI Foundation. Do not implement Feature 02 until its plan is approved.
+1. Run `/remember restore`.
+2. Run `/architect` for Phase 2, Feature 03 — Supabase and Prisma Foundation.
+3. Do not implement Feature 03 until its plan is approved.
 
 ## Open questions
 
-- Reassess supported Next.js and ESLint updates when they resolve the documented transitive audit advisories.
+- None for Feature 02. Reassess the documented upstream dependency audit risks when supported direct dependency updates become available.

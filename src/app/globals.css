@@ -2,60 +2,217 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
+:root.light {
   color-scheme: light;
 
   --background: #f4f6fb;
+  --background-subtle: #eef1f8;
+  --sidebar: #ffffff;
+  --sidebar-elevated: #f7f8fc;
+
   --surface: #ffffff;
   --surface-raised: #ffffff;
+  --surface-secondary: #f7f8fc;
+  --surface-tertiary: #eef1f8;
+  --surface-interactive: #f2f4fa;
+  --surface-hover: #e9edf7;
+  --surface-selected: #e8ebff;
+  --surface-overlay: rgba(17, 24, 39, 0.56);
+
   --border: #dfe4ef;
+  --border-strong: #cbd3e3;
+  --border-subtle: #e9edf5;
+  --border-focus: #6067f2;
+
   --text-primary: #11172b;
   --text-secondary: #4f5c78;
   --text-muted: #7b879f;
+  --text-disabled: #a8b0c2;
+  --text-inverse: #f8faff;
+
   --accent: #5c63f2;
   --accent-hover: #4f56e5;
+  --accent-active: #444bd3;
+  --accent-soft: #e9eaff;
+  --accent-muted: #cfd2ff;
   --accent-foreground: #ffffff;
+  --accent-ring: rgba(92, 99, 242, 0.32);
+
   --intelligence: #8b5cf6;
+  --intelligence-hover: #7c4fea;
+  --intelligence-soft: #f0eaff;
+  --intelligence-foreground: #5d2fc0;
+
+  --success: #12a873;
+  --success-hover: #0d9163;
   --success-soft: #dcf7ec;
   --success-foreground: #087654;
+  --info: #3478f6;
+  --info-hover: #2867dd;
+  --info-soft: #e1ecff;
+  --info-foreground: #1d55b5;
+  --warning: #e79a15;
+  --warning-hover: #cc8210;
+  --warning-soft: #fff0ce;
+  --warning-foreground: #875404;
+  --danger: #e6495f;
+  --danger-hover: #ce394e;
+  --danger-soft: #ffe3e8;
+  --danger-foreground: #a5253b;
+
+  --chart-1: #5c63f2;
+  --chart-2: #3f8cff;
+  --chart-3: #20c997;
+  --chart-4: #9b5de5;
+  --chart-5: #f6ae2d;
+  --chart-6: #ef5da8;
+  --chart-grid: #dfe4ef;
+  --chart-axis: #74809a;
+  --chart-reference: #9aa5ba;
+
   --focus-ring: #6870ff;
+  --selection: rgba(92, 99, 242, 0.2);
+  --code-background: #edf0f7;
+  --shadow-color: 24 33 58;
 }
 
+:root,
 .dark {
   color-scheme: dark;
 
   --background: #080f22;
+  --background-subtle: #0b1329;
+  --sidebar: #0a1126;
+  --sidebar-elevated: #101a34;
+
   --surface: #111a35;
   --surface-raised: #151f3e;
+  --surface-secondary: #192443;
+  --surface-tertiary: #202b4c;
+  --surface-interactive: #1b2648;
+  --surface-hover: #243055;
+  --surface-selected: #242d68;
+  --surface-overlay: rgba(2, 6, 23, 0.76);
+
   --border: #27345d;
+  --border-strong: #35436f;
+  --border-subtle: #1d294c;
+  --border-focus: #7279ff;
+
   --text-primary: #f7f8ff;
   --text-secondary: #b9c2df;
   --text-muted: #8490b4;
+  --text-disabled: #5e698a;
+  --text-inverse: #0a1022;
+
   --accent: #6269ff;
   --accent-hover: #747aff;
+  --accent-active: #5057e8;
+  --accent-soft: #232d68;
+  --accent-muted: #343e84;
   --accent-foreground: #ffffff;
+  --accent-ring: rgba(111, 119, 255, 0.4);
+
   --intelligence: #9b72ff;
+  --intelligence-hover: #ab8aff;
+  --intelligence-soft: #30245d;
+  --intelligence-foreground: #d9c8ff;
+
+  --success: #2ed6a1;
+  --success-hover: #45e2b2;
   --success-soft: #123f39;
   --success-foreground: #6ff0c5;
+  --info: #4a8dff;
+  --info-hover: #67a0ff;
+  --info-soft: #172f5c;
+  --info-foreground: #91baff;
+  --warning: #f6aa2c;
+  --warning-hover: #ffbb4b;
+  --warning-soft: #4a3616;
+  --warning-foreground: #ffd17d;
+  --danger: #f04f67;
+  --danger-hover: #ff6a80;
+  --danger-soft: #4a202d;
+  --danger-foreground: #ff9aac;
+
+  --chart-1: #6269ff;
+  --chart-2: #4a8dff;
+  --chart-3: #2ed6a1;
+  --chart-4: #a06cff;
+  --chart-5: #f6aa2c;
+  --chart-6: #f36aa8;
+  --chart-grid: #263355;
+  --chart-axis: #8d99bb;
+  --chart-reference: #5f6a8e;
+
   --focus-ring: #7b82ff;
+  --selection: rgba(98, 105, 255, 0.3);
+  --code-background: #0c142b;
+  --shadow-color: 0 0 0;
 }
 
 @theme inline {
   --font-sans: var(--font-inter);
+
   --color-background: var(--background);
+  --color-background-subtle: var(--background-subtle);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-elevated: var(--sidebar-elevated);
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-surface-interactive: var(--surface-interactive);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-selected: var(--surface-selected);
+  --color-surface-overlay: var(--surface-overlay);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-focus: var(--border-focus);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-muted: var(--accent-muted);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-ring: var(--accent-ring);
   --color-intelligence: var(--intelligence);
+  --color-intelligence-hover: var(--intelligence-hover);
+  --color-intelligence-soft: var(--intelligence-soft);
+  --color-intelligence-foreground: var(--intelligence-foreground);
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
   --color-success-soft: var(--success-soft);
   --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-hover: var(--info-hover);
+  --color-info-soft: var(--info-soft);
+  --color-info-foreground: var(--info-foreground);
+  --color-warning: var(--warning);
+  --color-warning-hover: var(--warning-hover);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+  --color-chart-reference: var(--chart-reference);
   --color-focus-ring: var(--focus-ring);
+  --color-code-background: var(--code-background);
 }
 
 body {
@@ -64,6 +221,6 @@ body {
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--selection);
+  color: var(--text-primary);
 }

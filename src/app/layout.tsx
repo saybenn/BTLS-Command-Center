@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { EnvironmentIndicator } from "@/components/feedback/environment-indicator";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { themeInitializerScript } from "@/components/theme/theme-script";
 import { getServerEnvironment, isProductionEnvironment } from "@/server/env";
 
 import { inter } from "./fonts";
@@ -19,9 +21,12 @@ export default function RootLayout({
   const environment = getServerEnvironment();
 
   return (
-    <html lang="en" className={`${inter.variable} dark h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitializerScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
         {!isProductionEnvironment(environment) ? (
           <EnvironmentIndicator environment={environment.applicationEnvironment} />
         ) : null}

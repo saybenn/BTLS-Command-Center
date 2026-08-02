@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-07-30 |
-| Current phase | Phase 1 — Project Bootstrap |
-| Current feature | Feature 01 — Repository and Tooling complete |
-| Overall status | Exit gate passed; upstream dependency risk recorded |
-| MVP progress | Feature 01 complete; Feature 02 not started |
-| Next implementation target | Await approval to plan Feature 02 — Shared UI Foundation |
+| Last updated | 2026-08-02 |
+| Current phase | Phase 1 complete |
+| Current feature | Feature 02 — Shared UI Foundation complete |
+| Overall status | Feature exit gate passed |
+| MVP progress | Features 01 and 02 complete |
+| Next implementation target | Feature 03 — Supabase and Prisma Foundation (not started) |
 
 ---
 
@@ -46,6 +46,18 @@ A feature is complete only when its exit gate in `context/build-plan.md` passes.
 - [x] Feature 01 exit gate passed
 
 Feature 01 provides the pnpm-only application baseline, source ownership structure, tooling contracts, GitHub Actions quality workflow, safe system diagnostics, a responsive bootstrap interface, and the initial UI registry.
+
+## Phase 1 — Feature 02: Shared UI Foundation
+
+- [x] Slice 1 — Foundation contracts and token alignment
+- [x] Slice 2 — Theme infrastructure
+- [x] Slice 3 — Core shared controls and form composition
+- [x] Slice 4 — Feedback, data display, and page composition
+- [x] Slice 5 — Responsive shell and navigation
+- [x] Slice 6 — Internal showcase, documentation, and exit verification
+- [x] Feature 02 exit gate passed
+
+Feature 02 provides semantic dark/light tokens, local theme preference, accessible shared controls and field composition, feedback and data-display primitives, responsive application-shell compositions, and a guarded internal UI Foundation catalog. Production and development Playwright modes are intentionally separated: production-visible workflows are release-gating, while the guarded catalog remains development diagnostic coverage.
 
 ## Product and Architecture Context
 
@@ -94,7 +106,7 @@ Feature 01 provides the pnpm-only application baseline, source ownership structu
 
 # In Progress
 
-No implementation feature is active.
+No active implementation feature.
 
 ---
 
@@ -102,8 +114,9 @@ No implementation feature is active.
 
 ## Immediate
 
-1. [ ] Run `/architect` before planning Feature 02 — Shared UI Foundation
-2. [ ] Approve the Feature 02 plan before implementation
+1. [ ] Run `/architect` for Feature 03 — Supabase and Prisma Foundation
+2. [ ] Confirm the Feature 03 plan before implementation
+3. [ ] Do not begin Feature 04 until Feature 03 passes its exit gate
 
 ## First implementation feature
 
@@ -135,7 +148,7 @@ No implementation feature is active.
 ## Phase 1 — Project Bootstrap
 
 - [x] 01 Repository and Tooling
-- [ ] 02 Shared UI Foundation
+- [-] 02 Shared UI Foundation
 
 ## Phase 2 — Tenancy, Authentication, and Property Management
 
@@ -284,6 +297,93 @@ Record only decisions that future sessions might otherwise reopen.
 1. Run `/architect` for Feature 02 — Shared UI Foundation.
 2. Do not implement Feature 02 until its plan is approved.
 
+## 2026-07-30 — Phase 1, Feature 02: Slice 1
+
+### Completed
+
+- Added the full approved semantic token bridge for dark and light themes.
+- Added presentation-only application-shell display contracts without tenant, authorization, or database fields.
+- Added approved Radix Dialog, Select, and Tabs dependencies.
+- Added focused token and contract unit tests plus a browser assertion for dark/light token resolution.
+- Imprinted the semantic token foundation in `context/ui-registry.md`.
+- Ran focused formatting, type-checking, linting, unit tests, Chromium checks, and a production build.
+
+### Changed
+
+- Files: `src/app/globals.css`, `src/components/layout/app-shell.types.ts`, focused tests, `package.json`, and `pnpm-lock.yaml`
+- Migrations: none
+- Dependencies: `@radix-ui/react-dialog`, `@radix-ui/react-select`, `@radix-ui/react-tabs`
+- Events/jobs: none
+- UI components: none; foundation tokens and presentation contracts only
+
+### Issues
+
+- Local Playwright checks pass when the bundled pnpm runtime is exposed on `PATH`; Windows leaves the development server alive after the suite, so its process must be stopped by port during local verification.
+- Production builds require network access to download the existing Google Inter font in this environment.
+
+### Next session
+
+1. Implement Feature 02 — Slice 2: Theme infrastructure.
+2. Test persisted dark, light, and system preferences.
+3. Continue only after Slice 2 verification passes.
+
+## 2026-07-30 — Phase 1, Feature 02: Slice 2
+
+### Completed
+
+- Made dark the token default and added a pre-hydration initializer for locally persisted dark, light, and system preferences.
+- Added `ThemeProvider` with storage-safe persistence and system-preference listeners limited to the system setting.
+- Added the accessible Radix-based Theme Control and imprinted its reusable visual pattern.
+- Resolved the focus-style registry conflict by adopting the canonical ring-based token pattern.
+- Ran focused formatting, type-checking, unit tests, production-server browser verification, and a production build.
+
+### Changed
+
+- Files: root layout, global styles, theme provider, initializer, control, focused tests, and UI registry
+- Migrations: none
+- Dependencies: none beyond the Radix primitives added in Slice 1
+- Events/jobs: none
+- UI components: `ThemeControl`
+
+### Issues
+
+- Local development-server verification requires network access for the existing Google Inter font; production-server verification runs after the production build without that runtime dependency.
+
+### Next session
+
+1. Implement Feature 02 — Slice 3: Core shared controls and form composition.
+2. Verify keyboard behavior, focus handling, and field semantics.
+3. Continue only after Slice 3 verification passes.
+
+## 2026-07-30 — Phase 1, Feature 02: Slice 3
+
+### Completed
+
+- Added the shared Button, Input, Textarea, Select, Dialog, Tabs, Badge, Card, and Alert components.
+- Added visible Label and Field composition with optional help text, required indicators, and linked validation errors.
+- Preserved Radix Dialog, Select, and Tabs keyboard/focus behavior through thin BTLS styling wrappers.
+- Added and passed keyboard-focused tests for loading buttons, fields, dialog focus restoration, tabs, Select, and alert announcement priority.
+- Added the JSDOM `scrollIntoView` shim required by Radix Select tests.
+- Imprinted every new reusable visual pattern in `context/ui-registry.md`.
+
+### Changed
+
+- Files: shared UI components, form composition components, test setup, focused component tests, UI registry, and progress tracker
+- Migrations: none
+- Dependencies: none beyond the Radix primitives added in Slice 1
+- Events/jobs: none
+- UI components: Button, Input, Textarea, Select, Dialog, Tabs, Badge, Card, Alert, Label, and Field
+
+### Issues
+
+- No open Slice 3 implementation issue.
+
+### Next session
+
+1. Implement Feature 02 — Slice 4: Feedback, data display, and page composition.
+2. Verify empty, loading, error, table, and page-header patterns.
+3. Continue only after Slice 4 verification passes.
+
 ## 2026-07-29 — Context foundation
 
 ### Completed
@@ -364,3 +464,154 @@ At the end of every session:
 10. Do not mark a feature complete merely because code was generated.
 
 The tracker should remain a working status document, not a duplicate of `build-plan.md`.
+
+## 2026-07-30 — Phase 1, Feature 02: Slice 4
+
+### Completed
+
+- Added generic EmptyState, LoadingState, and ErrorState components with safe, actionable copy and optional relevant actions.
+- Added a semantic TableShell with native header, body, and footer slots, numeric alignment, and horizontal overflow containment for narrow screens.
+- Added a responsive PageHeader with title, optional description, primary-action, and secondary-control slots.
+- Added a development-only Shared UI Foundation showcase covering loading, empty, error, disabled, success, and table states.
+- Added focused component tests and imprinted the feedback, table, and page-header patterns.
+- Ran focused formatting, unit tests, type checking, linting, and a production build.
+
+### Changed
+
+- Files: shared feedback components, TableShell, PageHeader, development status showcase, tests, UI registry, and progress tracker
+- Migrations: none
+- Dependencies: none
+- Events/jobs: none
+- UI components: EmptyState, LoadingState, ErrorState, TableShell, PageHeader
+
+### Issues
+
+- The in-app browser runtime could not initialize in this desktop session because of a process-environment collision. Component tests verify semantic table structure and overflow containment; production build verification passed.
+
+### Next session
+
+1. Implement Feature 02 — Slice 5: application shell and navigation presentation.
+2. Verify keyboard navigation and responsive sidebar/drawer behavior.
+3. Continue only after Slice 5 verification passes.
+
+## 2026-07-30 — Phase 1, Feature 02: Slice 5
+
+### Completed
+
+- Added presentation-only AppShell, ApplicationSidebar, TopNavigation, MobileNavigation, and shared navigation-list compositions.
+- Added the exact context-defined primary navigation order plus the separate Administration group to the static showcase.
+- Added the desktop 232px persistent sidebar, 72px top bar, tablet drawer trigger, and a labelled Radix dialog drawer containing property, navigation, theme, and account display.
+- Corrected the React Server Component boundary: navigation icons are now serializable tokens, and the interactive navigation list is client-owned.
+- Added focused AppShell unit coverage and the requested Playwright scenarios for desktop, tablet, mobile focus trap, Escape, overlay dismissal, focus return, and visible labels.
+- Imprinted the application shell and navigation pattern.
+
+### Verification
+
+- Production build: passed.
+- Focused AppShell unit test: passed.
+- Typecheck and targeted lint: passed.
+- Playwright: 10 of 12 checks pass. Both desktop and mobile Chromium fail only when opening the responsive drawer. The user manually verified that the trigger changes to `data-state="open"` and a dialog mounts without console or network errors. The automated browser remains closed even after a focused retry helper and when the server runs through Webpack.
+
+### Current blocker
+
+- Do not mark Slice 5 complete until the automated-browser-only drawer interaction is diagnosed and `pnpm test:e2e -- tests/e2e/app-shell.spec.ts` passes. The earlier React Server Component serialization errors are resolved. The Button ref forwarding remains a valid Radix composition correction; the unproven Playwright retry helper should be reassessed during the fresh diagnosis.
+
+### Next session
+
+1. Start with a narrow Playwright-versus-manual-browser diagnosis; capture trace, video, console, network, and client state before editing source.
+2. Determine why Playwright's trigger remains closed while the manually operated drawer opens.
+3. Restore or replace the retry helper only once the root cause is established, then re-run the Slice 5 proof.
+
+## 2026-08-01 â€” Phase 1, Feature 02: Slice 5 recovery handoff
+
+### Current state
+
+- The application shell presentation is implemented but Slice 5 is incomplete because its Playwright exit proof fails.
+- Manual browser verification succeeds: the responsive hamburger trigger opens the labelled dialog drawer.
+- The same interaction fails only in Playwright Chromium; it is not resolved by the current development bundler, a browser restart, or the current retry helper.
+
+### Next session
+
+1. Run `/remember restore` and begin from the Slice 5 recovery notes.
+2. Diagnose the automated browser boundary without speculative component changes.
+3. Do not start Slice 6 until Slice 5 Playwright proof passes.
+
+## 2026-08-01 — Phase 1, Feature 02: Slice 5 E2E recovery
+
+### Completed
+
+- Diagnosed the automated-browser failure as a Next.js development-origin mismatch: Playwright used `127.0.0.1` while the dev server initialized for `localhost` and blocked the HMR resource.
+- Allowed the loopback test origin through the documented `allowedDevOrigins` configuration.
+- Replaced the unproven drawer retry helper with the normal click-and-visible assertion.
+- Configured Playwright to retain trace and video only when a test fails.
+- Restored the responsive drawer proof in both Chromium projects, including focus trap, Escape dismissal, overlay dismissal, focus return, and visible labels.
+- Reconciled the stale Slice 4 checklist with the already-completed Slice 4 session record.
+
+### Verification
+
+- `pnpm typecheck` passed.
+- Focused ESLint passed for `next.config.ts`, `playwright.config.ts`, and `tests/e2e/app-shell.spec.ts`.
+- Focused AppShell unit test passed: 2 tests.
+- `tests/e2e/app-shell.spec.ts` passed: 6 checks across desktop and mobile Chromium.
+
+### Remaining
+
+- Feature 02 remains in progress. Complete Slice 6 and the feature-level imprint, review, and exit verification before starting Feature 03.
+
+## 2026-08-01 — Phase 1, Feature 02: Slice 6 partial implementation
+
+### Completed
+
+- Established `/development-status` as a guarded internal index and `/development-status/ui-foundation` as the stable UI Foundation catalog route.
+- Moved the production `notFound()` guard into the development-status layout so it applies to current and future child routes.
+- Organized the catalog into illustrative primitives, feedback states, table shell, page header, theme, and full shell preview.
+- Corrected the desktop sidebar so it remains sticky while its own navigation area can scroll.
+- Added focused route/catalog unit coverage and desktop/mobile Playwright coverage for the showcase.
+- Ran and confirmed the UI imprint audit; no `ui-registry.md` amendment was required.
+
+### Verification
+
+- Focused unit suite passed: 31 tests.
+- Strict TypeScript typecheck passed.
+- Focused Playwright suite: 14 of 16 checks passed. All catalog checks passed.
+
+### Current blocker
+
+- The recurring mobile navigation-drawer assertion still fails in Chromium and mobile Chromium. Do not make speculative UI changes; hand the targeted recovery prompt to the task that previously resolved the Slice 5 drawer issue, then resume this feature once the failure is diagnosed.
+- Do not run feature review or the full exit gate until that test is resolved.
+
+### Next session
+
+1. Give the prepared recovery handoff to the prior Slice 5 resolution task.
+2. Diagnose the drawer failure at `/development-status/ui-foundation` without speculative component changes.
+3. After it passes, run `/review` and the complete Feature 02 verification suite.
+
+## 2026-08-02 — Phase 1, Feature 02 completion
+
+### Completed
+
+- Completed Slice 6 with the guarded `/development-status` index and permanent `/development-status/ui-foundation` catalog.
+- Preserved the production guard while separating production-backed Playwright coverage from development-only catalog diagnostics.
+- Added shared browser failure evidence capture, a semantic client-ready helper, and unique generated ThemeControl label ids.
+- Completed the required `/imprint` audit and `/review`; no unresolved review finding remains.
+
+### Verification
+
+- `pnpm format:check` passed.
+- `pnpm typecheck` passed.
+- `pnpm lint` passed.
+- `pnpm test` passed: 32 tests.
+- `pnpm test:e2e:dev` passed: 16 checks.
+- `pnpm test:e2e` passed: 6 production-backed checks.
+- `pnpm build` passed.
+
+### Changed
+
+- Migrations: none.
+- Dependencies: the approved Radix Dialog, Select, and Tabs primitives added in Slice 1.
+- Events/jobs/integrations: none.
+- Context: `ui-registry.md`, `code-standards.md`, `library-docs.md`, and this tracker updated where required.
+
+### Exit gate
+
+- Feature 02 exit gate passed. Feature 03 has not started.
