@@ -1109,7 +1109,18 @@ Cover critical journeys:
 - Completed work enters measurement review
 - Cross-tenant access is denied
 
-### 18.5 Every bug fix should consider a regression test
+### 18.5 End-to-end reliability
+
+End-to-end tests prove a user journey after the application is interactive, not merely after server HTML arrives.
+
+- The authoritative CI or release-gating Playwright suite must run against a production Next.js server build, not a development server with HMR.
+- A development-server Playwright run is diagnostic feedback only. It must not be used to explain away a production-suite failure or to redefine production correctness.
+- Before the first interaction with a client component, wait for an explicit, user-observable hydration-ready condition. Reuse an approved helper or established readiness contract; do not rely on `domcontentloaded`, arbitrary delays, polling retries, or private React state.
+- Retain a failure trace and video. Capture browser console messages, page errors, and failed network requests in the test evidence.
+- Use unique rendered IDs. Reusable controls that need IDs must generate instance-specific values, and component tests must cover repeated instances where duplicate IDs are possible.
+- Preserve parallel execution. Do not reduce worker count merely to hide a hydration or readiness race.
+
+### 18.6 Every bug fix should consider a regression test
 
 When a reproducible defect is fixed, add a test when practical.
 

@@ -1281,6 +1281,30 @@ Rules:
 - Mock external providers only where real sandbox testing is impractical.
 - Keep a small dependable critical suite rather than a large brittle suite.
 
+### Runtime and readiness model
+
+Use two explicit Playwright modes:
+
+1. **Authoritative suite** â€” runs the application from a production Next.js build and is the CI or release-gating result.
+2. **Development diagnostic suite** â€” may run against `next dev` for fast local feedback, but HMR, compilation, and refresh behavior are diagnostic context rather than correctness signals.
+
+`pnpm test:e2e` is the production-backed authoritative suite. Guarded development-status routes are verified through `pnpm test:e2e:dev`, which remains diagnostic because those routes intentionally return `notFound()` from a production server.
+
+For interactive pages, navigation completion does not prove React hydration. Before a test's first interaction:
+
+- wait for a shared hydration-ready helper or an established user-visible client-ready condition;
+- keep the condition semantic and local to the page or shell, rather than inspecting private React state;
+- do not add arbitrary waits or outcome-retry loops to compensate for an unhydrated page.
+
+The preferred long-term pattern is one BTLS-owned readiness helper used by client-interactive E2E tests. A temporary page-specific condition is acceptable only when it clearly demonstrates client interactivity and is covered by the test's user-visible workflow.
+
+### Failure evidence
+
+- Configure trace and video retention for failed tests.
+- In shared Playwright fixtures, collect browser console errors, uncaught page errors, and failed network requests with the test artifact output.
+- When diagnosing a browser-only failure, compare those artifacts with trigger state and the client-ready condition before changing application components.
+- Keep browser selectors role-, label-, or approved-test-ID-based; do not use framework-private hydration selectors.
+
 ---
 
 # Dependency Decisions and Deferred Libraries

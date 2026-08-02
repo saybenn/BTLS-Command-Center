@@ -22,18 +22,20 @@ pnpm format:check
 pnpm typecheck
 pnpm lint
 pnpm test
-pnpm test:e2e
 pnpm build
+pnpm test:e2e
 ```
 
-Run the end-to-end suite with `pnpm test:e2e` after installing the Playwright browser:
+Run the authoritative end-to-end suite with `pnpm test:e2e` after installing the Playwright browser. It builds the application and serves the production build on port 3001, leaving a local development server on port 3000 untouched:
 
 ```powershell
 pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-The GitHub Actions workflow runs formatting, type-checking, linting, unit tests, Playwright smoke tests, and the production build.
+For fast local diagnostics against `next dev`, use `pnpm test:e2e:dev`. This is also the required verification path for guarded `/development-status` routes, which intentionally return `notFound()` on a production server. Development-server results are not release-gating.
+
+The GitHub Actions workflow runs formatting, type-checking, linting, unit tests, and the production-backed Playwright suite.
 
 ## Deploy on Vercel
 
