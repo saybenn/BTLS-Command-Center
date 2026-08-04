@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AppUserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum PlatformRole {
+  BTLS_ADMIN
+  BTLS_OPERATOR
+}
+
+enum AccountRole {
+  CLIENT_OWNER
+  CLIENT_MANAGER
+  CLIENT_STAFF
+  CLIENT_VIEWER
+}
+
+enum AccountMembershipStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum ClientAccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum ClientPropertyStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum FeatureFlagScope {
+  GLOBAL
+  ACCOUNT
+  PROPERTY
+}
+
+model AppUser {
+  /// Must equal the corresponding Supabase auth.users UUID.
+  id           String        @id @db.Uuid
+  email        String        @unique
+  displayName  String?       @map("display_name")
+  status       AppUserStatus @default(ACTIVE)
+  platformRole PlatformRole? @map("platform_role")
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  accountMemberships AccountMembership[]
+  auditEvents        AuditEvent[]        @relation("AuditEventActor")
+
+  @@map("app_users")
+}
+
+model ClientAccount {
+  id        String              @id @default(uuid()) @db.Uuid
+  name      String
+  status    ClientAccountStatus @default(ACTIVE)
+  createdAt DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  properties   ClientProperty[]
+  memberships  AccountMembership[]
+  featureFlags FeatureFlag[]
+  auditEvents  AuditEvent[]
+
+  @@index([status])
+  @@map("client_accounts")
+}
+
+model ClientProperty {
+  id        String               @id @default(uuid()) @db.Uuid
+  accountId String               @map("account_id") @db.Uuid
+  name      String
+  domain    String?              @unique
+  status    ClientPropertyStatus @default(ACTIVE)
+  createdAt DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account          ClientAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  propertyAccesses PropertyAccess[]
+  featureFlags     FeatureFlag[]
+  auditEvents      AuditEvent[]
+
+  @@unique([id, accountId])
+  @@index([accountId, status])
+  @@map("client_properties")
+}
+
+model AccountMembership {
+  id        String                  @id @default(uuid()) @db.Uuid
+  accountId String                  @map("account_id") @db.Uuid
+  userId    String                  @map("user_id") @db.Uuid
+  role      AccountRole
+  status    AccountMembershipStatus @default(ACTIVE)
+  createdAt DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account          ClientAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  user             AppUser          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  propertyAccesses PropertyAccess[]
+
+  @@unique([userId, accountId])
+  @@unique([id, accountId])
+  @@index([accountId, status])
+  @@index([userId, status])
+  @@map("account_memberships")
+}
+
+model PropertyAccess {
+  id           String       @id @default(uuid()) @db.Uuid
+  accountId    String       @map("account_id") @db.Uuid
+  membershipId String       @map("membership_id") @db.Uuid
+  propertyId   String       @map("property_id") @db.Uuid
+  roleOverride AccountRole? @map("role_override")
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  membership AccountMembership @relation(fields: [membershipId, accountId], references: [id, accountId], onDelete: Cascade)
+  property   ClientProperty    @relation(fields: [propertyId, accountId], references: [id, accountId], onDelete: Cascade)
+
+  @@unique([membershipId, propertyId])
+  @@index([propertyId])
+  @@index([membershipId])
+  @@map("property_accesses")
+}
+
+model FeatureFlag {
+  id         String           @id @default(uuid()) @db.Uuid
+  key        String
+  enabled    Boolean          @default(false)
+  scope      FeatureFlagScope
+  accountId  String?          @map("account_id") @db.Uuid
+  propertyId String?          @map("property_id") @db.Uuid
+  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account  ClientAccount?  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  property ClientProperty? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([propertyId])
+  @@map("feature_flags")
+}
+
+model AuditEvent {
+  /// Append-only: application services must not update or delete audit events.
+  id          String   @id @default(uuid()) @db.Uuid
+  actorId     String?  @map("actor_id") @db.Uuid
+  accountId   String?  @map("account_id") @db.Uuid
+  propertyId  String?  @map("property_id") @db.Uuid
+  action      String
+  subjectType String   @map("subject_type")
+  subjectId   String?  @map("subject_id")
+  metadata    Json?
+  occurredAt  DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  actor    AppUser?        @relation("AuditEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+  account  ClientAccount?  @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  property ClientProperty? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, occurredAt])
+  @@index([accountId, occurredAt])
+  @@index([propertyId, occurredAt])
+  @@map("audit_events")
+}

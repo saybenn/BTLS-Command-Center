@@ -379,3 +379,41 @@ Last updated: 2026-07-30
 | Accent usage | Active navigation uses `bg-accent` only for its slim left indicator; property mark uses `bg-accent-soft text-accent` |
 
 **Pattern notes:** The desktop sidebar is exactly `w-[232px]` and the top bar exactly `h-[72px]`. Keep the context-defined primary navigation order and a separate Administration group. Below the large breakpoint, use the labelled dialog-backed drawer rather than icon-only primary navigation; it includes property, navigation, theme, and account display. Shell data remains presentation-only until Feature 05 supplies authorized items and property context.
+
+### Development Status Summary
+
+Files: `src/components/feedback/development-status-summary.tsx`, `src/app/development-status/loading.tsx`, `src/app/development-status/error.tsx`
+Last updated: 2026-08-02
+
+| Property | Class |
+|---|---|
+| Background | `bg-surface` |
+| Border | `border border-border`; list rows use `border-t border-border` |
+| Border radius | `rounded-xl` |
+| Text — primary | `text-text-primary text-base font-semibold` for the heading; row labels use `text-sm font-medium` |
+| Text — secondary | `text-text-secondary text-sm leading-6` |
+| Spacing | Panel `p-6`; rows `py-4`; status content begins at `mt-6` |
+| Hover state | None; the generic error recovery action uses the shared secondary Button |
+| Shadow | `shadow-xs` |
+| Accent usage | Semantic Badge variants communicate configuration and connection state; the panel remains neutral |
+
+**Pattern notes:** Use this only on guarded non-production diagnostic pages. Display configuration state and generic reachability results, never URLs, keys, connection strings, provider identifiers, or raw failure messages. Loading uses the approved labelled skeleton; failed page rendering uses the approved generic ErrorState with a safe retry action.
+
+### Development Status Summary
+
+Files: `src/components/feedback/development-status-summary.tsx`, `src/app/development-status/loading.tsx`, `src/app/development-status/error.tsx`
+Last updated: 2026-08-02
+
+| Property | Class |
+|---|---|
+| Background | `bg-surface` |
+| Border | `border border-border`; list rows use `border-t border-border` |
+| Border radius | `rounded-xl` |
+| Text — primary | `text-text-primary text-base font-semibold` for the heading; row labels use `text-sm font-medium` |
+| Text — secondary | `text-text-secondary text-sm leading-6` |
+| Spacing | Panel `p-6`; rows `py-4`; status content begins at `mt-6` |
+| Hover state | None; the generic error recovery action uses the shared secondary Button |
+| Shadow | `shadow-xs` |
+| Accent usage | Semantic Badge variants communicate configuration and connection state; the panel remains neutral |
+
+**Pattern notes:** Use this only on guarded non-production diagnostic pages. Display configuration state and generic reachability results, never URLs, keys, connection strings, provider identifiers, or raw failure messages. Loading uses the approved labelled skeleton; failed page rendering uses the approved generic ErrorState with a safe retry action.

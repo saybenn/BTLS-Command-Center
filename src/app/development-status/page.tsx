@@ -1,4 +1,9 @@
-export default function DevelopmentStatusPage() {
+import { DevelopmentStatusSummary } from "@/components/feedback/development-status-summary";
+import { getDevelopmentStatus } from "@/server/development-status";
+
+export default async function DevelopmentStatusPage() {
+  const status = await getDevelopmentStatus();
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-6 py-12">
       <p className="text-sm font-medium text-text-secondary">Development area</p>
@@ -9,7 +14,10 @@ export default function DevelopmentStatusPage() {
         These routes support implementation and verification. They contain illustrative data only
         and are unavailable in production.
       </p>
-      <section className="mt-8 rounded-xl border border-border bg-surface p-6 shadow-xs">
+      <div className="mt-8">
+        <DevelopmentStatusSummary status={status} />
+      </div>
+      <section className="mt-6 rounded-xl border border-border bg-surface p-6 shadow-xs">
         <h2 className="text-base font-semibold text-text-primary">UI Foundation</h2>
         <p className="mt-2 text-sm leading-6 text-text-secondary">
           Review approved primitives, feedback states, data display, theme controls, and the
