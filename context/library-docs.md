@@ -296,6 +296,8 @@ Do not add Realtime to static reporting or every dashboard by default.
 
 - `prisma`
 - `@prisma/client`
+- `@prisma/adapter-pg`
+- `pg`
 
 Prisma is the primary server-side database-access and migration layer.
 
@@ -304,20 +306,28 @@ Prisma is the primary server-side database-access and migration layer.
 Use one server-only Prisma client module.
 
 ```ts
-import { PrismaClient } from "@prisma/client";
+import "server-only";
+
+import { PrismaPg } from "@prisma/adapter-pg";
+
+import { PrismaClient } from "@/generated/prisma/client";
+import { requireDatabaseRuntimeEnvironment } from "@/server/env";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma?: PrismaClient;
+  prisma: PrismaClient | undefined;
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["warn", "error"]
-        : ["error"],
+function createPrismaClient() {
+  const { databaseUrl } = requireDatabaseRuntimeEnvironment();
+  const adapter = new PrismaPg({ connectionString: databaseUrl });
+
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
@@ -333,6 +343,16 @@ Rules:
 - Avoid large indiscriminate relation includes.
 - Paginate unbounded lists.
 - Review dashboards for N+1 queries.
+
+### Prisma 7 configuration
+
+Use the `prisma-client` generator with an explicit generated-client output path. The committed
+schema contains only the PostgreSQL provider; Prisma CLI configuration belongs in
+`prisma.config.ts`.
+
+`DIRECT_DATABASE_URL` is used by the Prisma CLI for migration operations. The runtime client uses
+the restricted application `DATABASE_URL` through `PrismaPg`. Load `.env.local` before `.env` in
+the Prisma config so local developer configuration remains private and takes precedence.
 
 ### Transactions
 
@@ -387,6 +407,7 @@ Rules:
 ### Migrations
 
 - Prisma owns ordinary schema migrations.
+- Prisma 7 migration configuration, migration location, and seed command live in `prisma.config.ts`.
 - Supabase-specific RLS SQL lives under `supabase/`.
 - Do not define the same object in both migration systems.
 - Never rewrite an applied migration.

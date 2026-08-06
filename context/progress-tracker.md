@@ -13,11 +13,11 @@
 | Field | Value |
 |---|---|
 | Last updated | 2026-08-02 |
-| Current phase | Phase 1 complete |
-| Current feature | Feature 02 — Shared UI Foundation complete |
+| Current phase | Phase 2 in progress |
+| Current feature | Feature 03 — Supabase and Prisma Foundation complete |
 | Overall status | Feature exit gate passed |
 | MVP progress | Features 01 and 02 complete |
-| Next implementation target | Feature 03 — Supabase and Prisma Foundation (not started) |
+| Next implementation target | Feature 04 — Authentication (not started) |
 
 ---
 
@@ -58,6 +58,15 @@ Feature 01 provides the pnpm-only application baseline, source ownership structu
 - [x] Feature 02 exit gate passed
 
 Feature 02 provides semantic dark/light tokens, local theme preference, accessible shared controls and field composition, feedback and data-display primitives, responsive application-shell compositions, and a guarded internal UI Foundation catalog. Production and development Playwright modes are intentionally separated: production-visible workflows are release-gating, while the guarded catalog remains development diagnostic coverage.
+
+## Phase 2 — Feature 03: Supabase and Prisma Foundation
+
+- [x] Slice 1 — Tooling and environment contracts
+- [x] Slice 2 — Core tenancy schema and Prisma migration
+- [x] Slice 3 — Supabase security and storage migrations
+- [x] Slice 4 — Reset, seed, and tenant-isolation foundation
+- [x] Slice 5 — Development status and feature verification
+- [x] Feature 03 exit gate passed
 
 ## Product and Architecture Context
 
@@ -114,9 +123,9 @@ No active implementation feature.
 
 ## Immediate
 
-1. [ ] Run `/architect` for Feature 03 — Supabase and Prisma Foundation
-2. [ ] Confirm the Feature 03 plan before implementation
-3. [ ] Do not begin Feature 04 until Feature 03 passes its exit gate
+1. [ ] Run `/architect` for Feature 04 — Authentication
+2. [ ] Confirm the Feature 04 plan before implementation
+3. [ ] Do not implement Feature 04 until its plan is approved
 
 ## First implementation feature
 
@@ -148,11 +157,11 @@ No active implementation feature.
 ## Phase 1 — Project Bootstrap
 
 - [x] 01 Repository and Tooling
-- [-] 02 Shared UI Foundation
+- [x] 02 Shared UI Foundation
 
 ## Phase 2 — Tenancy, Authentication, and Property Management
 
-- [ ] 03 Supabase and Prisma Foundation
+- [x] 03 Supabase and Prisma Foundation
 - [ ] 04 Authentication
 - [ ] 05 Property Access and Admin Property Directory
 
@@ -615,3 +624,145 @@ The tracker should remain a working status document, not a duplicate of `build-p
 ### Exit gate
 
 - Feature 02 exit gate passed. Feature 03 has not started.
+
+## 2026-08-02 — Phase 2, Feature 03: Slice 1
+
+### Completed
+
+- Added Prisma 7 with its PostgreSQL adapter and a generated, server-only Prisma client.
+- Added Supabase JavaScript/SSR packages and a project-local Supabase CLI contract.
+- Added safe local/hosted Supabase, application database, migration database, and service-role environment contracts.
+- Added initial Prisma configuration, generated-client boundary, seed command contract, database-test configuration, and migration command contracts.
+- Documented the Docker prerequisite and database environment boundaries.
+
+### Verification
+
+- Prisma client generation and schema validation passed.
+- Focused formatting, strict type-checking, linting, and 36 unit tests passed.
+- Production build passed.
+- `git diff --check` passed.
+
+### Issues
+
+- Docker is not installed in the current workspace, so local Supabase startup, migrations, reset, and real database integration tests await later slices and a Docker-capable environment.
+- The bundled desktop runtime does not expose Node on `PATH`; direct Node-based verification passed, while standard pnpm scripts require a normal Node installation or PATH setup.
+
+### Next session
+
+1. Implement Slice 2 — Core tenancy schema and Prisma migration.
+2. Add initial models, constraints, indexes, and property-role override support.
+3. Verify the first migration against local Supabase once Docker is available.
+
+## 2026-08-02 — Phase 2, Feature 03: Slice 2
+
+### Completed
+
+- Added the seven foundational models: `AppUser`, `ClientAccount`, `ClientProperty`, `AccountMembership`, `PropertyAccess`, `FeatureFlag`, and `AuditEvent`.
+- Linked `AppUser.id` by UUID contract to Supabase Auth, without duplicating ownership of the `auth.users` table.
+- Added account-level client roles and explicit property grants with optional `roleOverride`.
+- Added composite foreign keys that require a property access grant's membership and property to belong to the same account.
+- Added the initial Prisma migration, including scoped feature-flag constraints and indexes.
+
+### Verification
+
+- Prisma schema formatting, generation, and validation passed.
+- Strict typecheck and lint passed.
+- Unit suite passed: 41 tests, including five tenancy-schema and migration contracts.
+
+### Issues
+
+- Docker remains unavailable, so `prisma migrate deploy` against local Supabase and clean-database execution remain pending.
+
+### Next session
+
+1. Implement Slice 3 — Supabase security and storage migrations.
+2. Add the restricted application database role, tenant-context helpers, RLS structure, and baseline buckets.
+3. Continue with Slice 4 only after the Supabase migration layer is ready.
+
+## 2026-08-02 — Phase 2, Feature 03: Slice 3
+
+### Completed
+
+- Added local Supabase configuration plus telemetry-safe start/stop commands that tolerate slow initial health checks.
+- Added a separate, checksum-tracked Supabase security migration runner, applied only after Prisma migrations.
+- Added the restricted `btls_app` database role, tenant-context helpers, RLS policies for all seven tenancy tables, and property-scoped Storage access policies.
+- Initialized `public-media`, `public-content`, `private-media`, and `temporary-uploads` with the approved public/private boundaries.
+- Started the local Docker-backed Supabase stack and applied both the Prisma and Supabase security migration layers in order.
+
+### Verification
+
+- Local Prisma migration deploy passed.
+- Live database verification confirmed the security migration record, non-bypassing application role, seven RLS-enabled tenancy tables, and all four configured buckets.
+- Focused Supabase migration contract tests, formatting, and strict type checking passed.
+
+### Decisions
+
+- Prisma retains ownership of application tables and constraints; Supabase security SQL is versioned under `supabase/security-migrations` and executed explicitly after Prisma.
+- Restricted Codex shells disable only optional Supabase CLI telemetry when starting the local stack; this does not affect product data or services.
+
+### Next session
+
+1. Implement Slice 4 — reset, seed, and tenant-isolation integration foundation.
+2. Extend the reset workflow to run Prisma, Supabase security migrations, then seed data in order.
+3. Add local database integration coverage for cross-property RLS denial.
+
+## 2026-08-02 — Phase 2, Feature 03: Slice 4
+
+### Completed
+
+- Added ordered local deploy and reset workflows: Prisma migration, Supabase security migration, then seed.
+- Added non-production Supabase Auth-backed seed users, a BTLS admin, test client account, HVAC and Plumbing properties, membership, and explicit property access grants.
+- Seeded the approved access example: account viewer by default, HVAC manager by override, and Plumbing viewer by override.
+- Added real local-database tenant-isolation tests for cross-property denial, missing grants, account-role fallback, and property-role precedence.
+- Made local reset repeatable by removing only the BTLS-owned Storage policies that the security migration recreates.
+
+### Verification
+
+- Local reset completed successfully after rebuilding Prisma, security, Storage policy, and seed layers.
+- Local database authorization suite passed: 4 integration tests.
+- Focused workflow and security-migration tests passed: 8 tests.
+- Strict TypeScript type-check passed.
+
+### Decisions
+
+- `db:reset` is a local-development-only workflow; it must never target hosted or production data.
+- Prisma 7 no longer auto-runs seeds on reset, so the workflow invokes the seed process explicitly after security migrations.
+
+### Next session
+
+1. Implement Slice 5 — development status and feature verification.
+2. Run the Feature 03 review and complete exit-gate checks.
+3. Do not begin Feature 04 until Feature 03 passes its exit gate.
+
+## 2026-08-02 — Phase 2, Feature 03: Slice 5 and completion
+
+### Completed
+
+- Added the guarded development-status database and environment summary with safe configuration states and restricted-connection reachability.
+- Added loading and generic recoverable-error boundaries that never display configuration values or raw database failures.
+- Imprinted the diagnostic status-panel pattern in `context/ui-registry.md`.
+- Updated ESLint to ignore Supabase CLI temporary output and Prettier to preserve the repository's existing cross-platform line endings.
+- Completed the required feature review with no unresolved critical or high-severity findings.
+
+### Verification
+
+- Production status-page request returned 200, rendered the status panel, and contained no connection string or service-role key label.
+- Final local reset, migrations, security setup, seed, and four real tenant-isolation tests passed.
+- Formatting, linting, strict type checking, 54 unit tests, production build, and six production Playwright checks passed.
+
+### Exit gate
+
+- Passed: a clean local database is created by the ordered migrations; the seed creates the BTLS admin, test client, and properties; Prisma and Supabase migration layers remain separate and repeatable; and real tenant-isolation coverage exists.
+
+### Next session
+
+1. Run `/remember restore`.
+2. Run `/architect` for Feature 04 — Authentication.
+3. Do not begin Feature 04 until its plan is approved.
+
+## 2026-08-05 — Feature 03 test stability follow-up
+
+### Completed
+
+- Capped Vitest unit-test execution at two workers after the full JSDOM suite intermittently starved the development-status loading test.
+- Verified the full suite twice; the affected loading test completed in under one second in both runs.

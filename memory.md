@@ -1,49 +1,37 @@
-# Memory — Phase 1, Feature 02 complete
+# Memory — Phase 2, Feature 03 complete
 
 Last updated: 2026-08-02
 
 ## What was built
 
-- Completed Phase 1, Feature 02 — Shared UI Foundation, including semantic dark/light tokens, local theme preference, accessible controls and field composition, feedback/data-display patterns, responsive shell/navigation, and a guarded UI Foundation catalog.
-- Added `/development-status` as the guarded internal index and `/development-status/ui-foundation` as the permanent illustrative catalog.
-- Added production and development Playwright modes, shared client-readiness support, browser failure-evidence capture, and unique generated ThemeControl label ids.
+- Completed Feature 03 — Supabase and Prisma Foundation on `feature/03-supabase-and-prisma-foundation`.
+- Added Prisma tenancy schema and migration, Supabase local configuration, security and Storage migrations, ordered deploy/reset commands, and non-production Auth-backed seed fixtures.
+- Added local database tenant-isolation coverage and the guarded development-status database/environment summary with safe loading and error states.
 
 ## Decisions made
 
-- `pnpm test:e2e` is the production-backed, release-gating suite on port 3001. It excludes routes intentionally guarded from production.
-- `pnpm test:e2e:dev` verifies the guarded development catalog and is diagnostic only.
-- Interactive E2E tests wait for a semantic, user-observable client-ready condition; no arbitrary sleeps, retries, private React checks, or reduced worker count are used.
+- Prisma owns application tables and constraints; checksum-tracked Supabase SQL owns database roles, RLS helpers and policies, and Storage buckets.
+- Account membership supplies the default account role; every property needs an explicit `PropertyAccess` grant and its optional role override takes precedence.
+- The status page shows configuration state and generic reachability only. It never displays keys, URLs, connection strings, or raw errors.
 
 ## Problems solved
 
-- The responsive drawer Playwright failure was caused by client hydration lag after development-server navigation. The shared readiness assertion waits for the visible Theme control’s selected value before the first interaction.
-- Production E2E cannot test `/development-status` because that route correctly returns `notFound()` in production; the test modes now reflect this boundary.
-- Repeated ThemeControl instances now use React-generated IDs rather than a duplicated fixed label ID.
+- Local reset removes only BTLS-owned Storage policies before reapplying security migrations, making the repeatable reset workflow safe for local development.
+- Prisma 7 requires explicit seeding after reset; the local workflow now seeds after both migration layers.
+- Supabase CLI temporary output is excluded from ESLint, and Prettier preserves the repository's existing line-ending convention.
 
 ## Current state
 
-- Branch: `feature/02-shared-ui-foundation`.
-- Feature 02 is complete; Feature 03 has not started.
+- Feature 03 exit gate passed. Progress tracker is updated; do not begin Feature 04 yet.
+- Local reset, seed, four database isolation tests, 54 unit tests, lint, typecheck, formatting, production build, and six production Playwright checks passed.
 - Work remains uncommitted. Do not stage or commit unless the user explicitly asks.
-- No schema changes, migrations, events, jobs, integrations, or new providers were added.
-- `/imprint` audit and `/review` completed with no unresolved findings.
-
-## Verification
-
-- `pnpm format:check` passed.
-- `pnpm typecheck` passed.
-- `pnpm lint` passed.
-- `pnpm test` passed: 32 tests.
-- `pnpm test:e2e:dev` passed: 16 checks.
-- `pnpm test:e2e` passed: 6 production-backed checks.
-- `pnpm build` passed.
 
 ## Next session starts with
 
 1. Run `/remember restore`.
-2. Run `/architect` for Phase 2, Feature 03 — Supabase and Prisma Foundation.
-3. Do not implement Feature 03 until its plan is approved.
+2. Run `/architect` for Feature 04 — Authentication.
+3. Do not implement Feature 04 until its plan is approved.
 
 ## Open questions
 
-- None for Feature 02. Reassess the documented upstream dependency audit risks when supported direct dependency updates become available.
+- None for Feature 03.
