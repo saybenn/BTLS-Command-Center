@@ -759,3 +759,10 @@ The tracker should remain a working status document, not a duplicate of `build-p
 1. Run `/remember restore`.
 2. Run `/architect` for Feature 04 — Authentication.
 3. Do not begin Feature 04 until its plan is approved.
+
+## 2026-08-05 — Feature 03 test stability follow-up
+
+### Completed
+
+- Capped Vitest unit-test execution at two workers after the full JSDOM suite intermittently starved the development-status loading test.
+- Verified the full suite twice; the affected loading test completed in under one second in both runs.
