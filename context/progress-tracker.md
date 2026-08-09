@@ -766,3 +766,76 @@ The tracker should remain a working status document, not a duplicate of `build-p
 
 - Capped Vitest unit-test execution at two workers after the full JSDOM suite intermittently starved the development-status loading test.
 - Verified the full suite twice; the affected loading test completed in under one second in both runs.
+## 2026-08-08 ??? Phase 2, Feature 04: Slices 1 and 2
+
+### Completed
+
+- Added the Slice 1 server-only application URL validation, browser/server/admin Supabase client boundaries, SSR session refresh, and temporary `/dashboard` anonymous gate.
+- Added fixed post-auth redirect destinations, local Auth password-length and redirect configuration, and Slice 1 environment/redirect/proxy/client-boundary tests.
+- Added Slice 2 verified identity resolution through Supabase `getClaims()` followed by BTLS `AppUser` lookup and active-status enforcement.
+- Added the explicit `platform.user.manage` capability with platform-role mapping; services authorize through the capability rather than role-name checks.
+- Added idempotent trusted-profile synchronization and account disable/re-enable services with the required BTLS/audit and Supabase provider ordering.
+- Added platform-scoped audit persistence with actor and target user, leaving account and property scope null.
+
+### Verification
+
+- Feature 04 focused unit suites passed: 9 tests.
+- Strict typecheck, lint, formatting check, and Git diff check passed.
+
+### Decisions
+
+- No Prisma migration was required: the executable schema already provides `AppUser.status` and a platform-scoped `AuditEvent` shape.
+- A disabled BTLS account is denied by every protected service check even while an existing Auth JWT may remain valid until expiry.
+
+### Next session
+
+1. Continue Feature 04 only with the approved next slice.
+2. Do not begin authentication UI flows until their slice is explicitly requested.
+## 2026-08-08 ??? Phase 2, Feature 04: Slice 3
+
+### Completed
+
+- Added sign-in, forgot-password, reset-password, invitation-acceptance, unauthorized, and temporary dashboard routes.
+- Added fixed-destination Auth callback handling, server sign-out, server-side 12-character password validation, and enumeration-safe password recovery.
+- Added invitation acceptance that creates credentials and synchronizes an `AppUser` without creating memberships or property access.
+- Added disabled-account and session-expired user-facing states.
+- Added the `Authentication Surface` shared UI pattern and recorded it in the UI registry.
+
+### Verification
+
+- Feature 04 focused unit suites passed: 14 tests across action, route, component, and prior auth coverage.
+- Strict typecheck, lint, formatting check, and Git diff check passed.
+
+### Decisions
+
+- The temporary `/dashboard` contains only signed-in profile details and sign-out; it exposes no tenant data or access shortcuts.
+- Callback destinations accept only the existing fixed BTLS post-auth allowlist; no request host, origin, or forwarded header constructs redirects.
+
+### Next session
+
+1. Continue Feature 04 only with the next approved slice.
+2. Do not start Feature 05 property access or directory work.
+## 2026-08-08 ??? Phase 2, Feature 04: Slice 4
+
+### Completed
+
+- Added a server-only Supabase invitation primitive for future Feature 05 use, with a fixed `/invite` redirect and no membership, property-access, resend, or cancellation behavior.
+- Added typed product analytics with an in-memory test/development sink and an explicitly unconfigured production no-op.
+- Updated auth event timing and safe failure categories so sign-in success follows Auth and active AppUser validation, and invitation acceptance follows profile synchronization.
+- Added deterministic local Supabase Auth integration coverage for invitations, password recovery, and immediate refresh-token rejection after ban.
+
+### Verification
+
+- Local Auth integration harness passed.
+- Feature 04 focused unit suites passed: 18 tests.
+- Strict typecheck, lint, formatting check, and Git diff check passed.
+
+### Decisions
+
+- Production analytics collection remains deliberately unconfigured; Feature 04 emits to the no-op production adapter only.
+- Provider-ban invalidation is tested by an immediate refresh attempt, not by waiting for JWT expiry.
+
+### Next session
+
+1. Continue Feature 04 only with the next approved slice.
+2. Do not begin Feature 05 member management or property access UI.

@@ -417,3 +417,21 @@ Last updated: 2026-08-02
 | Accent usage | Semantic Badge variants communicate configuration and connection state; the panel remains neutral |
 
 **Pattern notes:** Use this only on guarded non-production diagnostic pages. Display configuration state and generic reachability results, never URLs, keys, connection strings, provider identifiers, or raw failure messages. Loading uses the approved labelled skeleton; failed page rendering uses the approved generic ErrorState with a safe retry action.
+### Authentication Surface
+
+Files: `src/components/auth/auth-page-layout.tsx`, `src/components/auth/auth-form.tsx`
+Last updated: 2026-08-08
+
+| Property | Class |
+|---|---|
+| Background | `bg-background` page; `bg-surface` form card |
+| Border | `border border-border` through Card; semantic Alert borders only for feedback |
+| Border radius | `rounded-xl` brand mark and Card; shared `rounded-md` inputs and actions |
+| Text ??? primary | `text-text-primary`; form title `text-base font-semibold` |
+| Text ??? secondary | `text-text-secondary text-sm leading-6`; navigation links use `text-accent` |
+| Spacing | Page `px-4 py-10`; Card `p-6`; form `gap-4` |
+| Hover state | Links `hover:underline`; Buttons retain their shared hover and focus behavior |
+| Shadow | Existing Card `shadow-xs`; brand mark `shadow-sm` |
+| Accent usage | Brand mark and primary submit action only; status uses semantic Alert variants |
+
+**Pattern notes:** Authentication pages use one narrow, responsive card with labelled shared fields and an in-form live feedback region. Never use authentication success, warning, or error text as the sole visible state; pair it with the matching shared Alert. The server enforces validation and access rules, while the client form exposes pending and field-error states.

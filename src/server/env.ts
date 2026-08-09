@@ -21,6 +21,7 @@ const optionalPostgresUrl = z.preprocess(
     .optional(),
 );
 
+const applicationUrlSchema = z.string().url();
 const serverEnvironmentSchema = z.object({
   NODE_ENV: nodeEnvironmentSchema.default("development"),
   BTLS_APP_ENV: applicationEnvironmentSchema.optional(),
@@ -188,4 +189,20 @@ export function isProductionEnvironment(
   environment: ServerEnvironment,
 ): environment is ServerEnvironment & { applicationEnvironment: "production" } {
   return environment.applicationEnvironment === "production";
+}
+
+export interface ApplicationUrlEnvironment {
+  appUrl: string;
+}
+
+export function requireApplicationUrlEnvironment(
+  input: Record<string, string | undefined> = process.env,
+): ApplicationUrlEnvironment {
+  const parsed = z.object({ BTLS_APP_URL: applicationUrlSchema }).safeParse(input);
+
+  if (!parsed.success) {
+    throw new Error("BTLS_APP_URL is unavailable or invalid.");
+  }
+
+  return { appUrl: parsed.data.BTLS_APP_URL.replace(/\/$/, "") };
 }

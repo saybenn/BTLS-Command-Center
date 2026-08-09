@@ -64,8 +64,9 @@ export async function getLocalSupabaseEnvironment(): Promise<NodeJS.ProcessEnv> 
   const databaseUrl = values.DB_URL;
   const apiUrl = values.API_URL;
   const serviceRoleKey = values.SERVICE_ROLE_KEY;
+  const anonKey = values.ANON_KEY;
 
-  if (!databaseUrl || !apiUrl || !serviceRoleKey) {
+  if (!databaseUrl || !apiUrl || !serviceRoleKey || !anonKey) {
     throw new Error("The local Supabase stack must be running before database commands can run.");
   }
 
@@ -75,6 +76,7 @@ export async function getLocalSupabaseEnvironment(): Promise<NodeJS.ProcessEnv> 
     DATABASE_URL: databaseUrl,
     DIRECT_DATABASE_URL: databaseUrl,
     NEXT_PUBLIC_SUPABASE_URL: apiUrl,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: anonKey,
     SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,
   };
 }
