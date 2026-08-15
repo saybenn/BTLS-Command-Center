@@ -920,3 +920,8 @@ The tracker should remain a working status document, not a duplicate of `build-p
 - Manual password sign-in and a genuine local mailed invitation both passed after restarting the development server.
 - Focused local Auth Playwright suite passed again: 10 desktop/mobile journeys.
 - Operational note: stop the manual dev server before pnpm test:e2e:auth:local; separate ports still share Next's .next/dev lock directory.
+## 2026-08-15 - Phase 2, Feature 04: CI clean-database follow-up
+
+- Canonical `pnpm test:e2e` now invokes the existing non-destructive local deployment workflow after local Auth starts and before the production build.
+- The workflow applies committed Prisma migrations, Supabase security migration, and idempotent non-production seed data; it does not add a migration, reset a database, or use `prisma db push`.
+- CI-equivalent canonical E2E passed afterward: 26 desktop/mobile tests, including invitation acceptance.

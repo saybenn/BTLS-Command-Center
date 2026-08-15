@@ -35,6 +35,9 @@ async function main() {
     "quiet",
   );
   const environment = await getMinimalLocalSupabaseEnvironment();
+  const tsxCliPath = path.resolve(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
+  console.log("Preparing local test database...");
+  await runCommand(process.execPath, [tsxCliPath, "scripts/deploy-local-database.ts"], environment);
   const nextCliPath = path.resolve(process.cwd(), "node_modules", "next", "dist", "bin", "next");
   await runCommand(process.execPath, [nextCliPath, "build"], environment);
   const playwrightCliPath = path.resolve(
