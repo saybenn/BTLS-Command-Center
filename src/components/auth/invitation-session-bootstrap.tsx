@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { LoadingState } from "@/components/feedback/loading-state";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -11,8 +11,11 @@ type InvitationSessionState = "invalid" | "loading" | "ready";
 
 export function InvitationSessionBootstrap({ children }: Readonly<{ children: ReactNode }>) {
   const [state, setState] = useState<InvitationSessionState>("loading");
+  const hasStarted = useRef(false);
 
   useEffect(() => {
+    if (hasStarted.current) return;
+    hasStarted.current = true;
     const establishInvitationSession = async () => {
       const supabase = createSupabaseBrowserClient();
       const fragment = new URLSearchParams(window.location.hash.slice(1));
@@ -29,6 +32,7 @@ export function InvitationSessionBootstrap({ children }: Readonly<{ children: Re
           return;
         }
 
+        window.history.replaceState(null, "", "/invite");
         window.location.replace("/invite");
         return;
       }

@@ -71,6 +71,8 @@ describe("Feature 04 Slice 4 primitives", () => {
 
     expect(config).toContain("minimum_password_length = 12");
     expect(config).toContain("enable_signup = false");
-    expect(config).toContain('additional_redirect_urls = ["http://127.0.0.1:3000"]');
+    expect(config).toContain(
+      'additional_redirect_urls = ["http://127.0.0.1:3000", "http://127.0.0.1:3100"]',
+    );
   });
 });

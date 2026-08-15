@@ -2,8 +2,6 @@ import "server-only";
 
 import type { AppUser } from "@/generated/prisma/client";
 
-import { prisma } from "@/server/database/prisma";
-
 import { createSupabaseServerClient } from "./supabase-server";
 
 type ClaimsResult = {
@@ -41,6 +39,7 @@ export async function requireAuthenticatedAppUserWith(
 
 export async function requireAuthenticatedAppUser() {
   const supabase = await createSupabaseServerClient();
+  const { prisma } = await import("@/server/database/prisma");
 
   return requireAuthenticatedAppUserWith({
     getClaims: () => supabase.auth.getClaims(),

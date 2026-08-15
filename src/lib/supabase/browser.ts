@@ -24,5 +24,9 @@ function requireBrowserSupabaseEnvironment() {
 export function createSupabaseBrowserClient() {
   const { publishableKey, url } = requireBrowserSupabaseEnvironment();
 
-  return createBrowserClient(url, publishableKey);
+  return createBrowserClient(url, publishableKey, {
+    auth: {
+      detectSessionInUrl: false,
+    },
+  });
 }

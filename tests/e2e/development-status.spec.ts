@@ -7,7 +7,7 @@ test("links the internal index to the illustrative UI Foundation catalog on desk
   await page.goto("/development-status", { waitUntil: "domcontentloaded" });
 
   await expect(page.getByRole("heading", { name: "Internal references" })).toBeVisible();
-  await expect(page.getByLabel("Database and environment status")).toBeVisible();
+  await expect(page.getByLabel("Database and environment status", { exact: true })).toBeVisible();
   await expect(page.getByText("Database reachability")).toBeVisible();
   await expect(
     page.getByText("Configuration is shown without URLs, keys, or connection details."),

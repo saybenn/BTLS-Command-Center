@@ -839,3 +839,84 @@ The tracker should remain a working status document, not a duplicate of `build-p
 
 1. Continue Feature 04 only with the next approved slice.
 2. Do not begin Feature 05 member management or property access UI.
+
+## 2026-08-09 - Phase 2, Feature 04: Slice 7 diagnostic handoff
+
+### Completed
+
+- Moved active work to the primary clone at `C:\dev\BTLS-Command-Center` on `feature/04-authentication`.
+- Added local-database proof that invitation profile synchronization creates an `AppUser` without creating `AccountMembership` or `PropertyAccess`.
+- Added invitation bootstrap coverage for valid fragments, existing sessions, unavailable states, and fragment removal from browser history.
+- Added browser public-environment boundary coverage, including valid/invalid configuration and server-only credential exclusion.
+
+### Verification and diagnosis
+
+- Focused invitation-bootstrap and browser-client unit suites passed: 8 tests.
+- The real local Playwright invitation journey initially remained at the verifying state on desktop and mobile.
+- The approved next step was isolated port 3100 testing with a secret-safe diagnostic before product changes.
+
+### Boundaries
+
+- No Prisma migration, database reset, Feature 05 membership/property-access work, public registration, production debug logging, staging, or commit.
+
+## 2026-08-11 - Phase 2, Feature 04: Slice 7 complete
+
+### Completed
+
+- Added the dedicated local Playwright Auth harness on port 3100 with matching fixed `BTLS_APP_URL`, opt-in existing-server reuse, and serialized local Auth journeys.
+- Added a one-run invitation bootstrap guard so React development Strict Mode cannot consume a one-time invitation refresh token twice.
+- Replaced local test resolver full-stack status dependency with direct Auth and PostgreSQL container inspection, avoiding unrelated Vector health failures.
+- Made Prisma initialization request-scoped during authenticated session resolution so production build succeeds without a build-time database URL.
+
+### Diagnostic conclusion
+
+- The safe diagnostic confirmed invitation session setup reached Auth verification, user lookup, a named session cookie, and the password form.
+- Initial acceptance failed because the restarted local database lacked `public.app_users`; existing checked-in schema and security history initialized it without a new migration or reset.
+- The intermittent unavailable invitation state was a development Strict Mode double-effect race. A later Docker Auth daemon stall was recovered by restarting Docker Desktop.
+
+### Verification
+
+- Local invited-user no-grant integration coverage passed: AppUser created; zero AccountMembership and zero PropertyAccess rows.
+- Invitation bootstrap and browser boundary unit coverage: 8 passed.
+- Full unit suite: 26 files / 80 tests passed.
+- Full local browser matrix: 10 desktop/mobile journeys passed.
+- Typecheck, lint, formatting, and production build passed.
+
+### Boundaries retained
+
+- No migration, reset, Feature 05 grant behavior, or production debug code was added.
+- Work remains uncommitted; unrelated untracked `v11/` content was untouched.
+
+## 2026-08-14 - Phase 2, Feature 04: final closeout verification
+
+### Completed
+
+- Made `pnpm test:e2e` the canonical local full-suite command: it quietly prepares the required local Supabase/Auth harness, builds with the isolated local environment, and runs every Playwright E2E spec.
+- Kept `pnpm test:e2e:auth:local` as the focused Auth-development command.
+- Replaced contradictory session memory with one current, secret-free Feature 04 handoff.
+
+### Verification
+
+- Canonical local E2E: 26 desktop/mobile tests passed.
+- Focused local Auth browser suite: 10 desktop/mobile journeys passed.
+- Local database no-grant invariant and provider-ban refresh-token invalidation coverage passed.
+- Full unit/integration suite: 26 files / 80 tests passed.
+- Typecheck, lint, Prettier check, production build, and Git diff check passed.
+
+### Boundaries retained
+
+- No migration, database reset, Feature 05 grant behavior, production debug code, staging, or commit.
+- Manual local development remains on port 3000; Playwright remains isolated on port 3100.
+- Unrelated untracked `v11/` content remains untouched.
+
+### Next session
+
+1. Feature 04 is ready for final review and handoff only.
+2. Do not start Feature 05 without explicit direction.
+
+## 2026-08-15 - Phase 2, Feature 04: local development follow-up
+
+- pnpm dev now resolves the running local Supabase Auth/PostgreSQL environment before starting Next on port 3000, avoiding mismatched .env.local public Auth configuration.
+- Manual password sign-in and a genuine local mailed invitation both passed after restarting the development server.
+- Focused local Auth Playwright suite passed again: 10 desktop/mobile journeys.
+- Operational note: stop the manual dev server before pnpm test:e2e:auth:local; separate ports still share Next's .next/dev lock directory.
