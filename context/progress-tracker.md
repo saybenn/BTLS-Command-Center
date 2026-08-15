@@ -766,3 +766,162 @@ The tracker should remain a working status document, not a duplicate of `build-p
 
 - Capped Vitest unit-test execution at two workers after the full JSDOM suite intermittently starved the development-status loading test.
 - Verified the full suite twice; the affected loading test completed in under one second in both runs.
+## 2026-08-08 ??? Phase 2, Feature 04: Slices 1 and 2
+
+### Completed
+
+- Added the Slice 1 server-only application URL validation, browser/server/admin Supabase client boundaries, SSR session refresh, and temporary `/dashboard` anonymous gate.
+- Added fixed post-auth redirect destinations, local Auth password-length and redirect configuration, and Slice 1 environment/redirect/proxy/client-boundary tests.
+- Added Slice 2 verified identity resolution through Supabase `getClaims()` followed by BTLS `AppUser` lookup and active-status enforcement.
+- Added the explicit `platform.user.manage` capability with platform-role mapping; services authorize through the capability rather than role-name checks.
+- Added idempotent trusted-profile synchronization and account disable/re-enable services with the required BTLS/audit and Supabase provider ordering.
+- Added platform-scoped audit persistence with actor and target user, leaving account and property scope null.
+
+### Verification
+
+- Feature 04 focused unit suites passed: 9 tests.
+- Strict typecheck, lint, formatting check, and Git diff check passed.
+
+### Decisions
+
+- No Prisma migration was required: the executable schema already provides `AppUser.status` and a platform-scoped `AuditEvent` shape.
+- A disabled BTLS account is denied by every protected service check even while an existing Auth JWT may remain valid until expiry.
+
+### Next session
+
+1. Continue Feature 04 only with the approved next slice.
+2. Do not begin authentication UI flows until their slice is explicitly requested.
+## 2026-08-08 ??? Phase 2, Feature 04: Slice 3
+
+### Completed
+
+- Added sign-in, forgot-password, reset-password, invitation-acceptance, unauthorized, and temporary dashboard routes.
+- Added fixed-destination Auth callback handling, server sign-out, server-side 12-character password validation, and enumeration-safe password recovery.
+- Added invitation acceptance that creates credentials and synchronizes an `AppUser` without creating memberships or property access.
+- Added disabled-account and session-expired user-facing states.
+- Added the `Authentication Surface` shared UI pattern and recorded it in the UI registry.
+
+### Verification
+
+- Feature 04 focused unit suites passed: 14 tests across action, route, component, and prior auth coverage.
+- Strict typecheck, lint, formatting check, and Git diff check passed.
+
+### Decisions
+
+- The temporary `/dashboard` contains only signed-in profile details and sign-out; it exposes no tenant data or access shortcuts.
+- Callback destinations accept only the existing fixed BTLS post-auth allowlist; no request host, origin, or forwarded header constructs redirects.
+
+### Next session
+
+1. Continue Feature 04 only with the next approved slice.
+2. Do not start Feature 05 property access or directory work.
+## 2026-08-08 ??? Phase 2, Feature 04: Slice 4
+
+### Completed
+
+- Added a server-only Supabase invitation primitive for future Feature 05 use, with a fixed `/invite` redirect and no membership, property-access, resend, or cancellation behavior.
+- Added typed product analytics with an in-memory test/development sink and an explicitly unconfigured production no-op.
+- Updated auth event timing and safe failure categories so sign-in success follows Auth and active AppUser validation, and invitation acceptance follows profile synchronization.
+- Added deterministic local Supabase Auth integration coverage for invitations, password recovery, and immediate refresh-token rejection after ban.
+
+### Verification
+
+- Local Auth integration harness passed.
+- Feature 04 focused unit suites passed: 18 tests.
+- Strict typecheck, lint, formatting check, and Git diff check passed.
+
+### Decisions
+
+- Production analytics collection remains deliberately unconfigured; Feature 04 emits to the no-op production adapter only.
+- Provider-ban invalidation is tested by an immediate refresh attempt, not by waiting for JWT expiry.
+
+### Next session
+
+1. Continue Feature 04 only with the next approved slice.
+2. Do not begin Feature 05 member management or property access UI.
+
+## 2026-08-09 - Phase 2, Feature 04: Slice 7 diagnostic handoff
+
+### Completed
+
+- Moved active work to the primary clone at `C:\dev\BTLS-Command-Center` on `feature/04-authentication`.
+- Added local-database proof that invitation profile synchronization creates an `AppUser` without creating `AccountMembership` or `PropertyAccess`.
+- Added invitation bootstrap coverage for valid fragments, existing sessions, unavailable states, and fragment removal from browser history.
+- Added browser public-environment boundary coverage, including valid/invalid configuration and server-only credential exclusion.
+
+### Verification and diagnosis
+
+- Focused invitation-bootstrap and browser-client unit suites passed: 8 tests.
+- The real local Playwright invitation journey initially remained at the verifying state on desktop and mobile.
+- The approved next step was isolated port 3100 testing with a secret-safe diagnostic before product changes.
+
+### Boundaries
+
+- No Prisma migration, database reset, Feature 05 membership/property-access work, public registration, production debug logging, staging, or commit.
+
+## 2026-08-11 - Phase 2, Feature 04: Slice 7 complete
+
+### Completed
+
+- Added the dedicated local Playwright Auth harness on port 3100 with matching fixed `BTLS_APP_URL`, opt-in existing-server reuse, and serialized local Auth journeys.
+- Added a one-run invitation bootstrap guard so React development Strict Mode cannot consume a one-time invitation refresh token twice.
+- Replaced local test resolver full-stack status dependency with direct Auth and PostgreSQL container inspection, avoiding unrelated Vector health failures.
+- Made Prisma initialization request-scoped during authenticated session resolution so production build succeeds without a build-time database URL.
+
+### Diagnostic conclusion
+
+- The safe diagnostic confirmed invitation session setup reached Auth verification, user lookup, a named session cookie, and the password form.
+- Initial acceptance failed because the restarted local database lacked `public.app_users`; existing checked-in schema and security history initialized it without a new migration or reset.
+- The intermittent unavailable invitation state was a development Strict Mode double-effect race. A later Docker Auth daemon stall was recovered by restarting Docker Desktop.
+
+### Verification
+
+- Local invited-user no-grant integration coverage passed: AppUser created; zero AccountMembership and zero PropertyAccess rows.
+- Invitation bootstrap and browser boundary unit coverage: 8 passed.
+- Full unit suite: 26 files / 80 tests passed.
+- Full local browser matrix: 10 desktop/mobile journeys passed.
+- Typecheck, lint, formatting, and production build passed.
+
+### Boundaries retained
+
+- No migration, reset, Feature 05 grant behavior, or production debug code was added.
+- Work remains uncommitted; unrelated untracked `v11/` content was untouched.
+
+## 2026-08-14 - Phase 2, Feature 04: final closeout verification
+
+### Completed
+
+- Made `pnpm test:e2e` the canonical local full-suite command: it quietly prepares the required local Supabase/Auth harness, builds with the isolated local environment, and runs every Playwright E2E spec.
+- Kept `pnpm test:e2e:auth:local` as the focused Auth-development command.
+- Replaced contradictory session memory with one current, secret-free Feature 04 handoff.
+
+### Verification
+
+- Canonical local E2E: 26 desktop/mobile tests passed.
+- Focused local Auth browser suite: 10 desktop/mobile journeys passed.
+- Local database no-grant invariant and provider-ban refresh-token invalidation coverage passed.
+- Full unit/integration suite: 26 files / 80 tests passed.
+- Typecheck, lint, Prettier check, production build, and Git diff check passed.
+
+### Boundaries retained
+
+- No migration, database reset, Feature 05 grant behavior, production debug code, staging, or commit.
+- Manual local development remains on port 3000; Playwright remains isolated on port 3100.
+- Unrelated untracked `v11/` content remains untouched.
+
+### Next session
+
+1. Feature 04 is ready for final review and handoff only.
+2. Do not start Feature 05 without explicit direction.
+
+## 2026-08-15 - Phase 2, Feature 04: local development follow-up
+
+- pnpm dev now resolves the running local Supabase Auth/PostgreSQL environment before starting Next on port 3000, avoiding mismatched .env.local public Auth configuration.
+- Manual password sign-in and a genuine local mailed invitation both passed after restarting the development server.
+- Focused local Auth Playwright suite passed again: 10 desktop/mobile journeys.
+- Operational note: stop the manual dev server before pnpm test:e2e:auth:local; separate ports still share Next's .next/dev lock directory.
+## 2026-08-15 - Phase 2, Feature 04: CI clean-database follow-up
+
+- Canonical `pnpm test:e2e` now invokes the existing non-destructive local deployment workflow after local Auth starts and before the production build.
+- The workflow applies committed Prisma migrations, Supabase security migration, and idempotent non-production seed data; it does not add a migration, reset a database, or use `prisma db push`.
+- CI-equivalent canonical E2E passed afterward: 26 desktop/mobile tests, including invitation acceptance.
