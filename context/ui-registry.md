@@ -378,7 +378,7 @@ Last updated: 2026-07-30
 | Shadow | none; the mobile drawer uses the existing Dialog shadow treatment |
 | Accent usage | Active navigation uses `bg-accent` only for its slim left indicator; property mark uses `bg-accent-soft text-accent` |
 
-**Pattern notes:** The desktop sidebar is exactly `w-[232px]` and the top bar exactly `h-[72px]`. Keep the context-defined primary navigation order and a separate Administration group. Below the large breakpoint, use the labelled dialog-backed drawer rather than icon-only primary navigation; it includes property, navigation, theme, and account display. Shell data remains presentation-only until Feature 05 supplies authorized items and property context.
+**Pattern notes:** The desktop sidebar is exactly `w-[232px]` and the top bar exactly `h-[72px]`. Keep the context-defined primary navigation order and a separate Administration group. Below the large breakpoint, use the labelled dialog-backed drawer rather than icon-only primary navigation; it includes property, navigation, theme, and account display. Feature 05 supplies server-authorized property context and a switcher slot; render only server-resolved active properties in that slot.
 
 ### Development Status Summary
 
@@ -435,3 +435,77 @@ Last updated: 2026-08-08
 | Accent usage | Brand mark and primary submit action only; status uses semantic Alert variants |
 
 **Pattern notes:** Authentication pages use one narrow, responsive card with labelled shared fields and an in-form live feedback region. Never use authentication success, warning, or error text as the sole visible state; pair it with the matching shared Alert. The server enforces validation and access rules, while the client form exposes pending and field-error states.
+
+### Administrative Property Directory and Onboarding
+
+Files: `src/components/properties/admin-property-directory.tsx`, `src/components/properties/property-onboarding-form.tsx`
+Last updated: 2026-08-16
+
+| Property | Class |
+|---|---|
+| Background | Directory filter `bg-surface`; onboarding uses the shared Card `bg-surface` |
+| Border | `border border-border`; directory table uses the shared TableShell border |
+| Border radius | Filter panel and Card `rounded-xl`; inputs/actions `rounded-md`; statuses `rounded-full` |
+| Text — primary | Property and account names `text-text-primary font-medium`; form title uses shared CardTitle |
+| Text — secondary | Filter labels `text-text-secondary text-sm font-medium`; domain/supporting copy `text-text-muted text-xs` |
+| Spacing | Directory `gap-6`; filter panel `p-4 gap-3`; onboarding uses Card `p-6` with form `gap-4` |
+| Hover state | Table rows `hover:bg-surface-hover`; pagination links use secondary-action hover and focus treatment |
+| Shadow | `shadow-xs` on filter panel and shared Card; TableShell has none |
+| Accent usage | Primary create action only; property status uses semantic success/warning Badge variants |
+
+**Pattern notes:** Administrative directories pair a server-submitted search/filter surface with the native shared TableShell, labelled status badges, and the shared EmptyState. The adjacent onboarding card always uses labelled Fields, field-level errors, a loading-disabled primary action, and an in-card Alert for success or recoverable error. Keep authorization copy generic; do not reveal unauthorized property details in an error or empty state.
+### Authorized Property Navigation
+
+Files: `src/components/properties/property-switcher.tsx`, `src/components/layout/property-overview-shell.tsx`, `src/app/select-property/page.tsx`
+Last updated: 2026-08-16
+
+| Property | Class |
+|---|---|
+| Background | Switcher trigger `bg-surface-interactive`; selection cards use shared `bg-surface`; shell uses `bg-background` |
+| Border | Switcher `border border-border`; selection cards use shared Card border |
+| Border radius | Switcher `rounded-md`; selection cards `rounded-xl` |
+| Text — primary | Current property and card titles use `text-text-primary` with shared medium/semibold hierarchy |
+| Text — secondary | Account and domain details use `text-text-secondary` and `text-text-muted` |
+| Spacing | Selection page `px-4 py-8` with `gap-4`; top-bar switcher uses the shared Select inset |
+| Hover state | Selection cards `hover:border-border-strong hover:bg-surface-hover`; switcher preserves shared Select focus/hover behavior |
+| Shadow | Selection cards use shared Card `shadow-xs`; switcher menu uses shared Select `shadow-sm` |
+| Accent usage | None; selection state is conveyed by the Select value and readable labels |
+
+**Pattern notes:** Property selection and switching may render only server-resolved, active authorized properties. Hide the switcher for one property. Keep the switcher in the responsive top bar and preserve the AppShell drawer on mobile; never use the current route ID to add or infer an option.
+### Property User Administration
+
+File: `src/components/properties/property-user-administration.tsx`
+Last updated: 2026-08-18
+
+| Property | Class |
+|---|---|
+| Background | Shared Card `bg-surface`; individual grant controls `bg-surface-secondary`; native selects `bg-surface-interactive` |
+| Border | Cards `border border-border`; grant controls use the same border; member rows use `border-b border-border` |
+| Border radius | Cards `rounded-xl`; grant controls `rounded-lg`; selects and actions `rounded-md` |
+| Text — primary | Member names and selected properties `text-text-primary`; titles use shared CardTitle |
+| Text — secondary | Labels and table values `text-text-secondary`; email and help text `text-text-muted` |
+| Spacing | Split layout `gap-6`; Card `p-6`; grant controls `p-3 gap-2`; form `gap-4` |
+| Hover state | Shared Button interactions; native controls retain the standard visible semantic focus ring |
+| Shadow | Shared Card `shadow-xs` |
+| Accent usage | Primary save action and the native checkbox accent only; member state uses semantic success/warning Badge variants |
+
+**Pattern notes:** Property-access administration pairs a horizontally scrollable, readable membership table with a narrow editing card. State the distinction between the account baseline role and an optional property override in visible copy. Keep all choices server-resolved; the client must not derive properties or permissions from the URL. Use the shared Alert and loading-disabled Button for mutation feedback, and a separate danger action for account-level access suspension.
+
+### Pending Invitation Administration
+
+File: `src/components/properties/property-invitation-administration.tsx`
+Last updated: 2026-08-18
+
+| Property | Class |
+|---|---|
+| Background | Shared Card `bg-surface`; invitation rows and intended-grant controls `bg-surface-secondary`; inputs `bg-surface-interactive` |
+| Border | `border border-border` across Cards and invitation/grant controls |
+| Border radius | Cards `rounded-xl`; invitation and grant controls `rounded-lg`; fields/actions `rounded-md`; status Badge `rounded-full` |
+| Text — primary | Recipient email and selected property `text-text-primary font-medium`; Card titles use shared CardTitle |
+| Text — secondary | Invitation detail and labels `text-text-secondary`; expiry/supporting copy `text-text-muted text-xs` |
+| Spacing | Split layout `gap-6`; Card `p-6`; invitation rows `p-4`; grant controls `p-3`; form `gap-4` |
+| Hover state | Shared Button hover/focus; the cancel action uses the shared danger variant |
+| Shadow | Shared Card `shadow-xs` |
+| Accent usage | Primary send action and checkbox accent only; invitation state uses semantic warning/success/neutral Badge variants |
+
+**Pattern notes:** Pending invitations remain visibly distinct from active member access. Pair each pending recipient with an explicit status and expiry, and show cancellation only while pending. The invitation form must explain that intended grants activate only after verified identity acceptance; never render credentials, tokens, or provider state.

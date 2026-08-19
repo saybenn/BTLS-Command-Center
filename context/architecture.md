@@ -1503,6 +1503,11 @@ A deferred decision must not be silently invented inside feature code. Record it
 
 ---
 
+## 28A. Feature 05 Authorization Decision
+
+Client users require an active `AccountMembership` and explicit `PropertyAccess` for every property. `AccountMembership.role` is the baseline client role; `PropertyAccess.roleOverride` is an optional property-specific override. Platform capabilities are the sole cross-property exception: `platform.property.read` is granted to BTLS admins and operators, while `platform.property.manage` and `platform.user.manage` are admin-only. `CLIENT_OWNER` alone has `property.member.manage`, limited to properties the owner explicitly accesses.
+
+Feature 04 verifies Supabase identity and sessions. Feature 05 activates pending BTLS authorization. A token-free `PendingAccountInvitation` and same-account `PendingPropertyAccess` set record intended access, which is activated idempotently only after verified acceptance. Existing verified AppUsers receive their validated grants immediately without a pending record. Pending invitations expire after the configured 24-hour default; expiry or cancellation never activates access.
 ## 29. Architecture Decision Summary
 
 The binding rulings are:

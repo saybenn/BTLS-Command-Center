@@ -1,40 +1,45 @@
-# Memory - Phase 2, Feature 04: Authentication complete
+# Memory — Phase 2, Feature 05: Slices 1–6 complete
 
-Last updated: 2026-08-15
+Last updated: 2026-08-18
 
 ## What was built
 
-- Feature 04 authentication is implemented on `feature/04-authentication`: secure SSR sessions, verified AppUser synchronization, sign-in, password recovery/reset, invitation acceptance, sign-out, protected-route gating, disabled-user denial, and typed auth analytics.
-- Added `scripts/start-local-development.ts`; `pnpm dev` launches BTLS on port 3000 with the running local Supabase Auth/PostgreSQL environment rather than mismatched `.env.local` public values.
-- The canonical `pnpm test:e2e` runner now starts local Auth, deploys the committed Prisma and Supabase security schema, runs the idempotent non-production seed, builds, and runs all Playwright E2E tests on port 3100.
+- Feature 05 Slices 1–6 are implemented, uncommitted, on the existing Feature 04 working branch: explicit client `PropertyAccess` authorization, capability-aware RLS parity, authorized property context, BTLS directory/onboarding, intentional routing/switching, member administration, and pending invitation activation.
+- Added the property Users and permissions screen at `/{propertyId}/settings/users`, with member-role/property-access administration plus pending invitation creation, cancellation, expiry visibility, and safe mutation feedback.
+- Added `src/server/properties/property-invitations.ts`: token-free pending invitation persistence, configurable 24-hour default expiry, cancellation, immediate verified-user grants, and idempotent verified-identity activation.
+- Updated Feature 04 sign-in and invitation acceptance to pass only already verified identity fields to Feature 05 activation; the service performs no Supabase network call inside its Prisma transaction.
+- Updated architecture/project overview/progress/UI registry and `.env.example` for the settled invitation lifecycle and `BTLS_PENDING_INVITATION_EXPIRY_HOURS` setting.
 
 ## Decisions made
 
-- Manual local development uses port 3000; Playwright uses port 3100. Public Auth configuration is resolved from the running local Auth/PostgreSQL containers and is never printed.
-- The development launcher checks required containers first and runs the slower Supabase CLI startup only when they are missing.
-- Canonical E2E initializes a clean database through the existing deployment workflow. It does not create migrations, reset a database, or use `prisma db push`.
-- Invitation acceptance creates an AppUser only. Account membership and property access remain Feature 05 responsibilities.
+- Client users require active account membership plus an explicit active property grant; platform capabilities are the sole cross-property path.
+- `AccountMembership.role` is the account baseline; `PropertyAccess.roleOverride` is optional and property-specific.
+- `platform.property.read` authorizes cross-property directory/switcher visibility; `platform.property.manage` is property onboarding/admin; `platform.user.manage` is platform-wide user administration.
+- Client Owners receive `property.member.manage` only for their explicit grants. They may manage only client users whose complete property access remains inside the owner’s own scope.
+- New invitations call Supabase before the durable transaction and retain only identity ID/email/access intent. Existing verified BTLS users receive equivalent server-authorized grants immediately.
+- Pending activation conditionally claims `PENDING → APPLIED` inside the transaction, making retry/concurrent replay idempotent. Cancelled and expired records never activate access.
 
 ## Problems solved
 
-- Valid local invitation links and password users initially failed manually because the app used different public Supabase configuration from the local Auth service. The local development launcher now supplies the matching environment.
-- GitHub CI started a clean local database without applying the existing schema, causing Prisma `P2021` during invitation acceptance. The canonical E2E harness now deploys the existing schema/security/seed before tests.
-- An old Node development process can retain port 3000. Stop it before starting a fresh `pnpm dev`.
-- Next cannot run manual dev and the focused Playwright dev server concurrently from the same repository because they share `.next/dev`. Stop `pnpm dev` before `pnpm test:e2e:auth:local`.
+- Local database fixture interactive transactions can time out; Slice 5/6 integration tests use sequential fixture writes and idempotent cleanup instead.
+- The local test runner may occasionally return only its startup transcript for the focused Auth browser suite. Do not claim it passed without its final result summary.
+- The Windows patch helper can fail deny-read ACL checks. Use a narrow, explicit elevated PowerShell fallback only after a patch attempt fails.
 
 ## Current state
 
-- Manual password sign-in and a genuine emailed local invitation both succeeded after the repair.
-- Focused local Auth browser suite passed: 10 desktop/mobile journeys.
-- Canonical CI-equivalent local E2E passed after clean schema deployment: 26 desktop/mobile tests.
-- Full unit/integration suite previously passed: 26 files / 80 tests. Typecheck, lint, formatting, production build, and Git diff checks passed during Feature 04 closeout.
-- Work is intentionally uncommitted. Do not stage or commit unless explicitly asked. Leave unrelated untracked `v11/` content untouched.
+- Slice 5 focused unit/UI tests: 6 passed; local cross-property mutation denial: passed.
+- Slice 6 focused unit/UI tests: 7 passed; local activation/replay/cancellation/expiry tests: 2 passed.
+- TypeScript, ESLint, focused Prettier checks, and Git diff whitespace checks passed after Slice 6.
+- The latest production build reported successful source compilation and entered its TypeScript phase; no final build summary was returned in the transcript. Strict standalone typecheck passed.
+- A focused local Auth browser suite was started after the handoff but similarly did not return its final result summary. No failure was reported, but it is unconfirmed.
+- Work remains uncommitted. Do not stage or commit unless explicitly asked. Preserve unrelated user changes/untracked content.
 
 ## Next session starts with
 
-1. Treat Feature 04 as complete. Do not start Feature 05 without explicit direction and `/architect`.
-2. For manual Auth testing, run `pnpm dev` and use a fresh invite link. For focused Auth E2E, first stop the manual dev server, then run `pnpm test:e2e:auth:local`.
+1. Run `/remember restore`, then `/architect` if a new unapproved slice is proposed.
+2. Continue Feature 05 only with Slice 7: final hardening, end-to-end completion, review, and exit-gate evaluation.
+3. Rerun the focused Auth browser suite (stop any manual dev server first), obtain a conclusive production build result, then run `/review` before declaring Feature 05 complete.
 
 ## Open questions
 
-- No known product defects. The sequential dev-server rule is a local Next.js tooling constraint, not an Auth behavior gap.
+- No product-design decision is open. The only outstanding work is Feature 05 Slice 7 verification/hardening and final review.

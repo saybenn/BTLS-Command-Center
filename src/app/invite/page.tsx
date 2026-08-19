@@ -11,7 +11,7 @@ export default function InvitationPage() {
       <InvitationSessionBootstrap>
         <AuthForm
           action={acceptInvitationAction}
-          description="Set a password to activate your invited BTLS account. This invitation does not change property access."
+          description="Set a password to activate your invited BTLS account. If BTLS assigned property access, it activates only after this verified acceptance."
           fields={[
             {
               autoComplete: "new-password",
