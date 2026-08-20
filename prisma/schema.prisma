@@ -45,6 +45,13 @@ enum FeatureFlagScope {
   PROPERTY
 }
 
+enum PendingInvitationStatus {
+  PENDING
+  CANCELLED
+  EXPIRED
+  APPLIED
+}
+
 model AppUser {
   /// Must equal the corresponding Supabase auth.users UUID.
   id           String        @id @db.Uuid
@@ -57,6 +64,7 @@ model AppUser {
 
   accountMemberships AccountMembership[]
   auditEvents        AuditEvent[]        @relation("AuditEventActor")
+  sentInvitations    PendingAccountInvitation[] @relation("PendingInvitationInviter")
 
   @@map("app_users")
 }
@@ -72,6 +80,7 @@ model ClientAccount {
   memberships  AccountMembership[]
   featureFlags FeatureFlag[]
   auditEvents  AuditEvent[]
+  pendingInvitations PendingAccountInvitation[]
 
   @@index([status])
   @@map("client_accounts")
@@ -90,6 +99,7 @@ model ClientProperty {
   propertyAccesses PropertyAccess[]
   featureFlags     FeatureFlag[]
   auditEvents      AuditEvent[]
+  pendingAccesses  PendingPropertyAccess[]
 
   @@unique([id, accountId])
   @@index([accountId, status])
@@ -134,6 +144,51 @@ model PropertyAccess {
   @@map("property_accesses")
 }
 
+/// Authorization intended for an invited Auth identity before it has a verified AppUser profile.
+/// The invited user ID is intentionally not a foreign key because Feature 04 creates AppUser only
+/// after Supabase verifies and accepts the invitation.
+model PendingAccountInvitation {
+  id            String                  @id @default(uuid()) @db.Uuid
+  accountId     String                  @map("account_id") @db.Uuid
+  invitedUserId String                  @map("invited_user_id") @db.Uuid
+  email         String
+  role          AccountRole
+  status        PendingInvitationStatus @default(PENDING)
+  expiresAt     DateTime                @map("expires_at") @db.Timestamptz(6)
+  invitedById   String                  @map("invited_by_id") @db.Uuid
+  appliedAt     DateTime?               @map("applied_at") @db.Timestamptz(6)
+  cancelledAt   DateTime?               @map("cancelled_at") @db.Timestamptz(6)
+  createdAt     DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account        ClientAccount          @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  invitedBy      AppUser                @relation("PendingInvitationInviter", fields: [invitedById], references: [id], onDelete: Restrict)
+  propertyGrants PendingPropertyAccess[]
+
+  @@unique([id, accountId])
+  @@unique([invitedUserId, accountId])
+  @@index([accountId, status])
+  @@index([invitedUserId, status])
+  @@index([expiresAt])
+  @@map("pending_account_invitations")
+}
+
+model PendingPropertyAccess {
+  id                  String                  @id @default(uuid()) @db.Uuid
+  accountId           String                  @map("account_id") @db.Uuid
+  pendingInvitationId String                  @map("pending_invitation_id") @db.Uuid
+  propertyId          String                  @map("property_id") @db.Uuid
+  roleOverride        AccountRole?            @map("role_override")
+  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  pendingInvitation PendingAccountInvitation @relation(fields: [pendingInvitationId, accountId], references: [id, accountId], onDelete: Cascade)
+  property          ClientProperty           @relation(fields: [propertyId, accountId], references: [id, accountId], onDelete: Cascade)
+
+  @@unique([pendingInvitationId, propertyId])
+  @@index([propertyId])
+  @@map("pending_property_accesses")
+}
 model FeatureFlag {
   id         String           @id @default(uuid()) @db.Uuid
   key        String

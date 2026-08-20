@@ -3,10 +3,15 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { requireSupabaseBrowserEnvironment } from "@/server/env";
 
-const protectedPath = "/dashboard";
+const protectedPrefixes = ["/dashboard", "/admin", "/select-property", "/no-access"] as const;
+const propertyRoutePattern =
+  /^\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?:\/|$)/i;
 
 export function isProtectedAuthRoute(pathname: string) {
-  return pathname === protectedPath || pathname.startsWith(`${protectedPath}/`);
+  return (
+    protectedPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)) ||
+    propertyRoutePattern.test(pathname)
+  );
 }
 
 export async function updateAuthSession(request: NextRequest) {

@@ -925,3 +925,128 @@ The tracker should remain a working status document, not a duplicate of `build-p
 - Canonical `pnpm test:e2e` now invokes the existing non-destructive local deployment workflow after local Auth starts and before the production build.
 - The workflow applies committed Prisma migrations, Supabase security migration, and idempotent non-production seed data; it does not add a migration, reset a database, or use `prisma db push`.
 - CI-equivalent canonical E2E passed afterward: 26 desktop/mobile tests, including invitation acceptance.
+## 2026-08-16 — Phase 2, Feature 05: Slices 1 and 2
+
+### Completed
+
+- Added the binding explicit-property-grant authorization decision, pending invitation schema/migration, capability-aware RLS defense-in-depth, and TypeScript/SQL platform-capability parity coverage.
+- Added the reusable server-only property-context and authorized-property-list services.
+- Property routes now resolve an active verified `AppUser`, property/account status, active client membership, explicit `PropertyAccess`, effective role, and capabilities before returning an authorized context.
+- Platform users require `platform.property.read` for cross-property context without individual grants. Client users require their active membership and explicit property grant.
+- Invalid, anonymous, disabled, unavailable, suspended-account/property, suspended-membership, and no-property outcomes are explicit and browser-safe.
+
+### Verification
+
+- Slice 2 focused property-context unit suite: 6 tests passed.
+- Strict TypeScript passed.
+- Local database tenant-isolation and SQL-capability-parity suites: 5 tests passed.
+- Focused lint, Prettier, and Git diff whitespace checks passed.
+
+### Next session
+
+1. Continue Feature 05 only with its approved Slice 3: capability-authorized property directory and onboarding.
+
+## 2026-08-16 — Phase 2, Feature 05: Slice 3
+
+### Completed
+
+- Added the capability-authorized `/admin/properties` server-paginated directory with search and property-status filtering.
+- Added account/property onboarding through `platform.property.manage`; creation is an atomic active-account/active-property transaction with account and property audit events.
+- Added capability-gated account/property status-change services with durable audit events. No future settings model was invented.
+- Added the administrative directory, search/filter control, creation form, pagination, loading, empty, validation, recoverable-error, pending-disabled, and success states.
+- Imprinted the Administrative Property Directory and Onboarding visual pattern in `context/ui-registry.md`.
+
+### Verification
+
+- Strict TypeScript and focused lint passed.
+- Slice 3 service, action, component, loading, and error-boundary coverage: 10 tests passed.
+- Real local database proof for immediate directory appearance, creation audits, cross-property isolation, and capability parity: 7 tests passed.
+- Local-runtime production build, Prettier, and Git diff whitespace checks passed.
+
+### Next session
+
+1. Continue Feature 05 only with its approved Slice 4: intentional property routing, property overview shell, and switcher.
+2. Preserve `platform.property.manage` for property onboarding and administration; do not infer access from a route ID or role name.
+## 2026-08-16 — Phase 2, Feature 05: Slice 4
+
+### Completed
+
+- Replaced the temporary post-auth dashboard with server-authorized routing: platform readers go to `/admin/properties`; clients with one property go directly to its overview; multiple-property clients select intentionally; no active grant goes to `/no-access`.
+- Opened the shared directory to `platform.property.read` while retaining `platform.property.manage` exclusively for onboarding controls and mutations.
+- Added protected session-refresh coverage for administrative, selection, no-access, and UUID property routes.
+- Added the authorized property overview shell, capability-aware administrative navigation, and responsive top-bar property switcher.
+- Switcher and selection options come solely from the server-resolved active authorized-property list; they omit suspended and ungranted properties.
+- Imprinted the Authorized Property Navigation pattern and updated the AppShell registry note.
+
+### Verification
+
+- Focused property-context, routing, admin-directory, protected-route, switcher, and overview-shell suites: 21 tests passed.
+- Real local directory/onboarding, cross-property isolation, and capability-parity suites: 7 tests passed.
+- Local desktop/mobile authentication routing suite passed after the temporary dashboard was replaced.
+- Strict TypeScript, lint, Prettier, Git diff whitespace checks, and local-runtime production build passed.
+
+### Next session
+
+1. Continue Feature 05 only with its approved Slice 5: existing-user member and property-access administration.
+2. Preserve the settled split: `platform.property.read` authorizes directory/switcher visibility; `platform.property.manage` authorizes property onboarding and administration.
+## 2026-08-18 — Phase 2, Feature 05: Slice 5
+
+### Completed
+
+- Added the server-authorized `/{propertyId}/settings/users` screen for existing account-member role and explicit property-access administration, with loading, empty, error, pending, success, and disabled-action states.
+- Added reusable property-user services and actions. `AccountMembership.role` remains the account baseline; `PropertyAccess.roleOverride` is an explicit optional per-property override.
+- `platform.user.manage` retains account-wide administration. A Client Owner can manage only non-platform client users whose complete property access is inside the owner’s own explicit grants; managers, staff, and viewers are denied before user data is read or changed.
+- Access saves reactivate the membership, synchronize only the submitted same-account active property grants, and append membership plus grant/revocation audit events. Account-wide suspension is separately audited.
+- Imprinted the Property User Administration pattern in `context/ui-registry.md`.
+
+### Verification
+
+- Focused service and UI suites: 6 tests passed.
+- Local database cross-property mutation-denial test passed: an out-of-scope Client Owner mutation was denied and left the target membership and grant unchanged.
+- Strict TypeScript, ESLint, focused Prettier formatting, and Git diff whitespace checks passed.
+- Production build compiled successfully through the TypeScript stage with the local project environment.
+
+### Next session
+
+1. Continue Feature 05 only with its approved Slice 6: normalized pending invitation activation.
+2. Keep Supabase identity verification outside the activation transaction; Feature 05 activates pending BTLS authorization only after verified identity resolution.
+
+## 2026-08-18 — Phase 2, Feature 05: Slice 6
+
+### Completed
+
+- Added server-authorized pending invitation creation, listing, automatic expiry, cancellation, and immediate existing-verified-user grant paths to the property Users and permissions screen.
+- Added a configurable `BTLS_PENDING_INVITATION_EXPIRY_HOURS` setting with a safe 24-hour default and documented it in `.env.example`.
+- New-user invitations call Supabase before the durable Prisma transaction and persist only the Auth identity ID, intended account role, property grants, status, timestamps, and audit events—never tokens or credentials.
+- Feature 04 continues to verify Supabase identity/session state. Its sign-in and invitation-acceptance flows now delegate only verified identity fields to Feature 05’s idempotent authorization activation transaction.
+- Activation atomically upserts the `AppUser`, conditionally claims pending records, resolves membership, upserts unique same-account property grants, marks invitations applied, and appends audit events. Cancelled and expired records create no BTLS membership or property access.
+- Imprinted the Pending Invitation Administration pattern in `context/ui-registry.md` and updated Feature 05 binding documentation for the immediate verified-user path.
+
+### Verification
+
+- Pending lifecycle and invitation UI unit suites: 7 tests passed.
+- Local database lifecycle suite: 2 tests passed for activation/replay and cancellation/expiry denial.
+- Focused local Auth browser suite was started after the handoff; its runner reported startup and active execution but did not return a final result summary in the command transcript.
+
+### Next session
+
+1. Continue Feature 05 only with its approved Slice 7: final hardening, end-to-end completion, and review.
+2. Preserve the verified-identity boundary: no Supabase network call or credential handling may enter the activation transaction.
+
+## 2026-08-18 — Phase 2, Feature 05: Slice 7 / Feature complete
+
+### Completed
+
+- Added final browser coverage for explicit client property grants, multi-property selection and switching, and URL-manipulation denial on desktop and mobile.
+- Hardened local database integration execution for external Supabase Auth setup by serializing integration files and using a bounded 30-second hook timeout.
+- Completed Feature 05 review: no unresolved critical or high-severity findings remain.
+
+### Final verification
+
+- `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:database`, `pnpm build`, `pnpm test:e2e`, `pnpm format:check`, and `git diff --check` passed.
+- Canonical Playwright suite: 28 passed across desktop and mobile.
+- Exit gate passed: platform-capability directory visibility, explicit client grants, server-side URL denial, immediate property directory appearance, and cross-tenant read/mutation denial are covered by service, database/RLS, and browser tests.
+
+### Next session
+
+1. Feature 05 is complete. Do not start Feature 06 without explicit direction.

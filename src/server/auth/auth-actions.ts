@@ -88,8 +88,9 @@ export async function signInAction(
   }
 
   try {
-    const { synchronizeAppUserProfile } = await import("./profile-sync");
-    await synchronizeAppUserProfile(identityFromAuthUser(data.user));
+    const { synchronizeAndActivatePendingAuthorization } =
+      await import("@/server/properties/property-invitations");
+    await synchronizeAndActivatePendingAuthorization(identityFromAuthUser(data.user));
   } catch {
     await recordProductAnalyticsEvent({ category: "provider_error", name: "auth.sign_in_failed" });
     return errorState("We could not finish signing you in. Please try again.");
@@ -189,12 +190,6 @@ export async function acceptInvitationAction(
     return errorState("This invitation is invalid or has expired.");
   }
 
-  const { prisma } = await import("@/server/database/prisma");
-  const existingUser = await prisma.appUser.findUnique({ where: { id: authUser.id } });
-  if (existingUser) {
-    return errorState("This invitation has already been used. Sign in with your password instead.");
-  }
-
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) {
     return errorState("We could not accept this invitation. Please request a new invitation.");
@@ -207,8 +202,9 @@ export async function acceptInvitationAction(
     );
   }
 
-  const { synchronizeAppUserProfile } = await import("./profile-sync");
-  await synchronizeAppUserProfile(identityFromAuthUser(refreshedIdentity.user));
+  const { synchronizeAndActivatePendingAuthorization } =
+    await import("@/server/properties/property-invitations");
+  await synchronizeAndActivatePendingAuthorization(identityFromAuthUser(refreshedIdentity.user));
   await recordProductAnalyticsEvent({ name: "auth.invitation_accepted" });
   redirect("/dashboard");
 }

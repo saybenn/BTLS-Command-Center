@@ -10,6 +10,11 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // Local Supabase Auth setup makes network calls. Keep integration fixtures
+    // isolated and give the provider a bounded startup window so concurrent
+    // database tests cannot make a healthy Auth setup look like a failure.
+    fileParallelism: false,
+    hookTimeout: 30_000,
     include: ["tests/integration/**/*.test.ts"],
   },
 });

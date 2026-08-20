@@ -19,8 +19,22 @@ function createPrismaClient() {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+function getPrismaClient() {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  return globalForPrisma.prisma;
 }
+
+/**
+ * Defers database configuration until a request or job actually performs a query.
+ * Dynamic Next routes are therefore safe to analyze during builds without a database URL.
+ */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, property) {
+    const value = Reflect.get(getPrismaClient(), property);
+
+    return typeof value === "function" ? value.bind(getPrismaClient()) : value;
+  },
+});

@@ -639,6 +639,9 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Used by every protected service operation.
 - Must never rely only on hidden navigation or frontend state.
 
+## Pending Invitation Authorization
+
+`PropertyAccess` is the authoritative client-user property assignment record: an account membership without an explicit grant does not authorize property entry. BTLS cross-property access comes only from explicit platform capabilities. Pending invitations store intended account and same-account property grants without Auth tokens or credentials; verified acceptance activates them idempotently; existing verified AppUsers receive the same server-authorized grants immediately. Cancellation and expiry deny activation.
 ## IntegrationConnection
 
 - Lives in PostgreSQL.
