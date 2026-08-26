@@ -177,8 +177,8 @@ Recommended naming:
 
 ```text
 feature/01-repository-tooling
-feature/09-unified-lead-inbox
-feature/23-website-intelligence-interface
+feature/09-lead-operations-action-workspace
+feature/31-website-intelligence-interface
 ```
 
 Rules:
@@ -243,11 +243,31 @@ Web interfaces call reusable application services.
 
 This is required so Revenue Operations can later support a dedicated mobile client without duplicating business logic.
 
+### Revenue Operations
+
+Revenue Operations is the supported service-business operating core, not a Lead-only CRM.
+
+Required guardrails:
+
+- `Customer` is the property-scoped operational end-customer parent.
+- `Contact` is a person associated with a Customer.
+- `Lead` is one commercial opportunity with sales-stage truth only.
+- Do not flatten Appointment, Estimate, Job, Invoice, Payment, next-action, stale, or overdue truth into Lead status.
+- Preserve the robust-underneath/simple-in-front path: Lead → Estimate → Start work → Work done → Record payment → Close.
+- `Conversation` and `Message` belong to Revenue Operations communication truth; a customer-facing Conversation requires Customer and primary Contact.
+- Lead, Estimate, Appointment, Job, Invoice, and Robin do not own Conversation.
+- Quick Capture is a Revenue input workflow, not Robin. It always shows typed proposals and requires human confirmation before normal application services execute them.
+- AI never fabricates signature or Payment truth and never writes derived operational state directly.
+- BTLS owns operational financial truth, not accounting, payroll, or tax-compliance truth. Integrated payment processing is optional.
+- Preserve shared `PropertyService` and `MediaAsset`; Revenue may add only explicit contextual relationships.
+- `JobTask != WorkTicketTask` and `BusinessException != Finding`.
+- Revenue Leak is a BusinessException rule family, not another model.
+
 ### Web and future mobile boundary
 
 The current product is a responsive web application.
 
-Revenue Operations launches as a web beta.
+Revenue Operations launches as a field-capable responsive web beta.
 
 A future mobile application is post-MVP.
 
@@ -340,11 +360,19 @@ Robin must not:
 - Present possible causes as proven facts
 - Act outside the property Business Knowledge Pack and enabled capabilities
 
+Quick Capture does not use Robin automation mode. Its natural-language extraction follows
+typed validation, property authorization, before/after proposal review, explicit human
+confirmation, normal application services, and durable audit/activity evidence.
+
 ### Communication
 
-- Postmark is outbound-only email for MVP.
-- Twilio provides two-way SMS.
-- Inbound email synchronization is deferred.
+- Postmark is outbound-only email for MVP behind the shared `EmailProvider`.
+- Shared communication/integration configuration owns `SendingIdentity`; Revenue settings may reference a default identity but never own credentials or sender verification.
+- `BTLS_MANAGED` sending uses a verified BTLS-owned From identity and may use a client Gmail, Yahoo, or custom address as Reply-To.
+- Twilio provides two-way SMS for Customer/Contact Conversations.
+- A customer-facing Conversation belongs to Customer and requires a primary Contact; operational records may be optional Message/RevenueActivity context but never become the Conversation owner.
+- Robin sends through the same authorized communication application services and never owns Conversation or Message.
+- Inbound email synchronization and connected mailboxes are deferred.
 - Respect consent, opt-out state, business hours, and duplicate protection.
 - Store provider identifiers and delivery outcomes.
 - Process provider webhooks idempotently.
@@ -462,6 +490,8 @@ Do not add:
 - Predictive analytics
 - Cross-client benchmarking
 - Full project-management features
+- Universal CRM or general ERP behavior
+- General accounting, general ledger, bank reconciliation, payroll, inventory-suite, advanced dispatch/route optimization, or tax-compliance behavior
 - Unbounded or AI-directed automatic website modification
 - Inbound email synchronization
 - Arbitrary WordPress page-builder support
@@ -493,7 +523,12 @@ Critical areas require tests for:
 - Authorization
 - Cross-tenant denial
 - Public lead ingestion
-- Lead lifecycle transitions
+- Customer/Contact/Lead ownership and tenant isolation
+- Source-domain lifecycle and derived-state rules
+- Estimate revision, scoped acceptance, and immutability
+- Conversation consent and thread correlation
+- Invoice/Payment derivation and correction
+- Quick Capture proposal and confirmation safety
 - Robin approval and automatic modes
 - Messaging consent and opt-out
 - Content publishing

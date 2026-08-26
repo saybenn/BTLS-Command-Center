@@ -264,442 +264,536 @@ Exit gate:
 
 ## 06 Storage and Media
 
-Build shared file and image management.
+Build one shared file and image system that future product features can use without
+prebuilding their records.
 
 UI:
 
-- Reusable upload control
-- upload progress
-- media preview
-- replace and remove actions
-- private attachment access
-- public image selection
+- Reusable responsive-web file/camera upload control
+- Upload progress, preview, replace, remove, and recovery states
+- Private attachment access and public image selection
 
 Logic:
 
-- Supabase Storage buckets
-- property-scoped paths
-- `MediaAsset`
-- signed upload and download URLs
-- type and size validation
-- public/private access rules
-- orphan cleanup job
-- audit events for sensitive files
+- Supabase Storage buckets and property-scoped paths
+- Shared `MediaAsset` metadata and finalization lifecycle
+- Server-owned visibility, purpose/sensitivity, and temporary/durable semantics
+- Signed upload and short-lived private download URLs
+- Type, size, ownership, and intended-use validation
+- Finalized bytes never overwritten in place; replacement creates a new asset
+- Generic cleanup eligibility/expiry plus orphan cleanup
+- Audit events for sensitive files
+
+The upload/finalization contract uses authorized property scope and server-owned target
+metadata; a future Customer, Estimate, Job, Invoice, or Quick Capture record need not
+already exist before safe upload begins. Do not create a purpose enum per Revenue noun or
+a universal polymorphic `subjectType/subjectId` attachment system.
+
+Future consumers include signatures, signed Estimate artifacts, customer/location/asset
+photos, Job photos, ServiceIssue evidence, temporary Quick Capture audio, and commercial
+documents. Revenue-specific joins, signature UI, public document grants, document
+generation, and retention policy remain with their owning later features.
 
 Exit gate:
 
 - Public content images can be served durably
-- Private attachments require permission
+- Private attachments require server authorization and short-lived signed access
 - Cross-property file access is denied
-- Failed and abandoned uploads are recoverable
+- Failed and abandoned uploads are recoverable and cleanup eligible
+- Replacing a finalized durable/evidence asset cannot mutate its bytes in place
+- Responsive-web file/camera input is supported without native-mobile assumptions
 
 ---
 
 ## 07 Events, Jobs, Notifications, and Operational Records
 
-Create the shared asynchronous foundation.
+Create feature-neutral asynchronous and provider infrastructure that later Revenue,
+Robin, Growth, and Search workflows can extend.
 
 UI:
 
 - In-app notification center
-- background-operation status where useful
-- internal admin failure view
+- Background-operation status where useful
+- Internal admin failure and retry view
 
 Logic:
 
 - Inngest setup
-- typed internal events
-- typed job payloads
-- retry and idempotency patterns
-- notification records
-- webhook receipt records
-- important job execution records
-- Postmark adapter
+- Additive typed/versioned internal-event registry
+- Zod-validated property-scoped job payloads
+- Explicit idempotency, retry-safe execution, correlation IDs, and repeated-failure records
+- Property/user-scoped Notification records and subject links that are not Lead-only
+- Provider-neutral `WebhookReceipt`
+- Shared important `JobExecution`/failure visibility
+- `EmailProvider` with normalized `SendingIdentity`, display name, Reply-To, recipients, and business idempotency inputs
+- Postmark adapter returning normalized provider IDs
 - Twilio adapter foundation
-- structured logging
-- Sentry setup
+- Structured logging and Sentry setup
 
-Initial events:
+Keep generic provider receipts separate from later business records such as Message,
+EstimateDelivery, and InvoiceDelivery. `BTLS_MANAGED` is the MVP-safe email identity
+mode; custom-domain onboarding and connected mailbox OAuth are not Feature 07 work.
+Webhook infrastructure may later receive Postmark, Twilio, or payment-provider callbacks
+without implementing their owning business behavior.
 
-- `lead.created`
-- `lead.status_changed`
-- `content.published`
-- `integration.sync_completed`
-- `integration.sync_failed`
-- `finding.detected`
-- `ticket.completed`
-- `robin.handoff_requested`
+Representative event contracts may include source-domain names such as
+`lead.created`, `estimate.revision_issued`, `payment.recorded`, or
+`quick_capture.applied`, but Feature 07 implements only the registry and test events—not
+future Revenue handlers or records.
+
+Explicitly out of scope:
+
+- Customer/Conversation/Message
+- Estimate or Invoice delivery records
+- signed document generation
+- scheduling rules
+- BusinessException evaluation
+- Quick Capture
+- ReviewRequest
+- payment behavior or provider selection
 
 Exit gate:
 
-- A test event completes a durable job
-- Duplicate provider events do not duplicate effects
-- Failed jobs are visible and retryable
-- Notifications are property- and user-scoped
-- Email and SMS providers are isolated behind adapters
+- A test event completes a durable property-scoped job
+- Duplicate events and provider receipts do not duplicate effects
+- Failed jobs are visible and retryable with correlation context
+- Notifications are property- and user-scoped and can link to future subject routes
+- Email and SMS providers remain isolated behind normalized BTLS interfaces
+- No Revenue business rule is embedded in shared infrastructure
 
 ---
-
 # Phase 4 — Revenue Operations Foundation
 
-## 08 Revenue Operations Data Model
+## 08 Customer, Workforce, and Revenue Settings Foundation
 
-Create the source-of-truth records and lifecycle rules for customer opportunities.
+Create the durable end-customer, optional service context, workforce identity, and
+Revenue-default foundation used by every later Revenue feature.
 
-UI:
-
-- Internal data-development view or seeded examples visible through the upcoming inbox shell
-
-Logic:
-
-- `Contact`
-- `Lead`
-- `LeadActivity`
-- `FollowUpTask`
-- `Estimate`
-- `Job`
-- `PaymentRecord`
-- source and landing-page attribution
-- lifecycle transition rules
-- assignment
-- notes and tags
-- audit history
-- property-scoped services
-
-Lead lifecycle:
-
-```text
-New
-→ Contacted
-→ Qualified
-→ Estimate Scheduled
-→ Estimate Sent
-→ Follow-Up
-→ Sale Won
-```
-
-Additional outcomes:
-
-- Lost
-- Stale
-
-Fulfillment:
-
-```text
-Sale Won
-→ Job Scheduled
-→ Job In Progress
-→ Job Complete
-```
-
-Collections:
-
-```text
-Job Complete
-→ Payment Due
-→ Paid
-```
-
-Exit gate:
-
-- Lifecycle rules are covered by unit tests
-- Core workflows use transactions
-- Contact may own multiple leads
-- Lead remains the parent opportunity
-- Property isolation tests pass
-
----
-
-## 09 Unified Lead Inbox — Full UI
-
-Build the complete Revenue Operations interface first against stable seeded data.
+Dependencies: Features 03–07 and the canonical shared `PropertyService` contract.
 
 UI:
 
-- Lead Inbox table
-- search and filters
-- assignment
-- status indicators
-- stale and overdue indicators
-- lead-detail page
-- contact details
-- attribution
-- notes
-- tags
-- next action
-- estimate, job, and payment sections
-- conversation/activity timeline
-- follow-up task list
-- mobile-friendly lead view
+- Customer directory and Customer detail foundation
+- Contact and ServiceLocation management with optional ServiceAsset detail
+- Employee directory/profile administration
+- Revenue Operations settings for approved defaults and shared SendingIdentity selection
+- Loading, empty, error, disabled, success, and responsive states
 
-Logic:
+Logic/data:
 
-- Read-only feature queries
-- pagination
-- sorting
-- filtering
-- safe view models
+- `Customer`, person-only `Contact`, `ServiceLocation`, basic optional `ServiceAsset`
+- Property Tag definitions and explicit assignments as required
+- `EmployeeProfile` separate from `AppUser`
+- `RevenueOperationsSettings` for Revenue defaults only
+- Safe Customer/Contact matching and duplicate review
+- Explicit Customer relationship state independent of Lead sales stage
+- If absent, only the minimal canonical shared `PropertyService` substrate as a prerequisite slice; ownership remains shared and Feature 36 reuses it
+
+Authorization:
+
+- `customer.view/manage`, `employee.view/manage`, and settings capabilities as specified
+- Every read/mutation uses authorized property context and same-property relations
+
+Tests:
+
+- Customer versus ClientAccount and ServiceLocation versus BusinessLocation semantics
+- Contact person-only rules and safe matching
+- cross-tenant read/mutation denial
+- EmployeeProfile/AppUser separation
+- Revenue settings cannot own provider credentials or sender verification
 
 Exit gate:
 
-- The complete lead-management experience is visually reviewable
-- Empty, loading, error, and populated states exist
-- Table behavior performs with realistic seeded volume
-- UI does not invent lifecycle behavior
+- Authorized users can manage a property-scoped Customer and person Contact through real UI/services
+- Optional locations/assets do not become clerical gates
+- Workforce and Revenue defaults exist without payroll, TimeEntry, or downstream commercial records
+- No duplicate private PropertyService or MediaAsset system exists
 
 ---
 
-## 10 Revenue Operations Mutations and Reporting
+## 09 Lead Operations and Action Workspace
 
-Wire the interface to production data and workflows.
+Create one-opportunity sales truth and the action-first Revenue home.
+
+Dependencies: Feature 08.
 
 UI:
 
-- Create and edit lead
-- change lifecycle status
-- assign owner
-- add note
-- schedule follow-up
-- create estimate
-- update job state
-- record payment
-- mark won, lost, or stale
-- property operations summary
-- response and outcome reports
+- Revenue home answering “What should I do next?”
+- Lead list/detail, search, filters, assignment, source, requested service, and actual sales stage
+- Customer context, next action, notes, Tags, AttentionFlags, and RevenueActivity history
+- responsive assigned-work view with loading, empty, error, and success states
 
-Logic:
+Logic/data:
 
-- Server Actions
-- Zod validation
-- authorization
-- application services
-- audit events
-- internal events
-- response-time calculations
-- qualification rates
-- estimate outcomes
-- win/loss reporting
-- completed job and confirmed revenue reporting
+- `Lead` stages `NEW / CONTACTED / QUALIFIED / WON / LOST`
+- `RevenueActivity`, `RevenueNote`, `NextRequiredAction`, and contextual `AttentionFlag`
+- source/landing-page attribution, ownership, assignment, transition rules, and audit/events
+- at most one primary open NextRequiredAction per supported subject
+- no Estimate, Appointment, Job, Invoice, Payment, stale, overdue, or follow-up-due value in Lead status
 
-Analytics events:
+Authorization:
 
-- `lead.created`
-- `lead.assigned`
-- `lead.status_changed`
-- `follow_up.created`
-- `estimate.created`
-- `payment.recorded`
+- `lead.view/manage/assign`, `attention.view/manage`, and sensitive `revenue.view` separation
+
+Tests:
+
+- true sales-stage transitions and loss/win behavior
+- action uniqueness, activity history, and tenant isolation
+- UI never presents downstream state as Lead lifecycle
 
 Exit gate:
 
-- Lead can move through the full MVP lifecycle
-- Reports derive from real records
-- Sensitive revenue views require capability
-- Every material lifecycle change appears in the activity history
+- A Lead is created and managed as one opportunity under a Customer
+- The workspace prioritizes next actions over KPI decoration
+- History is trustworthy and all mutations use application services
+- Cross-property denial passes
 
 ---
 
-## 11 Public Lead Ingestion
+## 10 Public Lead Ingestion
 
-Connect client websites to the shared Revenue Operations system.
+Connect public website inquiries to the Customer/Contact/Lead foundation.
+
+Dependencies: Features 07–09.
 
 UI:
 
-- Public form configuration
-- embed/integration instructions
-- form-source status
-- submission test tool
+- Public form configuration, integration instructions, source status, and submission test tool
 
 Logic:
 
-- revocable public form key
-- public ingestion endpoint
-- Turnstile
-- honeypot
-- rate limiting
-- payload validation
-- idempotency
-- contact matching
-- lead creation
-- attribution preservation
-- WordPress webhook/plugin-compatible request
-- employee notification dispatch
+- Revocable public form key resolved server-side
+- Turnstile, honeypot, rate limiting, Zod validation, and idempotency
+- Safe Customer and Contact matching/creation
+- one Lead opportunity plus attribution and RevenueActivity
+- `lead.created` event and employee notification dispatch
+- WordPress-compatible documented request path
+
+Tests:
+
+- BTLS form, direct request, and WordPress-compatible webhook create the correct Customer/Contact/Lead
+- ambiguous matching does not silently merge records
+- spam, duplicate, arbitrary-tenant, and cross-property cases are denied
 
 Exit gate:
 
-- BTLS React form creates a lead
-- Direct documented request creates a lead
-- WordPress-compatible webhook request creates a lead
-- Spam and duplicate protections work
-- Public callers cannot choose arbitrary tenant access
+- Supported public sources create one idempotent property-scoped opportunity
+- Public callers cannot choose privileged property access
+- Failures return safe responses and are operationally visible
 
 ---
 
-# Phase 5 — Conversations and Robin Foundation
+## 11 Customer Conversations and Communication
 
-## 12 Two-Way SMS and Outbound Email
+Build Customer-owned, Contact-specific SMS and outbound-email communication before Robin
+receives customer-message tools.
 
-Build the communication timeline before adding AI behavior.
+Dependencies: Features 07–10, Postmark, and Twilio.
 
 UI:
 
-- Lead conversation panel
-- send SMS
-- send outbound email
-- delivery state
-- failed-message state
-- consent and opt-out state
-- human reply composer
-- property phone-number settings
+- Customer communication timeline and concrete channel/route Conversation
+- SMS and outbound-email composers
+- delivery/failure state, consent/opt-out state, unmatched-message resolution, and responsive reply workflow
 
-Logic:
+Logic/data:
 
-- Postmark outbound email
-- Twilio outbound SMS
-- Twilio inbound SMS webhook
-- delivery callbacks
-- message records
-- conversation threading
-- property-number mapping
-- E.164 normalization
-- STOP/START/HELP handling
-- consent records
-- duplicate webhook protection
+- `Conversation` requires Customer and primary Contact
+- `Message` stores channel, direction, delivery, provider correlation, and optional Lead/Estimate/Appointment/Job/Invoice context
+- property Twilio number + normalized Contact phone correlation
+- Postmark outbound through shared SendingIdentity and Reply-To
+- Twilio inbound/delivery webhooks, E.164, STOP/START/HELP, consent, business hours, and idempotency
+- unmatched inbound evidence preserved without guessing/creating Customer ownership
 
-Exit gate:
+Explicitly out of scope:
 
-- Human user can send SMS and email from a lead
-- Inbound SMS reaches the correct property and lead conversation
-- Delivery status is visible
-- Opted-out contacts cannot receive automated SMS
-- Postmark inbound email remains out of scope
+- Lead/Job/Invoice-owned Conversations
+- generic omnichannel/contact-center platform
+- inbound email synchronization, connected mailbox, group/social threads
 
----
+Tests:
 
-## 13 Robin Configuration and Knowledge
-
-Create Robin’s approved knowledge and operating controls.
-
-UI:
-
-- Robin settings
-- Off / Approval Required / Automatic modes
-- capability toggles
-- business hours
-- escalation rules
-- Business Knowledge Pack editor
-- services
-- locations
-- hours
-- policies
-- approved appointment types
-- workflow steps
-- draft/test mode
-
-Logic:
-
-- `BusinessKnowledgePack`
-- versioning
-- `RobinConfiguration`
-- client progression workflows
-- capability enforcement
-- configuration validation
-- property-scoped tool registry
-- audit events
+- Customer/Contact ownership and long-lived thread behavior
+- property-number routing, consent/opt-out, callbacks, duplicate prevention, and cross-tenant denial
+- Gmail/Yahoo Reply-To works without becoming unauthenticated From
 
 Exit gate:
 
-- Robin cannot run without valid property configuration
-- Configuration changes are versioned and audited
-- Tools can be enabled or disabled independently
-- Draft/test mode performs no customer-facing action
+- A human can send SMS and outbound email from the correct Customer/Contact context
+- Inbound SMS reaches the correct property/Contact Conversation or bounded unmatched flow
+- Delivery/consent state is visible and provider-safe
+- Robin does not own communication records
+
+---
+# Phase 5 — Revenue Operations and Robin Core
+
+## 12 Robin Configuration and Knowledge
+
+Create Robin’s approved knowledge and operating controls after Customer communication exists.
+
+Dependencies: Features 08–11.
+
+UI: Robin settings, Off/Approval Required/Automatic modes, capability toggles, business
+hours, escalation rules, Business Knowledge Pack editor, approved services/locations,
+workflow steps, and no-side-effect test mode.
+
+Logic/data: versioned `BusinessKnowledgePack`, `RobinConfiguration`, property-scoped tool
+registry, configuration validation, capability enforcement, and audit events. Tools may
+reference only domain services implemented through Feature 11.
+
+Tests/exit gate: invalid configuration cannot run; configuration changes are versioned
+and audited; tools toggle independently; test mode creates no customer-facing effect;
+property isolation passes.
 
 ---
 
-## 14 Robin Agent Runs and Approval Workflow
+## 13 Robin Agent Runs and Approval Workflow
 
-Build Robin’s controlled reasoning and tool-execution foundation.
+Build Robin’s controlled reasoning, typed-tool, approval, and human-handoff foundation.
 
-UI:
+Dependencies: Features 09 and 11–12.
 
-- Robin run history
-- proposed action review
-- approve, edit, reject
-- human-handoff queue
-- failure detail
-- related lead context
+UI: run history, proposed-action review, approve/edit/reject, handoff queue, failure
+detail, and related Customer/Lead/Conversation context.
 
-Logic:
+Logic/data: OpenAI adapter, structured output, `RobinRun`, `RobinAction`, typed tool
+arguments, property authorization, mode/consent/duplicate checks, prompt/model/config
+versions, and application-service execution. Initial tools are limited to implemented
+Customer/Lead/communication/next-action services; unfinished Estimate/Job/Invoice tools
+do not exist yet.
 
-- OpenAI adapter
-- structured outputs
-- `RobinRun`
-- `RobinAction`
-- typed tool arguments
-- action validation
-- approval workflow
-- duplicate-action protection
-- human escalation
-- prompt/model/configuration version logging
-
-Initial tools:
-
-- summarize lead
-- identify missing approved fields
-- propose qualification question
-- update approved lead field
-- create follow-up task
-- send approved message
-- request human handoff
-
-Exit gate:
-
-- AI output cannot directly mutate data
-- Approval Required mode blocks action until approval
-- Every tool request is validated and property-scoped
-- Failed or unsafe actions create a visible handoff
+Tests/exit gate: AI cannot mutate directly; Approval Required blocks execution; every
+tool is validated/property-scoped; failures create visible handoff; Robin cannot own
+Conversation/Message or fabricate signature/Payment truth.
 
 ---
 
-## 15 Robin Automations
+## 14 Appointment Scheduling and Time Tracking Foundation
 
-Activate the MVP automation workflows.
+Add sales/evaluation scheduling and basic workforce time while establishing the unified
+schedule contract that later JobVisit plugs into.
 
-UI:
+Dependencies: Feature 08 and the Cronofy boundary.
 
-- Automation outcome dashboard
-- awaiting-human queue
-- upcoming Robin follow-ups
-- successful/failed action summary
+UI: Appointment list/calendar, create/reschedule/cancel/complete actions, unified schedule
+type labels, personal Clock In/Out, current clock state, authorized team history,
+manager correction with reason, and basic export.
 
-Logic:
+Logic/data: `Appointment`, assignments as needed, `TimeEntry`, one-open-entry invariant,
+optional Job/JobVisit linkage for future use, audited corrections, property time zone,
+and Cronofy availability/projection with visible sync failure. BTLS remains schedule
+truth.
 
-- new-lead acknowledgment
-- employee notification
-- lead summarization
-- approved qualification
-- missing-information collection
-- approved field updates
-- follow-up scheduling
-- unresponsive-lead re-engagement
-- approved appointment scheduling through Cronofy
-- business-hours enforcement
-- escalation
-- success/failure reporting
+Authorization/tests: `schedule.view/manage`, `time.use_self`, and `time.manage_team` are
+separate; test appointment lifecycle, provider outage, one-open-clock, correction history,
+property isolation, and responsive field use.
 
-Exit gate:
-
-- Each automation respects property mode
-- Automatic mode is capability-specific
-- Duplicate acknowledgments and follow-ups are prevented
-- Calendar outage creates a handoff
-- Robin-assisted outcomes are traceable to the lead
+Exit gate: Appointments and clock state work end to end without JobVisit, payroll, pay
+rates, PTO, overtime engine, geofencing, or HR scope.
 
 ---
 
+## 15 Pricebook and Estimate Drafting
+
+Create productive Estimate drafting while preserving future commercial history.
+
+Dependencies: Features 08–09.
+
+UI: Pricebook management, Estimate list/detail, line editor, agreement selection,
+draft totals, user-entered tax fields, defaults/progressive detail, and responsive
+presentation preparation.
+
+Logic/data: `Pricebook`, `PricebookItem` with optional shared PropertyService reference,
+`AgreementTemplate`, stable `Estimate`, draft `EstimateRevision`, `EstimateLineItem`, and
+`EstimateAgreementSnapshot`; integer cents, decimal-safe quantities, server totals, and
+user-entered tax snapshots.
+
+Authorization/tests: `pricebook.view/manage` and `estimate.view/manage`; verify catalog
+changes do not rewrite snapshots, Customer/default Contact composition, no tax inference,
+validation, and cross-tenant denial.
+
+Exit gate: an authorized user can draft/revise an Estimate through UI/services; Pricebook
+does not replace PropertyService; no issue/delivery/public acceptance exists yet.
+
+---
+
+## 16 Estimate Delivery, Public Presentation, and Acceptance
+
+Issue immutable Estimate revisions and provide minimal scoped customer acceptance.
+
+Dependencies: Features 06–07, 11, and 15.
+
+UI: Issue, Send/Present, delivery/view history, superseded-version state, scoped customer
+View → Agreement → Sign and Accept surface, signed-artifact status, and safe failures.
+No customer edit, comment, revision request, or public Reject action exists.
+
+Logic/data: immutable issued revisions, `EstimateDelivery`, `EstimateViewEvent`,
+`EstimateAcceptance`, scoped `CustomerDocumentAccessGrant`, signature/shared MediaAsset,
+signed artifact job, stale-revision denial, and optional compositional Lead `WON` update.
+
+Authorization/tests: `estimate.issue`; grant expiry/revocation, exact-revision acceptance,
+immutability, idempotent delivery/webhooks, artifact-failure-with-preserved-acceptance,
+customer-power boundary, cross-tenant/public route denial.
+
+Exit gate: one exact issued revision can be delivered, viewed, and accepted safely; Pricebook
+or AgreementTemplate changes cannot alter history; material later changes route to ChangeOrder.
+
+---
+
+## 17 Job and Field Operations
+
+Create authorized work, optional field visits, and a simple mobile-web work flow.
+
+Dependencies: Features 06, 08, 14, and 16 or an authorized manual-Job workflow.
+
+UI: Job list/detail, Start Work, Work Complete, Close, unified-schedule JobVisits,
+assignments, optional tasks, notes, ServiceAssets, photos/files, ChangeOrders, and basic
+ServiceIssues with responsive field actions.
+
+Logic/data: `Job` with provenance, `JobVisit` and assignments as needed, narrow `JobTask`,
+explicit MediaAsset/ServiceAsset relationships, immutable issued/accepted `ChangeOrder`,
+and `ServiceIssue`. Business commands replace generic status picking.
+
+Authorization/tests: `job.view/manage/close`, `service_issue.manage`; test accepted/manual
+provenance, optional JobVisit, command transitions, ChangeOrder immutability, JobTask versus
+WorkTicket, media/property isolation, and mobile field flow.
+
+Exit gate: authorized work can Start → Work Complete → Close without mandatory visits,
+tasks, notes, photos, assets, or a closeout wizard; advanced records remain available.
+
+---
+
+## 18 Invoice and Payment Operations
+
+Add operational billing and collection truth without introducing accounting or mandatory
+payment processing.
+
+Dependencies: Feature 07 and 17; Feature 16 where billing originates from an Estimate.
+
+UI: Invoice draft/issue/void/delivery, scoped customer view, total/paid/balance/due,
+record factual Payment, partial-payment feedback, correction/reversal, and responsive
+authorized field collection.
+
+Logic/data: `Invoice`, immutable issued `InvoiceLineItem`, `InvoiceDelivery`, scoped
+CustomerDocumentAccessGrant, and `Payment`; derive `UNPAID / PARTIALLY_PAID / PAID /
+OVERDUE` from document, due date, and net valid Payments. User-entered tax only.
+
+Authorization/tests: separate `invoice.view/manage/issue/void` and
+`payment.view/record/correct`; test cents/quantity/tax math, multiple Payments, derivation,
+void/reversal history, manual/external method, idempotency, public grant, and cross-tenant
+denial.
+
+Exit gate: Invoice and manual/external Payment work fully without a processor;
+PaymentRecord and PaymentSchedule do not exist; BTLS does not become a ledger or tax engine.
+
+---
+
+## 19 Revenue Exceptions and Operations Views
+
+Make next work and deterministic operating leakage visible without confusing it with
+growth Findings or contextual AttentionFlags.
+
+Dependencies: Features 09 and 16–18.
+
+UI: Revenue home and owner/director views organized by next actions, material exceptions,
+assigned work, follow-up, scheduling, billing, collections, customer care, and delivery
+failures; calm severity, reasons, snooze/dismiss/resolve paths, and drill-down.
+
+Logic/data: `BusinessExceptionDefinition`, `BusinessException`, deterministic evaluation
+and idempotent open/update/resolve behavior, Revenue Leak category/rule family, rebuildable
+summaries, and notification jobs where warranted.
+
+Tests/exit gate: Lead untouched, accepted Estimate unscheduled, Work Complete without
+Invoice, and Invoice overdue rules; action/flag/exception/Finding separation; rule-version
+history; false-positive/provider-failure behavior; sensitive revenue and tenant checks.
+The primary view answers what needs action, not merely KPI status.
+
+---
+
+## 20 Quick Capture — Text and Proposal Review
+
+Add natural-text capture as a confirmation-required Revenue input workflow distinct from Robin.
+
+Dependencies: Features 09 and 14–19.
+
+UI: text entry, source phrase, confidence, current/before and proposed/after values, new
+records, missing information, derived effects, proposal selection, dedicated consequential
+confirmations, apply result, and correction/compensation guidance. Proposal review always appears.
+
+Logic/data: `QuickCaptureRun`, typed `QuickCaptureMutationProposal`, structured OpenAI
+extraction behind adapter, runtime/business/context validation, explicit confirmation,
+normal application-service execution, audit/RevenueActivity/events, and no auto mode.
+
+Tests/exit gate: low confidence, missing/ambiguous facts, invalid/unauthorized proposal,
+duplicate apply, Payment + note example, no direct derived-state write, compensation, and
+cross-tenant denial. No proposal executes before human confirmation.
+
+---
+
+## 21 Voice Quick Capture and Generated Job Brief
+
+Extend confirmed Quick Capture to voice and add a cited, derived field-work summary.
+
+Dependencies: Features 06–07, 17, and 20; a provider decision for TranscriptionProvider.
+
+UI: responsive-web audio/file capture, transcription/review state, provider failure and
+retry, temporary-audio status, and Generated Job Brief with source links and
+non-authoritative label.
+
+Logic: provider-independent `TranscriptionProvider`, temporary shared MediaAsset cleanup,
+transcript-to-existing proposal flow, Generated Job Brief from trusted Customer/Estimate/
+Job/Invoice sources, and no new Job source of truth.
+
+Tests/exit gate: transcription failure/partial result, cleanup eligibility, confirmation
+still required, evidence/source fidelity, stale data, authorization, and property isolation.
+No native-mobile dependency or authoritative AI summary is introduced.
+
+---
+
+## 22 Review Requests and Lifecycle Automation
+
+Add basic post-work review requests and deterministic lifecycle follow-on jobs without
+turning them into operational gates.
+
+Dependencies: Features 07, 11, and 17–19.
+
+UI: review timing/defaults, scheduled/sent/delivered/failed state, customer communication
+history, retry/cancel where safe, and lifecycle automation visibility.
+
+Logic/data: `ReviewRequest`, idempotent scheduling/delivery, consent and communication
+services, business-hour/provider handling, deterministic exception/action evaluation, and
+audit/events. Review requests never gate Job completion or become reputation software.
+
+Tests/exit gate: duplicate prevention, consent/opt-out, provider failure, cancelled/closed
+work policy, anti-gating behavior, property isolation, and auditable delivery. One eligible
+completed Job can produce one controlled request.
+
+---
+
+## 23 Robin Automations
+
+Activate controlled automation only after the broader Revenue application services exist.
+
+Dependencies: Features 12–22; only implemented domain services may become tools.
+
+UI: automation outcomes, awaiting-human queue, upcoming actions, failures/handoffs, and
+mode/capability visibility.
+
+Logic: new-inquiry acknowledgment, employee notification, qualification and missing
+information, approved field/source updates, NextRequiredAction follow-up, re-engagement,
+approved Appointment scheduling, and approved Estimate/Job/Invoice/Payment-adjacent tools
+only where explicitly safe. Every action follows typed validation, property capability,
+mode, consent, duplicate, business-hour, application-service, and audit requirements.
+
+Tests/exit gate: complete mode/capability matrix, duplicate protection, consent, calendar
+and provider outage handoff, derived-state/financial/signature denial, no unfinished tool,
+and traceability to Customer/Conversation/owning record. No unrestricted autonomy exists.
+
+---
 # Phase 6 — Smart Blog Studio
 
-## 16 Content Foundation and Strategy
+## 24 Content Foundation and Strategy
 
 Create the content records and strategy workflow.
 
@@ -738,7 +832,7 @@ Exit gate:
 
 ---
 
-## 17 Article Editor and SEO Readiness
+## 25 Article Editor and SEO Readiness
 
 Build the production editor.
 
@@ -778,7 +872,7 @@ Exit gate:
 
 ---
 
-## 18 Internal Links, Publishing, and Playbook
+## 26 Internal Links, Publishing, and Playbook
 
 Complete the Smart Blog Studio workflow.
 
@@ -820,7 +914,7 @@ Exit gate:
 
 # Phase 7 — Website Data Foundation
 
-## 19 Integration Connections
+## 27 Integration Connections
 
 Build property-level Google integration onboarding and status.
 
@@ -858,7 +952,7 @@ Exit gate:
 
 ---
 
-## 20 Data Ingestion, Normalization, and Page Inventory
+## 28 Data Ingestion, Normalization, and Page Inventory
 
 Build the shared web-growth data pipeline.
 
@@ -903,7 +997,7 @@ Exit gate:
 
 ---
 
-## 21 Metric Engine and Baselines
+## 29 Metric Engine and Baselines
 
 Calculate the shared measurements used by Website and Content Intelligence and consumed by Search Operations where applicable.
 
@@ -943,7 +1037,7 @@ Exit gate:
 
 # Phase 8 — Website Intelligence
 
-## 22 Findings Engine
+## 30 Findings Engine
 
 Build the fixed evidence-backed diagnostic engine.
 
@@ -992,7 +1086,7 @@ Exit gate:
 
 ---
 
-## 23 Website Intelligence Interface
+## 31 Website Intelligence Interface
 
 Build the operator and client-facing Website Intelligence experience.
 
@@ -1031,7 +1125,7 @@ Exit gate:
 
 # Phase 9 — Content Intelligence
 
-## 24 Article Scorecards
+## 32 Article Scorecards
 
 Connect Smart Blog Studio strategy to real performance.
 
@@ -1068,7 +1162,7 @@ Exit gate:
 
 ---
 
-## 25 Content Findings
+## 33 Content Findings
 
 Build content-specific diagnostics and recommendations.
 
@@ -1106,7 +1200,7 @@ Exit gate:
 
 # Phase 10 — Shared Work Management
 
-## 26 Work Packages and Tickets
+## 34 Work Packages and Tickets
 
 Turn confirmed Findings into focused operator work.
 
@@ -1145,7 +1239,7 @@ Exit gate:
 
 ---
 
-## 27 Interventions and Before/After Measurement
+## 35 Interventions and Before/After Measurement
 
 Close the diagnosis-to-proof loop.
 
@@ -1187,7 +1281,7 @@ Exit gate:
 
 # Phase 11 — Search Operations Studio
 
-## 28 Search Program and Shared Vocabulary Foundation
+## 36 Search Program and Shared Vocabulary Foundation
 
 ### Objective
 
@@ -1201,14 +1295,15 @@ A BTLS operator can activate one property's SEO program, define what services an
 
 - Phase 2 tenancy/auth/property access
 - Phase 3 shared jobs/audit infrastructure
-- existing property settings
-- parent authorization model
+- Feature 08 shared PropertyService substrate when it was the first implementation consumer
+- Features 27–35 as applicable
+- existing property settings and parent authorization model
 
 ### Data
 
-Create or reuse canonical shared records:
+Reuse and, where Search requires it, extend canonical shared records:
 
-- `PropertyService`
+- `PropertyService` — never create a competing Search or Revenue service table
 - `BusinessLocation`
 - `ServiceArea`
 
@@ -1372,7 +1467,7 @@ Codex reports:
 
 ---
 
-## 29 Page Semantic Classification and Search Graph
+## 37 Page Semantic Classification and Search Graph
 
 ### Objective
 
@@ -1384,8 +1479,8 @@ An operator can classify a site once and the machine can reason about money page
 
 ### Dependencies
 
-- Feature 28
-- WebsitePage inventory from Feature 20 or seeded equivalent
+- Feature 36
+- WebsitePage inventory from Feature 28 or seeded equivalent
 
 ### Data
 
@@ -1517,7 +1612,7 @@ Include:
 
 ---
 
-## 30 Keyword Clusters and Search Targets
+## 38 Keyword Clusters and Search Targets
 
 ### Objective
 
@@ -1529,7 +1624,7 @@ BTLS can explicitly say what a client is trying to rank for, why it matters, and
 
 ### Dependencies
 
-- Features 28–29
+- Features 36–37
 - Search Console query data may exist but is not required to create manual targets.
 
 ### Data
@@ -1662,7 +1757,7 @@ Include:
 
 ---
 
-## 31 Market Coverage Workspace
+## 39 Market Coverage Workspace
 
 ### Objective
 
@@ -1674,8 +1769,8 @@ BTLS can see which important service/location opportunities are missing, weak, c
 
 ### Dependencies
 
-- Features 29–30
-- WebsitePage technical/indexability evidence may be partially mocked until Feature 34
+- Feature 38
+- WebsitePage technical/indexability evidence may be partially mocked until Feature 42
 - existing Search Console evidence
 
 ### Data
@@ -1796,7 +1891,7 @@ Include:
 
 ---
 
-## 32 Search Provider and Usage Foundation
+## 40 Search Provider and Usage Foundation
 
 ### Objective
 
@@ -1808,7 +1903,7 @@ BTLS can add ranking/crawl/authority vendors without contaminating feature code 
 
 ### Dependencies
 
-- Feature 28 SearchProgram policies
+- Feature 36 SearchProgram policies
 - shared IntegrationConnection/job infrastructure
 
 ### Data
@@ -1917,7 +2012,7 @@ Include:
 
 ---
 
-## 33 Organic and Local Ranking Evidence
+## 41 Organic and Local Ranking Evidence
 
 ### Objective
 
@@ -1929,7 +2024,7 @@ BTLS can prove whether important targets are gaining or losing visibility and ca
 
 ### Dependencies
 
-- Features 30–32
+- Features 38 and 40
 - BusinessLocation coordinates
 - selected rank provider(s)
 
@@ -2059,7 +2154,7 @@ Include:
 
 ---
 
-## 34 Site Inspection and Technical Audit
+## 42 Site Inspection and Technical Audit
 
 ### Objective
 
@@ -2071,7 +2166,7 @@ The machine detects mechanical SEO failures so the operator does not manually cr
 
 ### Dependencies
 
-- Feature 32 provider foundation
+- Features 37 and 40
 - WebsitePage inventory
 - SearchProgram
 - shared Finding infrastructure
@@ -2212,7 +2307,7 @@ Include:
 
 ---
 
-## 35 Content Authority and Internal Linking
+## 43 Content Authority and Internal Linking
 
 ### Objective
 
@@ -2224,7 +2319,7 @@ BTLS can find under-supported money pages, orphan content, missing links, and to
 
 ### Dependencies
 
-- Features 29–34
+- Features 37–42
 - Smart Blog Studio
 - Content Intelligence
 - current InternalLinkEdge graph
@@ -2338,7 +2433,7 @@ Include:
 
 ---
 
-## 36 Local Presence and External Authority Signals
+## 44 Local Presence and External Authority Signals
 
 ### Objective
 
@@ -2350,8 +2445,8 @@ BTLS can detect local-profile problems, citation inconsistencies, and meaningful
 
 ### Dependencies
 
-- Feature 32 provider foundation
-- Feature 33 local ranking
+- Features 36 and 40
+- Local ranking evidence from Feature 41 is reused when available
 - Google Business Profile normalized data
 
 ### Data
@@ -2458,7 +2553,7 @@ Include:
 
 ---
 
-## 37 Search Opportunity and Prioritization Engine
+## 45 Search Opportunity and Prioritization Engine
 
 ### Objective
 
@@ -2470,7 +2565,7 @@ The operator sees what is likely worth doing next instead of receiving every pos
 
 ### Dependencies
 
-- Features 31–36
+- Features 39–44
 - shared FindingDefinition/Finding infrastructure
 
 ### Data
@@ -2604,7 +2699,7 @@ Include:
 
 ---
 
-## 38 Search Work Integration
+## 46 Search Work Integration
 
 ### Objective
 
@@ -2616,8 +2711,8 @@ Search insight becomes actual controlled work without inventing another task man
 
 ### Dependencies
 
-- Feature 37
-- Work Management Features 26–27
+- Feature 45
+- Work Management Features 34–35
 - Smart Blog integration
 
 ### Data
@@ -2724,7 +2819,7 @@ Include:
 
 ---
 
-## 39 Fulfillment Cycles and Delivery Proof
+## 47 Fulfillment Cycles and Delivery Proof
 
 ### Objective
 
@@ -2736,7 +2831,7 @@ The machine knows what each client is owed this cycle and prevents recurring ful
 
 ### Dependencies
 
-- Features 28–38
+- Features 36 and 46
 
 ### Data
 
@@ -2862,7 +2957,7 @@ Include:
 
 ---
 
-## 40 Portfolio Exception Operations
+## 48 Portfolio Exception Operations
 
 ### Objective
 
@@ -2874,7 +2969,7 @@ This is the core agency leverage: the machine watches the portfolio and routes h
 
 ### Dependencies
 
-- Feature 39
+- Feature 47
 - all evidence/Findings needed for health calculation
 
 ### Data
@@ -2997,7 +3092,7 @@ Include:
 
 ---
 
-## 41 Bounded Optimization Execution
+## 49 Bounded Optimization Execution
 
 ### Objective
 
@@ -3009,7 +3104,7 @@ Routine fixes stop consuming human production time while risky or strategic deci
 
 ### Dependencies
 
-- Features 34, 37–40
+- Features 46–48
 - Work Management
 - managed-site capability contract
 
@@ -3166,7 +3261,7 @@ Include:
 
 ---
 
-## 42 Fleet Remediation
+## 50 Fleet Remediation
 
 ### Objective
 
@@ -3178,7 +3273,7 @@ A defect affecting dozens of BTLS-built sites can become one platform remediatio
 
 ### Dependencies
 
-- Feature 41
+- Feature 49
 - BTLS-managed site architecture
 - platform authorization
 
@@ -3279,7 +3374,7 @@ Include:
 
 ---
 
-## 43 Search Measurement and Business Outcomes
+## 51 Search Measurement and Business Outcomes
 
 ### Objective
 
@@ -3291,7 +3386,7 @@ BTLS can stop doing SEO blindly and can show clients whether work was followed b
 
 ### Dependencies
 
-- Features 33–42
+- Features 29, 35, and 47–50
 - Work Management MeasurementReview
 - Website Intelligence metrics
 - Revenue Operations outcomes
@@ -3304,7 +3399,7 @@ Reuse:
 - `SearchInterventionScope`
 - rank/grid evidence;
 - Search Console/GA4 metrics;
-- Lead/Job/Payment records.
+- Revenue Lead/Estimate/Job/Invoice/Payment records as implemented.
 
 Add only Search-specific measurement snapshot/reference data if required for reproducibility.
 
@@ -3323,10 +3418,10 @@ Intervention measurement:
 - Search Console change;
 - organic traffic;
 - commercial actions;
-- attributed leads;
-- qualified leads;
-- won leads;
-- confirmed revenue;
+- attributed and qualified Leads;
+- accepted Estimates or authorized Jobs where defensible;
+- issued Invoice context where useful;
+- collected Payment revenue;
 - evidence confidence;
 - result:
 
@@ -3450,19 +3545,21 @@ Include:
 
 # Phase 12 — Command Center Completion
 
-## 44 Property Overview
+## 52 Property Overview
 
-Create the property-level summary across both studios.
+Create the property-level summary across all studios.
+
+Dependencies: Features 19, 29–35, and 51.
 
 UI:
 
-- New inquiries
-- leads awaiting response
-- overdue follow-ups
-- estimates awaiting decisions
-- recent wins and losses
-- calls and forms
-- top sources
+- Priority NextRequiredActions and material BusinessExceptions
+- New inquiries and Leads awaiting response
+- accepted work awaiting scheduling
+- active and work-complete Jobs
+- uninvoiced work and unpaid/overdue balances
+- communication/provider failures
+- recent outcomes, calls/forms, and top sources
 - Visibility Health
 - Conversion Health
 - important Findings
@@ -3499,16 +3596,19 @@ Exit gate:
 
 ---
 
-## 45 BTLS Cross-Property Overview
+## 53 BTLS Cross-Property Overview
 
 Give BTLS operators one place to manage the client portfolio.
+
+Dependencies: Feature 52 and explicit cross-property platform authorization.
 
 UI:
 
 - Property ledger
 - property search and filters
-- unanswered leads
-- failed integrations
+- unanswered Leads and overdue next actions
+- material Revenue BusinessExceptions and unpaid/overdue summaries
+- failed integrations and communication/provider jobs
 - Robin handoffs
 - unreviewed Findings
 - overdue work
@@ -3545,7 +3645,7 @@ Exit gate:
 
 # Phase 13 — Production Hardening and Launch
 
-## 46 Security and Data Protection Review
+## 54 Security and Data Protection Review
 
 Validate production safeguards across the system.
 
@@ -3590,7 +3690,7 @@ Exit gate:
 
 ---
 
-## 47 Reliability, Performance, and Accessibility
+## 55 Reliability, Performance, and Accessibility
 
 Prepare the product for sustained operation.
 
@@ -3637,7 +3737,7 @@ Exit gate:
 
 ---
 
-## 48 Release Readiness
+## 56 Release Readiness
 
 Complete staging and production launch preparation.
 
@@ -3698,7 +3798,7 @@ Do not break this phase into implementation tasks yet.
 | 2 | Tenancy, Authentication, and Property Management | 3 |
 | 3 | Shared Infrastructure | 2 |
 | 4 | Revenue Operations Foundation | 4 |
-| 5 | Conversations and Robin Foundation | 4 |
+| 5 | Revenue Operations and Robin Core | 12 |
 | 6 | Smart Blog Studio | 3 |
 | 7 | Website Data Foundation | 3 |
 | 8 | Website Intelligence | 2 |
@@ -3707,7 +3807,7 @@ Do not break this phase into implementation tasks yet.
 | 11 | Search Operations Studio | 16 |
 | 12 | Command Center Completion | 2 |
 | 13 | Production Hardening and Launch | 3 |
-| **Total** |  | **48** |
+| **Total** |  | **56** |
 
 Post-MVP: Revenue Operations Mobile Application — deferred; no implementation tasks are defined.
 
@@ -3750,7 +3850,7 @@ Every numbered feature should receive a concise implementation specification con
 - Acceptance criteria
 - Documentation updates
 
-For Search Operations Features 28–43, the feature specification must also state:
+For Search Operations Features 36–51, the feature specification must also state:
 
 - Enums and lifecycle states
 - Constraints and indexes
@@ -3787,7 +3887,7 @@ After each numbered feature, Codex must report:
 - Deferred work
 - Exit-gate result
 
-For Search Operations Features 28–43, also report:
+For Search Operations Features 36–51, also report:
 
 - Constraints/indexes added or changed
 - Provider decisions

@@ -25,6 +25,11 @@ The BTLS MVP contains three product studios and six primary product components.
 4. **Revenue Operations / Command Center**
 5. **Robin AI Automation Agent**
 
+Revenue Operations is the supported service-business customer, sales, scheduling,
+field-operation, invoicing, payment-tracking, and lifecycle operating system inside
+BTLS. Its durable domain may be relationally rich, but the normal worker path must
+remain action driven and simple.
+
 ### Search Operations Studio
 
 6. **Search Operations / Fulfillment**
@@ -56,6 +61,11 @@ The MVP does not include:
 - Predictive analytics
 - Cross-client benchmarking
 - Full project-management software
+- A universal CRM or general ERP
+- General accounting, general ledger, bank reconciliation, payroll, or tax accounting
+- Inventory-suite or advanced dispatch/route-optimization behavior
+- An automatic tax-compliance engine
+- A native offline field application during the MVP
 - Unbounded or AI-directed automatic website modification
 - Unapproved autonomous AI actions
 
@@ -103,6 +113,24 @@ Search Operations may execute bounded website actions only through the approved 
 12. **Fulfillment orchestration stays separate from diagnosis**  
     Website and Content Intelligence determine evidence-backed conditions. Search Operations owns recurring search-program fulfillment, portfolio exceptions, and bounded execution. Work Management remains the shared execution and measurement record.
 
+13. **Robust underneath; simple in front**
+    Durable relational truth must not force ordinary users to perform unnecessary clerical work. Advanced Revenue detail uses defaults and progressive disclosure.
+
+14. **Derived state beats duplicated manual status**
+    Persist the source facts that happened and derive summaries such as delivery, payment, overdue, coverage, and health when reality permits.
+
+15. **Commercial history becomes immutable when issued or accepted**
+    Current catalog, agreement, or template changes never rewrite issued, signed, or otherwise historical commercial truth.
+
+16. **Natural-language capture proposes before mutation**
+    AI extraction produces typed, validated proposals. Consequential proposals are reviewed before normal application services execute them.
+
+17. **Operational financial truth is not accounting truth**
+    BTLS records estimates, authorized work, invoices, payments, balances, and collected revenue without becoming a ledger, payroll, or tax-accounting system.
+
+18. **Provider-independent operational truth**
+    A provider may execute or project a capability without becoming the source of the underlying BTLS business fact.
+
 ---
 
 ## 3. Stack
@@ -121,10 +149,10 @@ Search Operations may execute bounded website actions only through the approved 
 | Runtime validation | Zod | Validation at all server and external trust boundaries |
 | File storage | Supabase Storage | Public media and private attachments |
 | Background jobs | Inngest | Durable jobs, schedules, retries, and event-driven workflows |
-| AI provider | OpenAI API behind a BTLS adapter | Robin reasoning, extraction, and message generation |
-| Email | Postmark behind a BTLS adapter | Transactional and lead communication email |
-| SMS | Twilio behind a BTLS adapter | Permissioned lead communication |
-| Calendar | Cronofy behind a BTLS adapter | Availability and approved appointment scheduling |
+| AI provider | OpenAI API behind a BTLS adapter | Robin reasoning plus bounded Quick Capture extraction and derived summaries |
+| Email | Postmark behind a BTLS adapter | Transactional and customer communication email |
+| SMS | Twilio behind a BTLS adapter | Permissioned Customer/Contact communication |
+| Calendar | Cronofy behind a BTLS adapter | Availability and external projection/synchronization of BTLS schedule truth |
 | Web analytics | Google Analytics Data API | Website behavior and events |
 | Search data | Google Search Console API | Queries, pages, impressions, clicks, CTR, position |
 | Local presence | Google Business Profile APIs | Local visibility and interaction metrics |
@@ -233,6 +261,15 @@ No browser component, Server Action, Route Handler, job handler, or AI tool shou
 │   │
 │   ├── features/
 │   │   ├── revenue-operations/
+│   │   │   ├── customers/
+│   │   │   ├── opportunities/
+│   │   │   ├── communications/
+│   │   │   ├── scheduling/
+│   │   │   ├── estimates/
+│   │   │   ├── field-operations/
+│   │   │   ├── billing/
+│   │   │   ├── intelligence/
+│   │   │   ├── quick-capture/
 │   │   │   ├── components/
 │   │   │   ├── actions/
 │   │   │   ├── queries/
@@ -418,6 +455,7 @@ No browser component, Server Action, Route Handler, job handler, or AI tool shou
 - `supabase/` owns RLS policies and Supabase-specific SQL/configuration that Prisma cannot express safely.
 - `tests/` contains cross-feature integration and end-to-end coverage.
 - `work-management/` is shared because Website Intelligence, Content Intelligence, and Search Operations use Findings, Work Packages, tickets, interventions, and measurement reviews.
+- Revenue Operations remains one product feature root. Its internal subdomains are permitted seams as complexity appears, not separate products or folders that must be created in advance.
 
 ---
 
@@ -431,6 +469,7 @@ No browser component, Server Action, Route Handler, job handler, or AI tool shou
 | Feature queries | Read-oriented feature APIs and DTO construction | Cross-tenant access, provider-specific parsing |
 | Feature services | Business rules, workflow orchestration, transactions, audit/event dispatch | Rendering or provider SDK leakage |
 | `work-management/` | Shared Finding-to-work lifecycle | Website, Content, or Search rule calculation |
+| `revenue-operations/` | End-customer, opportunity, communication, scheduling, commercial, field-work, billing, operational-attention, time, and Quick Capture truth | Client tenancy, shared MediaAsset byte lifecycle, provider credentials, growth Findings, or general accounting/payroll |
 | `search-operations/` | Search strategy, recurring SEO fulfillment, Search-specific evidence/rules, portfolio exceptions, and bounded optimization requests | Duplicate analytics ingestion, duplicate tickets/interventions, billing truth, unrestricted site mutation |
 | `src/server/auth/` | Session resolution, capabilities, property access | Feature-specific business rules |
 | `src/server/database/` | Prisma client, tenant context, transaction helpers | Feature workflows |
@@ -463,8 +502,10 @@ BTLS platform
 
 ### Definitions
 
-- **ClientAccount** represents the customer relationship or business organization.
+- **ClientAccount** represents the organization or business subscribing to BTLS. It is not a Revenue Operations `Customer`.
 - **ClientProperty** represents one business website and its connected operating data.
+- **Customer** represents that client's end customer inside one ClientProperty.
+- **BusinessLocation** represents the subscribing business's own operating/search location. A Revenue `ServiceLocation` represents an end-customer location where service may be delivered.
 - A client account may own multiple properties.
 - Major operational, content, intelligence, integration, and automation records belong to a `ClientProperty`.
 - Users receive access through explicit membership and property permissions.
@@ -530,6 +571,36 @@ lead.view
 lead.update
 lead.assign
 revenue.view
+customer.view
+customer.manage
+employee.view
+employee.manage
+time.use_self
+time.manage_team
+communication.view
+communication.send
+schedule.view
+schedule.manage
+pricebook.view
+pricebook.manage
+estimate.view
+estimate.manage
+estimate.issue
+job.view
+job.manage
+job.close
+invoice.view
+invoice.manage
+invoice.issue
+invoice.void
+payment.view
+payment.record
+payment.correct
+attention.view
+attention.manage
+quick_capture.use
+service_issue.manage
+review_request.manage
 content.view
 content.edit
 content.publish
@@ -558,6 +629,11 @@ search.fleet.manage
 ```
 
 Roles bundle capabilities; services check capabilities rather than relying only on role names.
+
+Exact Revenue capabilities are added with the feature that owns them. The architecture
+must preserve meaningful separations such as `revenue.view != payment.record`,
+`payment.record != payment.correct`, `invoice.issue != invoice.void`, and
+`time.use_self != time.manage_team`; this list is not permission seed data.
 
 ### Role classes
 
@@ -702,7 +778,8 @@ The Prisma schema is the executable source of truth. This section defines the in
 | Entity | Purpose | Key relationships |
 |---|---|---|
 | `IntegrationConnection` | Connection status and provider metadata | Property, provider |
-| `MediaAsset` | Ownership and metadata for stored files | Property, uploader, feature record |
+| `SendingIdentity` | Shared verified sender identity and mode, separate from provider credentials and Revenue defaults | Property/integration configuration |
+| `MediaAsset` | Shared ownership and metadata for stored files | Property, uploader, owning-feature relationships |
 | `AuditEvent` | Append-only history of sensitive actions | Actor, property, subject |
 | `Notification` | In-app notification and delivery status | User, property |
 | `WebhookReceipt` | Idempotency and processing history | Provider, external event ID |
@@ -710,17 +787,63 @@ The Prisma schema is the executable source of truth. This section defines the in
 
 ### Revenue Operations
 
+Revenue Operations owns service-business operating truth inside a property. Exact Prisma
+fields and joins are specified in the feature that introduces them; the ownership and
+history boundaries below are binding.
+
 | Entity | Purpose | Key relationships |
 |---|---|---|
-| `Contact` | A person or organization known to the client | May have multiple leads |
-| `Lead` | One commercial opportunity | Contact, property, activities, estimate/job/payment |
-| `LeadActivity` | Communication and lifecycle timeline | Lead, actor |
-| `FollowUpTask` | Human or Robin follow-up work | Lead, assignee |
-| `Estimate` | Proposed work and value | Lead |
-| `Job` | Fulfillment after a won sale | Lead |
-| `PaymentRecord` | Payment state and confirmed value | Lead and/or job |
+| `Customer` | Durable operational end-customer parent | Property, Contacts, locations, opportunities, communications, commercial and work records |
+| `Contact` | Person associated with a Customer | Customer, endpoints, consent, Conversations |
+| `ServiceLocation` | End-customer place where service may occur | Customer, optional ServiceAssets, Appointments, Jobs |
+| `ServiceAsset` | Optional basic customer equipment/item context | Customer, ServiceLocation, Jobs, service history |
+| `Tag` and explicit assignments | Property-defined flexible classification | Customer, Lead, or other approved Revenue subjects |
+| `RevenueOperationsSettings` | Property Revenue defaults and references | Property; may reference shared SendingIdentity but never owns provider credentials |
+| `EmployeeProfile` | Revenue workforce identity separate from AppUser login identity | Property, optional AppUser, assignments, TimeEntries |
+| `TimeEntry` | Basic clock-in/out work record | EmployeeProfile, optional Job/JobVisit, audited corrections |
+| `Lead` | One commercial opportunity with sales-stage truth only | Customer, Contact, PropertyService, owner, attribution |
+| `RevenueActivity` | Append-only cross-lifecycle operating history | Customer plus optional Lead/Estimate/Appointment/Job/Invoice context |
+| `RevenueNote` | Human-authored Revenue note distinct from customer communication | Customer plus optional operational context |
+| `NextRequiredAction` | Canonical next work for a supported Revenue subject | Customer/Lead/Estimate/Job/Invoice, assignee |
+| `AttentionFlag` | Contextual human/rule/AI concern | Revenue subject, creator/source |
+| `BusinessExceptionDefinition` | Stable deterministic operating-rule identity/version | BusinessException history |
+| `BusinessException` | Current or historical deterministic condition such as stale, unscheduled, uninvoiced, or overdue work | Definition, property, Revenue subject |
+| `Appointment` | Sales, evaluation, or consultation schedule truth | Customer, Contact, optional Lead/Estimate, assignments |
+| `Conversation` | Customer-owned, Contact-specific, channel/route-scoped communication thread | Required Customer and primary Contact, Messages |
+| `Message` | Inbound/outbound communication item and provider evidence | Conversation plus optional Lead/Estimate/Appointment/Job/Invoice context |
+| `Pricebook` | Revenue drafting catalog | Property, PricebookItems |
+| `PricebookItem` | Reusable priced drafting item, optionally linked to shared PropertyService | Pricebook; snapshots into commercial line items |
+| `AgreementTemplate` | Reusable current agreement source for drafting | Property; snapshots into Estimate revisions |
+| `Estimate` | Stable commercial identity | Customer, Lead, revisions, delivery, acceptance |
+| `EstimateRevision` | Versioned commercial content | Estimate, line-item and agreement snapshots |
+| `EstimateLineItem` | Historical line snapshot for one revision | EstimateRevision, optional PricebookItem provenance |
+| `EstimateAgreementSnapshot` | Historical agreement text for one revision | EstimateRevision, optional template provenance |
+| `EstimateDelivery` | One Estimate send/presentation attempt | Exact EstimateRevision, Message/provider correlation |
+| `EstimateViewEvent` | Customer document-view evidence | Exact EstimateRevision and scoped grant |
+| `EstimateAcceptance` | Signature/acceptance evidence bound to one exact revision | EstimateRevision, signer evidence, shared MediaAsset/artifact references |
+| `CustomerDocumentAccessGrant` | Scoped, expiring/revocable public access authority | Exact Estimate or Invoice document/version |
+| `Job` | Authorized service work and provenance | Customer, ServiceLocation, accepted Estimate or authorized manual source |
+| `JobVisit` | One scheduled field-fulfillment visit | Job, schedule, assignments |
+| `JobTask` | Narrow checklist within a service Job | Job/JobVisit; never shared WorkTicket work |
+| `ChangeOrder` | Material post-acceptance scope/price change | Job, immutable issued/accepted commercial snapshots |
+| `ServiceIssue` | Basic callback/quality/service concern | Customer, Job, optional evidence MediaAssets |
+| `Invoice` | Commercial billing document truth | Customer, Job, immutable issued lines, deliveries, Payments |
+| `InvoiceLineItem` | Historical issued invoice line snapshot | Invoice, optional source provenance |
+| `InvoiceDelivery` | One Invoice delivery attempt | Invoice, Message/provider correlation |
+| `Payment` | Factual money received or explicit reversal/correction | Invoice, method/date/reference; provider linkage optional |
+| `ReviewRequest` | Basic post-work review request without operational gating | Customer, Job, communication evidence |
+| `QuickCaptureRun` | One natural-language/text/voice capture and review context | Property, actor, source MediaAsset when applicable |
+| `QuickCaptureMutationProposal` | Typed proposed source mutation with confidence and before/after preview | QuickCaptureRun; applies only after confirmation through normal services |
 
-The parent `Lead.status` remains the source of the opportunity lifecycle. Estimate, job, and payment records contain their own operational details without creating competing lead-status systems.
+Canonical distinctions:
+
+- `ClientAccount` is the business subscribing to BTLS; `Customer` is that business's end customer.
+- `BusinessLocation` is the client's own business/search location; `ServiceLocation` is an end-customer work location.
+- Shared `PropertyService` is the identity of what the business offers. `PricebookItem` may reference it but never replaces it.
+- Shared `MediaAsset` owns file-byte lifecycle. Revenue owns explicit contextual relationships only.
+- `JobTask != WorkTicketTask` and `BusinessException != Finding`.
+- Revenue Leak is a `BusinessException` rule family/category, not another model.
+- Generated Job Brief, customer journey views, Estimate intelligence, and Invoice payment/overdue states are derived projections, not competing source records.
 
 ### Robin
 
@@ -728,10 +851,12 @@ The parent `Lead.status` remains the source of the opportunity lifecycle. Estima
 |---|---|---|
 | `BusinessKnowledgePack` | Approved facts Robin may use | Property, version |
 | `RobinConfiguration` | Modes, tools, hours, and capability settings | Property |
-| `Conversation` | Lead communication thread | Lead, property |
-| `Message` | Inbound/outbound communication item | Conversation |
-| `RobinRun` | One agent reasoning/execution session | Lead, property, configuration version |
+| `RobinRun` | One agent reasoning/execution session | Customer/Lead context, property, configuration version |
 | `RobinAction` | Proposed or executed typed tool action | Robin run, approval, result |
+
+Conversation and Message belong to Revenue Operations communication truth. Robin may
+consume them and send through the same authorized application services as a human, but
+Robin does not own or bypass their consent, threading, or provider rules.
 
 ### Smart Blog Studio
 
@@ -763,6 +888,12 @@ The parent `Lead.status` remains the source of the opportunity lifecycle. Estima
 | `ServiceArea` | Geographic market the business serves or intentionally targets | Property |
 
 Search priority does not belong on these shared records. Search-specific commercial and market priority belongs to `SearchProgram`. If implementation already contains equivalent canonical models, those existing names remain authoritative and Search Operations must reuse them.
+
+If `PropertyService` has not been implemented when Feature 08 begins, Feature 08 may
+introduce only the minimal already-canonical shared substrate as a prerequisite slice.
+That timing does not transfer ownership to Revenue Operations. Search Feature 36 reuses
+and may extend the same shared record while preserving Search-specific
+BusinessLocation/ServiceArea behavior and internal Search feature order.
 
 ### Search Operations
 
@@ -850,34 +981,131 @@ Client website form
 → payload validation
 → property resolved through public form key
 → idempotency check
-→ contact matched or created
-→ lead created
-→ activity recorded
+→ Customer and person-only Contact safely matched or created
+→ one Lead opportunity created
+→ RevenueActivity recorded
 → lead.created event published
-→ employee notification and Robin job dispatched
+→ employee notification and eligible Robin job dispatched
 → safe success response
 ```
 
-Public forms never accept a privileged property ID as proof of destination. They use a revocable public form identifier mapped server-side to the property.
+Public forms never accept a privileged property ID as proof of destination. They use a
+revocable public form identifier mapped server-side to the property. Matching rules must
+not silently merge ambiguous end customers or people.
 
-### 11.4 Robin lead response
+### 11.4 Customer communication
 
 ```text
-lead.created or follow-up-due event
+Authorized human or Robin requests a send
+→ required Customer and primary Contact resolved
+→ consent, endpoint, property route, capability, and idempotency checked
+→ Customer/Contact Conversation resolved for the concrete channel/route
+→ provider adapter executes
+→ Message and provider correlation persisted
+→ RevenueActivity records optional Lead/Estimate/Appointment/Job/Invoice context
+→ callbacks update delivery evidence idempotently
+```
+
+For SMS, the receiving property number plus normalized Contact phone resolves the
+Customer/Contact Conversation. An unmatched inbound SMS preserves verified provider
+receipt evidence and enters bounded resolution; it never guesses or creates ownership.
+Outbound email may appear in the same Customer communication history, but inbound email
+synchronization remains deferred.
+
+### 11.5 Estimate issue and acceptance
+
+```text
+Known Customer and obvious/default Contact selected
+→ optional ServiceLocation and Pricebook defaults applied
+→ Estimate draft and mutable draft revision created
+→ line items and agreement content snapshotted
+→ exact revision issued and becomes immutable
+→ scoped CustomerDocumentAccessGrant created
+→ EstimateDelivery records presentation/send attempts
+→ customer may view Agreement and sign/accept that exact current revision
+→ EstimateAcceptance persists signer/signature evidence
+→ signed artifact generation follows through shared MediaAsset
+→ linked Lead may transition to WON through the acceptance service
+```
+
+A superseded or stale revision cannot be accepted as current. Customers cannot edit,
+comment, request revisions, or publicly reject in MVP. Artifact-generation failure does
+not erase authoritative database acceptance. Material post-acceptance change uses
+ChangeOrder.
+
+### 11.6 Authorized Job and field work
+
+```text
+Accepted Estimate or authorized manual workflow
+→ Job resolved or created with provenance
+→ Start work makes Job IN_PROGRESS
+→ optional JobVisit, assignments, notes, tasks, assets, and MediaAsset evidence
+→ Work complete makes Job WORK_COMPLETE
+→ authorized Close makes Job CLOSED
+```
+
+The simple path does not require JobVisit, ServiceAsset, photos, notes, tasks, or a
+closeout wizard unless a later explicit property policy requires them.
+
+### 11.7 Invoice and Payment
+
+```text
+Authorized completed/active work
+→ Invoice draft and line snapshots created
+→ user-entered tax inputs included only when supplied
+→ Invoice issued and financial content becomes immutable
+→ InvoiceDelivery records send attempts
+→ one or more factual Payments recorded
+→ net collected and remaining balance calculated
+→ UNPAID / PARTIALLY_PAID / PAID derived
+→ OVERDUE derived from issued document + due date + remaining balance
+```
+
+Manual or externally processed money is a complete MVP path. A payment processor is
+optional. Mistakes use explicit reversal/correction; voided commercial documents use a
+traceable replacement flow. BTLS performs arithmetic on user-entered tax data but does
+not determine jurisdiction, taxability, or statutory rates.
+
+### 11.8 Quick Capture
+
+```text
+Natural text or voice
+→ transcription when required
+→ structured extraction
+→ typed mutation proposals
+→ runtime, authorization, and business-context validation
+→ persisted confidence and before/after preview
+→ proposal window always shown
+→ human confirms selected proposals
+→ normal application services execute source mutations
+→ audit, RevenueActivity, and internal events persist
+```
+
+Quick Capture has no automatic mode and is not Robin. It proposes facts such as creating
+a Payment or adding a Job note; it never directly writes derived payment, overdue, or
+lifecycle state. Consequential Undo uses reversal, void, replacement, or other
+compensating operations.
+
+### 11.9 Robin-assisted Revenue action
+
+```text
+Eligible Revenue event or due action
 → durable Robin job
-→ property configuration loaded
-→ Knowledge Pack and workflow version loaded
+→ property configuration, Customer context, Knowledge Pack, and workflow version loaded
 → duplicate-action check
 → AI produces typed proposed tool action
 → Zod validates tool arguments
-→ capability and automation-mode checks
-→ approval requested or action executed
-→ application service performs mutation/provider call
-→ message, RobinRun, RobinAction, and LeadActivity recorded
+→ property capability, mode, consent, and business-hour checks
+→ approval requested or approved action executed
+→ normal Revenue application service performs mutation/provider call
+→ Message/RevenueActivity, RobinRun, RobinAction, and audit evidence recorded
 → human handoff created when required
 ```
 
-### 11.5 Content creation and publication
+Robin exposes only already-implemented application services. It cannot fabricate
+signature or Payment truth, set derived state directly, or own Conversation/Message.
+
+### 11.10 Content creation and publication
 
 ```text
 Content strategy brief
@@ -894,7 +1122,7 @@ Content strategy brief
 
 A publishing adapter allows BTLS-built sites and supported external CMS targets to use different implementations without changing Smart Blog Studio workflows.
 
-### 11.6 Website data ingestion
+### 11.11 Website data ingestion
 
 ```text
 Scheduled integration job
@@ -908,7 +1136,7 @@ Scheduled integration job
 → Finding evaluation job dispatched
 ```
 
-### 11.7 Finding evaluation
+### 11.12 Finding evaluation
 
 ```text
 Normalized metrics
@@ -923,7 +1151,7 @@ Normalized metrics
 
 AI may explain a Finding, but deterministic application rules decide whether it activates.
 
-### 11.8 Finding-to-work loop
+### 11.13 Finding-to-work loop
 
 ```text
 Finding detected
@@ -938,7 +1166,7 @@ Finding detected
 → Finding resolved, monitored, or reopened
 ```
 
-### 11.9 File upload
+### 11.14 File upload
 
 ```text
 User requests upload
@@ -952,7 +1180,7 @@ User requests upload
 
 ---
 
-### 11.10 Search Operations recurring fulfillment
+### 11.15 Search Operations recurring fulfillment
 
 ```text
 SearchProgram active
@@ -970,7 +1198,7 @@ SearchProgram active
 → MeasurementReview later evaluates performance outcome
 ```
 
-### 11.11 Bounded Search optimization
+### 11.16 Bounded Search optimization
 
 ```text
 Approved Search work requests an action
@@ -997,8 +1225,8 @@ The database owns file metadata and relationships. Supabase Storage owns file by
 |---|---|---|---|
 | `public-media` | Public | `{propertyId}/brand/{assetId}/{filename}` | Client logos and approved public brand assets |
 | `public-content` | Public | `{propertyId}/content/{contentAssetId}/{assetId}/{filename}` | Published article images and featured images |
-| `private-media` | Private | `{propertyId}/{category}/{recordId}/{assetId}/{filename}` | Lead attachments, work evidence, internal screenshots, Knowledge Pack files |
-| `temporary-uploads` | Private | `{propertyId}/{uploadId}/{filename}` | Unfinalized or pending-validation uploads |
+| `private-media` | Private | `{propertyId}/{purpose}/{assetId}/{filename}` | Attachments, signatures, commercial artifacts, field evidence, internal screenshots, Knowledge Pack files |
+| `temporary-uploads` | Private | `{propertyId}/{uploadId}/{filename}` | Unfinalized, pending-validation, or cleanup-eligible temporary inputs such as future Quick Capture audio |
 
 ### Storage rules
 
@@ -1007,10 +1235,15 @@ The database owns file metadata and relationships. Supabase Storage owns file by
 - Private files require server-authorized signed access.
 - Public status is an explicit application decision.
 - Upload type, size, ownership, and intended use are validated before authorization.
+- Storage authorization/finalization uses property scope plus server-owned purpose/target metadata; it does not require every future owning Revenue record to exist before upload begins.
+- Finalized bytes are never overwritten in place. Replacement finalizes a new MediaAsset and later changes the owning relationship.
+- Generic semantics distinguish public/private, temporary/durable, ordinary attachment, and durable evidence/generated document without one purpose value per Revenue noun.
 - Removing a database relationship does not silently delete a reusable file.
-- Orphan cleanup runs as a scheduled background job.
+- Orphan and cleanup-eligible temporary uploads are processed by scheduled background jobs; owning features decide business retention.
 - Published content should not depend on short-lived signed URLs.
+- Private access remains compatible with property authorization plus owning-record authorization and short-lived signed delivery.
 - Client users cannot list or access another property's paths.
+- Shared MediaAsset supports future signatures, signed Estimate artifacts, customer/location/asset/job photos, ServiceIssue evidence, temporary capture audio, and commercial documents without prebuilding Revenue attachment models.
 
 ---
 
@@ -1064,6 +1297,21 @@ Every connection tracks:
 - Refresh is handled inside the provider adapter.
 - Disconnecting revokes or clears credentials and pauses dependent jobs.
 
+### Communication and scheduling provider boundaries
+
+- `EmailProvider` accepts a normalized shared `SendingIdentity`, display name, Reply-To, recipients, business correlation, and idempotency input. Postmark remains the outbound implementation.
+- Sending modes are `BTLS_MANAGED`, `CUSTOM_DOMAIN`, and deferred `CONNECTED_MAILBOX`. `BTLS_MANAGED` uses a verified BTLS-owned From identity and may use a client's Gmail, Yahoo, or custom address as Reply-To.
+- `SmsProvider` executes Customer/Contact messaging only after consent, property-number routing, and idempotency checks. Twilio remains the implementation.
+- BTLS `Appointment` and `JobVisit` records are operational schedule truth. Cronofy supplies availability and external calendar projection/synchronization; provider failure never erases valid BTLS schedule state.
+
+### Deferred Revenue capability interfaces
+
+The architecture recognizes replaceable `PaymentProvider`, `AddressLookupProvider`, and
+`TranscriptionProvider` boundaries without selecting vendors. Manual ServiceLocation
+entry, manual/external Payment recording, and text Quick Capture remain complete paths.
+Signature capture and commercial document generation do not require an external SaaS
+provider.
+
 ### Search Operations provider interfaces
 
 Search Operations uses BTLS-owned contracts for provider-intensive capabilities:
@@ -1096,9 +1344,19 @@ Internal events decouple completed business facts from follow-on work.
 Examples:
 
 ```text
+customer.created
 lead.created
-lead.status_changed
-lead.follow_up_due
+lead.stage_changed
+next_required_action.due
+appointment.scheduled
+estimate.revision_issued
+estimate.accepted
+job.work_completed
+invoice.issued
+payment.recorded
+business_exception.opened
+review_request.sent
+quick_capture.applied
 
 content.created
 content.published
@@ -1176,11 +1434,16 @@ Use background jobs for:
 - Data normalization
 - Finding evaluation
 - Content-performance calculations
-- Robin acknowledgments and follow-ups
-- Notification delivery
+- Robin acknowledgments and approved follow-ups
+- Notification and Message delivery
+- Estimate and Invoice delivery and signed-document generation
+- External calendar projection/synchronization
+- BusinessException evaluation
+- Quick Capture extraction/transcription follow-on work
+- ReviewRequest delivery
 - Measurement reviews
 - Webhook follow-on work
-- Orphaned-file cleanup
+- Orphaned-file and temporary-upload cleanup
 - Search keyword-metric refresh
 - Organic rank refresh
 - Local rank-grid refresh
@@ -1314,54 +1577,371 @@ It does not duplicate integration connections, ticketing, or measurement infrast
 
 ## 19. Revenue Operations Architecture
 
-Revenue Operations owns:
+Revenue Operations is the service-business operating core for end customers,
+opportunities, communication, scheduling, Estimates and acceptance, authorized field
+work, Invoices and Payments, next work, operating exceptions, basic time tracking, and
+bounded natural-language capture.
 
-- Contacts
-- Leads
-- Lead attribution
-- Opportunity lifecycle
-- Estimates
-- Jobs
-- Payments
-- Follow-up tasks
-- Conversation/activity timeline
-- Operational and revenue reporting
-
-### Lead lifecycle
+It owns:
 
 ```text
-New
-→ Contacted
-→ Qualified
-→ Estimate Scheduled
-→ Estimate Sent
-→ Follow-Up
-→ Sale Won
+Customer / Contact
+ServiceLocation / optional ServiceAsset
+Lead
+RevenueActivity / RevenueNote / Tags
+Conversation / Message
+RevenueOperationsSettings
+EmployeeProfile / TimeEntry
+Appointment
+Pricebook / PricebookItem
+AgreementTemplate
+Estimate aggregate and customer access/acceptance evidence
+Job / JobVisit / JobTask / ChangeOrder / ServiceIssue
+Invoice / Payment
+NextRequiredAction / AttentionFlag / BusinessException
+ReviewRequest
+QuickCaptureRun / QuickCaptureMutationProposal
 ```
 
-Terminal or holding outcomes include:
-
-- Lost
-- Stale
-
-Fulfillment after sale:
+It consumes rather than owns:
 
 ```text
-Sale Won
-→ Job Scheduled
-→ Job In Progress
-→ Job Complete
+ClientAccount / ClientProperty
+AppUser / PropertyAccess / capabilities
+PropertyService
+BusinessLocation / ServiceArea
+MediaAsset byte lifecycle
+AuditEvent
+Notification / WebhookReceipt / JobExecution
+SendingIdentity and provider connections
+Finding / WorkTicket / Intervention / MeasurementReview
 ```
 
-Collections after completion:
+### 19.1 Robust-underneath/simple-in-front contract
+
+The first-class simple path is:
 
 ```text
-Job Complete
-→ Payment Due
-→ Paid
+Lead
+→ Estimate
+→ Start work
+→ Work done
+→ Record payment
+→ Close
 ```
 
-The `Lead` remains the parent opportunity record. Related records enrich the lead without creating competing opportunity-status authorities.
+The user is not forced to manipulate the full entity graph.
+
+- **Create Estimate** uses the known Customer, obvious/default Contact, and the only/default ServiceLocation when available. ServiceAsset and advanced fields remain optional. Approved Pricebook/agreement defaults may apply.
+- **Start work** resolves or creates an authorized Job through a valid workflow, makes the consequential creation clear, and moves the Job to `IN_PROGRESS`. JobVisit is not required for simple work.
+- **Work done** moves the Job to `WORK_COMPLETE` without mandatory photos, tasks, notes, assets, or a closeout wizard.
+- **Record payment** creates a factual Payment; the application recalculates collected amount, remaining balance, and payment state.
+- **Close** lets an authorized user move a work-complete Job to `CLOSED`.
+
+ServiceLocation, ServiceAsset, Appointment, JobVisit, JobTask, files, detailed notes,
+ChangeOrder, and ServiceIssue appear through defaults or progressive disclosure when
+they are relevant. Issue, acceptance/signature, Invoice issue/void, Payment
+record/reversal, external sends, and terminal closure remain explicit consequential
+actions.
+
+### 19.2 Customer, Contact, and Lead
+
+```text
+ClientAccount = the organization subscribing to BTLS
+Customer      = that client's end customer
+Contact       = one person associated with a Customer
+Lead          = one commercial opportunity
+```
+
+Customer relationship state may move between `PROSPECT`, `CURRENT`, and `INACTIVE`; it
+is not the sales pipeline.
+
+Lead persists only sales-stage truth:
+
+```text
+NEW
+→ CONTACTED
+→ QUALIFIED
+→ WON
+```
+
+or:
+
+```text
+NEW / CONTACTED / QUALIFIED
+→ LOST
+```
+
+Estimate scheduling, Estimate delivery, next work, staleness, accepted-work scheduling,
+Job progress, Invoice state, overdue state, and payment state belong to their source
+domains. When acceptance is the business's winning event, the acceptance application
+service may compositionally move a linked Lead to `WON`.
+
+`RevenueActivity` is the chronological operating record across the Customer journey.
+`RevenueNote` is human-authored internal context and never masquerades as a customer
+Message. Current-catalog Tag definitions use explicit property-scoped assignments.
+
+### 19.3 Conversation and Message
+
+Canonical parentage is:
+
+```text
+Customer
+└── Conversation
+    ├── required primary Contact
+    └── Message(s)
+```
+
+Rules:
+
+- Customer is required.
+- A persisted customer-facing MVP Conversation requires a primary Contact so consent and routing belong to an identified person and endpoint.
+- Conversation is channel/route scoped, not a generic omnichannel container.
+- Lead, Estimate, Appointment, Job, and Invoice never own Conversation.
+- Robin never owns Conversation or Message.
+- Optional operational context belongs on Message and/or RevenueActivity through real relationships where practical.
+- A long-lived Customer/Contact SMS thread may span several opportunities and Jobs without reparenting.
+- Twilio correlation uses the receiving property number plus normalized Contact phone.
+- Unmatched inbound SMS preserves verified provider receipt evidence and enters bounded resolution; it does not guess Customer ownership.
+- Outbound Postmark email may participate in Customer communication history. Inbound email synchronization, connected mailboxes, group threads, social channels, and a generic contact-center platform remain deferred.
+
+Consent, opt-out, business hours, provider identifiers, delivery outcomes, and webhook
+idempotency are durable application-service concerns shared by human and Robin sends.
+
+### 19.4 Scheduling and time
+
+```text
+Appointment = sales, evaluation, or consultation event
+Job         = authorized work
+JobVisit    = one scheduled field-fulfillment visit
+```
+
+A schedule UI may combine Appointment and JobVisit while preserving their separate
+domain meaning. Appointment owns its own `SCHEDULED / CONFIRMED / COMPLETED` lifecycle
+with `CANCELLED / NO_SHOW` terminals. JobVisit owns `SCHEDULED / IN_PROGRESS /
+COMPLETED` with `CANCELLED / NO_SHOW` alternatives.
+
+BTLS Appointment and JobVisit records are operational schedule truth. Cronofy provides
+availability and external projection/synchronization; a sync failure is visible but does
+not delete or invalidate valid BTLS schedule state.
+
+Basic TimeEntry belongs in Revenue Operations:
+
+```text
+clock in
+→ OPEN
+→ clock out
+→ CLOSED
+```
+
+At most one open entry exists per EmployeeProfile unless a later explicit rule changes
+that invariant. Employees manage their own current clock where authorized. Team history,
+correction, and export require separate authority. A correction preserves actor, reason,
+original value, and result. Time tracking excludes payroll, pay rates, withholding, PTO,
+advanced overtime compliance, geofencing, and automatic payroll behavior.
+
+### 19.5 Pricebook, Agreement, and Estimate
+
+Pricebook is drafting productivity, not historical truth. `PropertyService` remains the
+shared offered-service identity. PricebookItem may reference it and snapshots current
+commercial content into EstimateLineItem.
+
+```text
+Estimate
+→ EstimateRevision
+   ├── EstimateLineItem snapshots
+   └── EstimateAgreementSnapshot
+→ EstimateDelivery
+→ EstimateViewEvent
+→ EstimateAcceptance
+→ CustomerDocumentAccessGrant
+```
+
+Binding rules:
+
+- Estimate is the stable commercial identity.
+- Draft revisions are mutable; issued revisions are immutable; an accepted revision is terminal and immutable.
+- A newly issued revision supersedes the prior issued revision without rewriting it.
+- Pricebook or AgreementTemplate changes never alter historical Estimate content.
+- Agreement content is snapshotted into the exact revision.
+- Delivery is per attempt; sent/delivered summaries derive from EstimateDelivery evidence.
+- A scoped, expiring/revocable CustomerDocumentAccessGrant authorizes public access. A route ID alone never does.
+- Acceptance/signature binds the exact current revision and preserves signer/signature evidence.
+- A superseded or stale revision cannot be signed as current.
+- Signed artifacts and signature images use shared private MediaAsset. Artifact-generation failure does not erase authoritative database acceptance.
+- The customer may view the Estimate, view the Agreement, and sign/accept. The customer cannot edit, comment, request a revision, or publicly reject in MVP.
+- Employees control rejection and authorized salespeople control revisions.
+- Material post-acceptance scope or price change uses an issued/accepted immutable ChangeOrder, not a rewrite of the accepted Estimate.
+
+### 19.6 Job and field operations
+
+Job owns authorized work and its provenance.
+
+```text
+AUTHORIZED
+→ SCHEDULED
+→ IN_PROGRESS
+→ WORK_COMPLETE
+→ CLOSED
+```
+
+Authorized cancellation may terminate appropriate pre-close states. Start Work, Work
+Complete, and Close are business commands, not a generic status picker.
+
+JobVisit is optional for simple same-day work. JobTask is a narrow service checklist and
+never becomes shared growth/search Work Management. Customer/ServiceLocation,
+assignments, ServiceAssets, notes, files/photos, ChangeOrders, and ServiceIssues remain
+contextual unless the business fact requires them. ServiceIssue supports an
+`OPEN → IN_PROGRESS → RESOLVED` path or a controlled `DISMISSED` outcome and may retain
+shared MediaAsset evidence.
+
+### 19.7 Invoice, Payment, and tax
+
+BTLS owns operational financial truth:
+
+```text
+quoted value
+accepted value
+authorized Job value
+Invoice amount
+Payment facts
+balance due
+partial/paid/overdue state
+collected revenue
+```
+
+BTLS does not own a general ledger, chart of accounts, bank reconciliation, payroll
+accounting, tax accounting, or GAAP bookkeeping.
+
+Invoice persists document truth:
+
+```text
+DRAFT
+→ ISSUED
+→ VOID
+```
+
+Issued Invoice line content is immutable. InvoiceDelivery is per-attempt evidence.
+Payments record money actually received through cash, check, an external card processor,
+externally handled ACH/bank transfer, or another factual method. Multiple Payments support
+deposits and partial collection.
+
+Derived payment state:
+
+```text
+net collected <= 0                 → UNPAID
+0 < net collected < invoice total  → PARTIALLY_PAID
+net collected >= invoice total     → PAID
+```
+
+Derived overdue:
+
+```text
+Invoice is ISSUED
+AND dueAt is before now
+AND remaining balance > 0
+→ OVERDUE
+```
+
+Payment processing is optional. Core Invoice and Payment records do not require a
+processor ID. PaymentSchedule is outside MVP; PaymentAttempt and provider-driven Refund
+records remain deferred until an integrated PaymentProvider exists. Mistaken manual
+Payments use explicit reversal/compensation, not deletion.
+
+Tax is optional user-entered commercial information. BTLS accepts and snapshots the
+input and performs decimal-safe arithmetic; it does not determine tax jurisdiction,
+taxability, statutory rate, or compliance. No tax engine is part of MVP.
+
+### 19.8 Operational attention
+
+Keep these meanings separate:
+
+```text
+NextRequiredAction = what should happen next
+AttentionFlag      = a contextual concern a human, rule, or AI wants noticed
+BusinessException  = a deterministic operating rule condition currently or historically true
+Finding            = Website/Content/Search evidence-backed growth diagnostic
+```
+
+NextRequiredAction supports `OPEN → COMPLETED / DISMISSED`, with at most one primary
+open action per supported subject. AttentionFlag supports `OPEN → RESOLVED / DISMISSED`
+and may be created manually. BusinessException refers to a stable versioned definition
+and supports open, snooze, resolve, or dismiss behavior without erasing history.
+
+Examples include Lead untouched, accepted Estimate unscheduled, Work Complete without an
+Invoice, and Invoice overdue. Revenue Leak is a BusinessException rule family/category,
+not a separate model. BusinessException never reuses shared growth Finding.
+
+### 19.9 Quick Capture and derived assistance
+
+Quick Capture is a Revenue Operations input workflow, not Robin:
+
+```text
+text / voice
+→ transcription when required
+→ structured extraction
+→ typed source-mutation proposals
+→ runtime, property, capability, and business validation
+→ persisted confidence and before/after preview
+→ proposal window always shown
+→ explicit human confirmation
+→ normal application services
+→ audit, RevenueActivity, and events
+```
+
+There is no automatic Quick Capture mode. AI cannot set permission, fabricate signature
+or Payment truth, call Prisma/providers directly, or write derived state.
+
+Example input "Invoice partially paid $375. Parts ordered." proposes a $375 Payment and
+a Job note. Domain logic derives the remaining balance and `PARTIALLY_PAID`; the proposal
+does not write those fields.
+
+Consequential Undo uses compensating business operations: reverse/correct Payment,
+void/replace Invoice, supersede a commercial document, or append corrective history.
+Externally sent communication cannot be made unsent.
+
+Generated Job Brief is a derived, evidence-cited, non-authoritative projection from
+trusted Revenue sources. It never becomes a competing Job record.
+
+### 19.10 Revenue settings, sending identity, and review requests
+
+RevenueOperationsSettings owns Revenue workflow defaults such as Pricebook/agreement
+selection, review timing, and a reference to the default shared SendingIdentity. It does
+not own provider credentials, sender verification, Twilio number mapping, or mailbox
+OAuth.
+
+Shared sending modes are:
+
+```text
+BTLS_MANAGED
+CUSTOM_DOMAIN
+CONNECTED_MAILBOX — deferred
+```
+
+The MVP-safe `BTLS_MANAGED` mode uses a verified BTLS-owned From identity with a visible
+business display name and a client Gmail, Yahoo, or custom address as Reply-To. A client
+is not forced to authenticate a consumer domain as a From domain.
+
+ReviewRequest is a basic scheduled/sent/delivered post-work communication. It does not
+gate Job completion, reopen operational truth, or become a reputation-management
+platform.
+
+### 19.11 Revenue attribution and reporting
+
+The directional evidence chain is:
+
+```text
+website / content / search source evidence
+→ Lead
+→ Estimate
+→ Job
+→ Invoice
+→ Payment
+```
+
+Collected Payment is confirmed operational revenue where evidence exists. Reporting and
+adjacent studios may describe observed or assisted relationships with confidence language;
+they must not claim unsupported individual or multi-touch causation.
 
 ---
 
@@ -1369,16 +1949,21 @@ The `Lead` remains the parent opportunity record. Related records enrich the lea
 
 Robin is a controlled application agent, not an autonomous database user.
 
-Robin owns:
+Robin consumes the approved Customer/Contact/Lead/Conversation context and only the
+Revenue application services that already exist. Robin supports:
 
-- Lead acknowledgment
-- Approved qualification
-- Approved field updates
-- Approved scheduling
-- Approved follow-up
-- Human escalation
-- Agent run/action records
-- Automation outcome reporting
+- approved acknowledgment and communication;
+- approved qualification and sales-stage updates;
+- approved scheduling through Appointment services;
+- approved next actions and follow-up;
+- bounded Estimate/Job/Invoice/Payment assistance only after the owning service exists;
+- human escalation;
+- agent run/action records;
+- automation outcome reporting.
+
+Robin does not own Conversation, Message, Quick Capture, or any Revenue aggregate. It
+cannot fabricate acceptance/signature or Payment truth, directly mutate derived state,
+or invent tools for unfinished features.
 
 ### Modes
 
@@ -1605,7 +2190,7 @@ The system must answer:
 | `WorkTicket` | Work Management | Creates through shared workflow |
 | `Intervention` | Work Management | Links Search-specific scope |
 | `MeasurementReview` | Work Management | Supplies Search evidence |
-| Lead / Job / Payment | Revenue Operations | Reads authorized outcome evidence |
+| Lead / Estimate / Job / Invoice / Payment | Revenue Operations | Reads authorized outcome evidence |
 | SearchProgram | Search Operations | Owns |
 | Search fulfillment policy | Search Operations | Owns |
 | Page search semantics | Search Operations | Owns |
@@ -3233,26 +3818,23 @@ Search Operations adds search-specific strategy and recurring fulfillment behavi
 
 Revenue Operations remains the source of truth for:
 
-- leads;
-- lead source;
-- landing page;
-- qualification;
-- won/lost outcome;
-- jobs;
-- payments.
+- Lead source, landing page, qualification, and won/lost outcome;
+- Estimate issue, delivery, and acceptance;
+- authorized Job and fulfillment state;
+- Invoice document truth;
+- Payment and collected revenue.
 
 Search Operations may calculate evidence such as:
 
 ```text
-organic/local attributed leads
-qualified organic/local leads
-won organic/local leads
-confirmed revenue from attributable leads
+organic/local attributed Leads
+qualified organic/local Leads
+accepted Estimates or authorized Jobs where defensible
+collected Payment revenue from attributable Leads
 ```
 
-Do not claim exact SEO causation when attribution is incomplete.
-
-Use confidence language.
+Search consumes these outcomes and never owns Revenue records. Do not claim exact SEO
+causation when attribution is incomplete; use confidence language.
 
 ---
 
@@ -3800,10 +4382,10 @@ Search Finding
 
 ##### Business outcomes
 
-- organic/local leads;
-- qualified leads;
-- won leads;
-- confirmed payments/revenue.
+- organic/local Leads and qualification;
+- accepted Estimates or authorized Jobs where evidence supports the relationship;
+- issued Invoices where useful;
+- collected Payments/revenue.
 
 #### 42.3 Causation language
 
@@ -4421,7 +5003,7 @@ The binding Search Operations rulings are:
 
 ## 21. Shared Work Management Architecture
 
-Work Management owns the common execution loop used by Website Intelligence and Content Intelligence.
+Work Management owns the common execution loop used by Website Intelligence, Content Intelligence, and Search Operations.
 
 ### Ownership
 
@@ -4589,6 +5171,8 @@ Required controls:
 - secure cookie sessions
 - server-only secrets
 - signed private-file access
+- scoped, expiring/revocable public Customer document grants bound to the exact commercial document/version
+- sensitive signature, commercial artifact, Payment, and time-record authorization/audit controls
 - public-form bot protection
 - rate limits on exposed endpoints
 - webhook signature verification
@@ -4607,22 +5191,29 @@ Public form ingestion and webhooks are the only intentionally unauthenticated bu
 
 Used for:
 
-- Finding rules
-- Metric calculations
+- Finding and BusinessException rules
+- Metric and derived-state calculations
 - URL normalization
-- lifecycle transitions
+- source-domain lifecycle transitions
+- Estimate/Invoice snapshot and immutability rules
+- Invoice balance, payment, overdue, and correction rules
 - permission checks
 - validation
-- Robin tool policies
+- Robin and Quick Capture proposal policies
 
 ### Integration tests
 
 Used for:
 
 - Prisma queries and transactions
-- tenant-scoped services
+- tenant-scoped services and cross-tenant denial
 - RLS behavior
-- lead creation workflows
+- Customer/Contact/Lead creation workflows
+- Conversation consent and thread correlation
+- Estimate issue/acceptance/public-grant behavior
+- Job/JobVisit and TimeEntry workflows
+- Invoice/Payment derivation and compensation
+- Quick Capture proposal confirmation through normal services
 - Finding persistence
 - ticket/intervention workflows
 - provider adapters
@@ -4635,8 +5226,13 @@ Critical MVP journeys include:
 
 - Sign in and property access
 - Cross-tenant access denied
-- Public form creates a lead
-- Lead progresses through its lifecycle
+- Public form creates the correct Customer/Contact/Lead
+- Lead progresses only through its sales stages
+- Customer communication respects consent and thread ownership
+- Estimate issue, public presentation, exact-revision acceptance, and immutability
+- Start Work, Work Complete, and Close use the authorized Job workflow
+- Invoice records partial Payment and derives balance/overdue correctly
+- Quick Capture always previews and confirms typed proposals
 - Robin acts or requests approval according to configuration
 - Article is created and published
 - Analytics data produces a reviewable Finding
@@ -4696,6 +5292,28 @@ Rules Codex and developers must never violate:
 44. No unguarded Search website-modification path exists.
 45. Provider usage and estimated cost remain attributable to property/program.
 46. Fleet remediation preserves property-specific Intervention history and tenant isolation.
+47. Customer is the end-customer parent; Contact is person-only; Lead is one opportunity.
+48. ClientAccount never substitutes for Customer, and BusinessLocation never substitutes for ServiceLocation.
+49. PropertyService remains shared and PricebookItem never replaces it.
+50. Estimate scheduling derives from Appointment and Estimate sent/delivered summaries derive from EstimateDelivery.
+51. Issued and accepted commercial revisions/snapshots are immutable.
+52. Customer public access is grant-scoped and cannot edit, comment, request a revision, or publicly reject an Estimate in MVP.
+53. Material post-acceptance commercial change uses ChangeOrder.
+54. Conversation requires Customer and primary Contact and is never owned by Lead, Job, Invoice, or Robin.
+55. Appointment, Job, and JobVisit preserve separate operational meanings.
+56. JobTask never becomes shared WorkTicket work.
+57. Invoice document truth and Payment truth remain separate.
+58. Invoice payment and overdue states derive from Invoice and valid Payment facts.
+59. Payment processing is optional and manual/external Payment remains a complete path.
+60. BTLS does not infer taxability, jurisdiction, or statutory tax rates.
+61. TimeEntry remains basic operational time and excludes payroll/HR truth.
+62. NextRequiredAction, AttentionFlag, BusinessException, and growth Finding remain distinct.
+63. Revenue Leak remains a BusinessException rule family rather than a model.
+64. MediaAsset remains shared byte-lifecycle truth.
+65. Quick Capture is distinct from Robin, always previews proposals, and never writes derived state directly.
+66. AI cannot fabricate signature or Payment truth or bypass normal application services.
+67. Consequential corrections preserve history through reversal, void, replacement, or compensation.
+68. Generated Job Brief and customer journey views remain derived, non-authoritative projections.
 
 The MVP does not need a public mobile API for every feature immediately. However, workflows must not be buried inside Server Actions so deeply that they cannot later be exposed through authenticated API endpoints.
 
@@ -4714,6 +5332,12 @@ These decisions may be finalized during the relevant build phase without blockin
 - Whether Work Package templates receive an admin editing UI in MVP
 - Exact OpenAI model selection and model fallback policy
 - Exact client-facing notification preference options
+- Exact integrated `PaymentProvider`, if online payment processing is later approved; no provider is required for core Invoice/Payment
+- Exact `AddressLookupProvider`, if address assistance/geocoding is later approved; manual ServiceLocation entry remains default
+- Exact `TranscriptionProvider` before Feature 21 voice Quick Capture; text Quick Capture is provider-independent
+- Exact connected-mailbox provider/OAuth behavior; Postmark outbound with BTLS-managed From and client Reply-To remains the MVP default
+- Exact server library for commercial PDF/artifact generation, if Feature 16 requires one
+- Exact customer document-grant expiry, claim, and revocation policies within the scoped-access architecture
 - Exact keyword-metrics provider
 - Exact organic-rank provider
 - Exact local rank-grid provider
@@ -4764,6 +5388,11 @@ The binding rulings are:
 - Search provider cost/usage is first-class operational data.
 - Search automatic execution is guarded, capability-aware, policy-authorized, and never self-authorized by AI.
 - Fleet remediation is BTLS-internal and still records property-specific Interventions.
+- Revenue Operations uses Customer as end-customer parent, Contact as person, and Lead as one opportunity rather than one flattened master lifecycle.
+- Customer/Contact Conversation ownership, separate Appointment/JobVisit schedule truth, immutable Estimate revision/acceptance history, and Invoice/Payment derivation are binding.
+- Operational financial truth is not accounting truth; payment processing is optional and tax remains user-entered commercial input.
+- Quick Capture is a confirmation-required Revenue proposal workflow distinct from Robin.
+- Shared PropertyService, MediaAsset, Finding, and Work Management ownership remain unchanged by Revenue Operations.
 
 ---
 

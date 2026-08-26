@@ -12,10 +12,10 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-08-20 — context reconciliation |
+| Last updated | 2026-08-26 — Revenue Operations canonical reconciliation |
 | Current phase | Phase 2 complete |
 | Current feature | Feature 05 — Property Access and Admin Property Directory complete |
-| Overall status | Feature 05 exit gate passed; no active implementation feature |
+| Overall status | Revenue Operations canonical context reconciled; Feature 05 exit gate passed; no active implementation feature |
 | MVP progress | Features 01–05 complete |
 | Next implementation target | Feature 06 — Storage and Media (not started) |
 
@@ -94,6 +94,7 @@ Feature 02 provides semantic dark/light tokens, local theme preference, accessib
   - Google APIs
   - OpenAI
 - [x] Search Operations domain architecture established
+- [x] Revenue Operations canonical architecture reconciled before Feature 08 implementation
 - [x] SearchTarget established as the primary search-strategy unit
 - [x] Search fulfillment and outcome measurement explicitly separated
 - [x] Search provider usage/cost controls established
@@ -178,74 +179,82 @@ No active implementation feature.
 
 ## Phase 4 — Revenue Operations Foundation
 
-- [ ] 08 Revenue Operations Data Model
-- [ ] 09 Unified Lead Inbox — Full UI
-- [ ] 10 Revenue Operations Mutations and Reporting
-- [ ] 11 Public Lead Ingestion
+- [ ] 08 Customer, Workforce, and Revenue Settings Foundation
+- [ ] 09 Lead Operations and Action Workspace
+- [ ] 10 Public Lead Ingestion
+- [ ] 11 Customer Conversations and Communication
 
-## Phase 5 — Conversations and Robin Foundation
+## Phase 5 — Revenue Operations and Robin Core
 
-- [ ] 12 Two-Way SMS and Outbound Email
-- [ ] 13 Robin Configuration and Knowledge
-- [ ] 14 Robin Agent Runs and Approval Workflow
-- [ ] 15 Robin Automations
+- [ ] 12 Robin Configuration and Knowledge
+- [ ] 13 Robin Agent Runs and Approval Workflow
+- [ ] 14 Appointment Scheduling and Time Tracking Foundation
+- [ ] 15 Pricebook and Estimate Drafting
+- [ ] 16 Estimate Delivery, Public Presentation, and Acceptance
+- [ ] 17 Job and Field Operations
+- [ ] 18 Invoice and Payment Operations
+- [ ] 19 Revenue Exceptions and Operations Views
+- [ ] 20 Quick Capture — Text and Proposal Review
+- [ ] 21 Voice Quick Capture and Generated Job Brief
+- [ ] 22 Review Requests and Lifecycle Automation
+- [ ] 23 Robin Automations
 
 ## Phase 6 — Smart Blog Studio
 
-- [ ] 16 Content Foundation and Strategy
-- [ ] 17 Article Editor and SEO Readiness
-- [ ] 18 Internal Links, Publishing, and Playbook
+- [ ] 24 Content Foundation and Strategy
+- [ ] 25 Article Editor and SEO Readiness
+- [ ] 26 Internal Links, Publishing, and Playbook
 
 ## Phase 7 — Website Data Foundation
 
-- [ ] 19 Integration Connections
-- [ ] 20 Data Ingestion, Normalization, and Page Inventory
-- [ ] 21 Metric Engine and Baselines
+- [ ] 27 Integration Connections
+- [ ] 28 Data Ingestion, Normalization, and Page Inventory
+- [ ] 29 Metric Engine and Baselines
 
 ## Phase 8 — Website Intelligence
 
-- [ ] 22 Findings Engine
-- [ ] 23 Website Intelligence Interface
+- [ ] 30 Findings Engine
+- [ ] 31 Website Intelligence Interface
 
 ## Phase 9 — Content Intelligence
 
-- [ ] 24 Article Scorecards
-- [ ] 25 Content Findings
+- [ ] 32 Article Scorecards
+- [ ] 33 Content Findings
 
 ## Phase 10 — Shared Work Management
 
-- [ ] 26 Work Packages and Tickets
-- [ ] 27 Interventions and Before/After Measurement
+- [ ] 34 Work Packages and Tickets
+- [ ] 35 Interventions and Before/After Measurement
 
 ## Phase 11 — Search Operations Studio
 
-- [ ] 28 Search Program and Shared Vocabulary Foundation
-- [ ] 29 Page Semantic Classification and Search Graph
-- [ ] 30 Keyword Clusters and Search Targets
-- [ ] 31 Market Coverage Workspace
-- [ ] 32 Search Provider and Usage Foundation
-- [ ] 33 Organic and Local Ranking Evidence
-- [ ] 34 Site Inspection and Technical Audit
-- [ ] 35 Content Authority and Internal Linking
-- [ ] 36 Local Presence and External Authority Signals
-- [ ] 37 Search Opportunity and Prioritization Engine
-- [ ] 38 Search Work Integration
-- [ ] 39 Fulfillment Cycles and Delivery Proof
-- [ ] 40 Portfolio Exception Operations
-- [ ] 41 Bounded Optimization Execution
-- [ ] 42 Fleet Remediation
-- [ ] 43 Search Measurement and Business Outcomes
+- [ ] 36 Search Program and Shared Vocabulary Foundation
+- [ ] 37 Page Semantic Classification and Search Graph
+- [ ] 38 Keyword Clusters and Search Targets
+- [ ] 39 Market Coverage Workspace
+- [ ] 40 Search Provider and Usage Foundation
+- [ ] 41 Organic and Local Ranking Evidence
+- [ ] 42 Site Inspection and Technical Audit
+- [ ] 43 Content Authority and Internal Linking
+- [ ] 44 Local Presence and External Authority Signals
+- [ ] 45 Search Opportunity and Prioritization Engine
+- [ ] 46 Search Work Integration
+- [ ] 47 Fulfillment Cycles and Delivery Proof
+- [ ] 48 Portfolio Exception Operations
+- [ ] 49 Bounded Optimization Execution
+- [ ] 50 Fleet Remediation
+- [ ] 51 Search Measurement and Business Outcomes
 
 ## Phase 12 — Command Center Completion
 
-- [ ] 44 Property Overview
-- [ ] 45 BTLS Cross-Property Overview
+- [ ] 52 Property Overview
+- [ ] 53 BTLS Cross-Property Overview
 
 ## Phase 13 — Production Hardening and Launch
 
-- [ ] 46 Security and Data Protection Review
-- [ ] 47 Reliability, Performance, and Accessibility
-- [ ] 48 Release Readiness
+- [ ] 54 Security and Data Protection Review
+- [ ] 55 Reliability, Performance, and Accessibility
+- [ ] 56 Release Readiness
 
 ---
 
@@ -283,6 +292,9 @@ Known Issues are defects, inconsistencies, or risks that need attention.
 
 Record only decisions that future sessions might otherwise reopen.
 
+- **2026-08-26** — Revenue Operations canonical reconciliation supersedes the old Lead-centric planned architecture before Feature 08 implementation; no Revenue feature is implemented or complete.
+- **2026-08-26** — The canonical roadmap contains 13 phases and 56 numbered features: Search Operations is 36–51, Command Center Completion is 52–53, and Production Hardening is 54–56.
+- **2026-08-26** — Payment processing, address/geocoding, voice transcription, and connected-mailbox providers remain deferred; core manual/external Payment and text Quick Capture paths do not require them.
 - **2026-08-20** — The MVP contains Website Intelligence, Smart Blog Studio, Content Intelligence, Revenue Operations, Robin, Search Operations, and shared Work Management.
 - **2026-07-28** — Campaign Tracking, general Funnel Mapping, advertising management, predictive analytics, and full project-management features are outside the MVP.
 - **2026-07-28** — BTLS will be one multi-tenant SaaS application and one managed codebase.
@@ -295,14 +307,14 @@ Record only decisions that future sessions might otherwise reopen.
 - **2026-07-29** — Postmark is the outbound email provider for MVP.
 - **2026-07-29** — Inbound email synchronization is deferred.
 - **2026-07-29** — Twilio is the two-way SMS provider.
-- **2026-07-29** — Cronofy is the calendar provider.
+- **2026-08-26** — Cronofy supplies availability and external calendar projection/synchronization; BTLS Appointment and JobVisit records remain operational schedule truth.
 - **2026-07-29** — BTLS-built websites are the primary publishing target.
 - **2026-07-29** — WordPress native-post publishing is supported through a limited REST API adapter.
 - **2026-07-29** — Unsupported WordPress configurations use manual/export fallback.
 - **2026-07-29** — Dark mode is the default UI theme.
 - **2026-07-29** — Light and system themes use the same semantic UI tokens.
 - **2026-07-29** — Code must favor clarity, explicitness, and junior-developer debuggability over cleverness.
-- **2026-07-29** — Revenue Operations will launch as a responsive web beta. A dedicated mobile application is a post-MVP direction and will not begin until the current web platform is complete and field workflows have been validated.
+- **2026-08-26** — Revenue Operations launches as a field-capable responsive web beta. A dedicated native application remains post-MVP for validated offline/background/deeper-device needs.
 - **2026-07-29** — pnpm 11.9.0 is the sole package manager. `pnpm-lock.yaml` is the only committed dependency lockfile.
 
 ---
@@ -316,7 +328,7 @@ Record only decisions that future sessions might otherwise reopen.
 - **2026-08-20** — The blanket website-modification exclusion is narrowed: unbounded/AI-directed modification remains prohibited; approved `AUTO_GUARDED` actions may run only through capability- and policy-controlled Search adapters on supported managed sites.
 - **2026-08-20** — Search provider usage and estimated cost are property/program-scoped operational data.
 - **2026-08-20** — Fleet Remediation is BTLS-internal and preserves property-specific Intervention history.
-- **2026-08-20** — The canonical build roadmap now contains 13 phases and 48 numbered features; Search Operations is Phase 11, Command Center Completion Phase 12, and Hardening Phase 13.
+- **2026-08-20 (superseded 2026-08-26)** — The Search Operations reconciliation previously expanded the roadmap to 48 features; the current 56-feature roadmap above now controls.
 
 # Session Notes
 
@@ -1105,3 +1117,24 @@ The tracker should remain a working status document, not a duplicate of `build-p
 
 1. Run `/architect` for Feature 06 — Storage and Media when implementation resumes.
 2. Do not begin Search Operations implementation before Features 01–27 reach their normal dependency point.
+
+## 2026-08-26 — Revenue Operations canonical reconciliation
+
+### Completed
+
+- Reconciled the canonical Revenue Operations product, domain, provider, UI, code-standard, and agent-operating context before Revenue implementation.
+- Replaced the old Lead-centric planned lifecycle with the approved Customer/Contact/Lead and source-domain ownership boundaries.
+- Adopted the 13-phase, 56-feature roadmap while preserving Search Operations internal order.
+
+### Implementation state preserved
+
+- Features 01–05 remain complete; Feature 05 verification and exit-gate evidence remain unchanged.
+- Feature 06 — Storage and Media remains next and not started.
+- Feature 07 remains not started.
+- New Feature 08 — Customer, Workforce, and Revenue Settings Foundation remains not started.
+- No Prisma schema, migration, application source, dependency, configuration, or product implementation changed.
+
+### Next session
+
+1. Run /architect for Feature 06 when implementation is explicitly resumed.
+2. Do not start Feature 06, Feature 07, or Feature 08 as part of this reconciliation.
