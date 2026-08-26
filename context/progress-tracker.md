@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-08-02 |
-| Current phase | Phase 2 in progress |
-| Current feature | Feature 03 — Supabase and Prisma Foundation complete |
-| Overall status | Feature exit gate passed |
-| MVP progress | Features 01 and 02 complete |
-| Next implementation target | Feature 04 — Authentication (not started) |
+| Last updated | 2026-08-20 — context reconciliation |
+| Current phase | Phase 2 complete |
+| Current feature | Feature 05 — Property Access and Admin Property Directory complete |
+| Overall status | Feature 05 exit gate passed; no active implementation feature |
+| MVP progress | Features 01–05 complete |
+| Next implementation target | Feature 06 — Storage and Media (not started) |
 
 ---
 
@@ -71,13 +71,14 @@ Feature 02 provides semantic dark/light tokens, local theme preference, accessib
 ## Product and Architecture Context
 
 - [x] MVP product boundary established
-- [x] Five primary MVP components established
+- [x] Three product studios / six primary MVP components established
   - Website Intelligence
   - Smart Blog Studio
   - Content Intelligence
   - Revenue Operations / Command Center
   - Robin AI Automation Agent
-- [x] Shared Work Management established
+  - Search Operations / Fulfillment
+- [x] Shared Work Management established across Website Intelligence, Content Intelligence, and Search Operations
 - [x] Non-MVP features explicitly excluded
 - [x] One-codebase multi-tenant SaaS direction established
 - [x] Property-scoped Supabase/Postgres architecture established
@@ -92,6 +93,11 @@ Feature 02 provides semantic dark/light tokens, local theme preference, accessib
   - Cronofy
   - Google APIs
   - OpenAI
+- [x] Search Operations domain architecture established
+- [x] SearchTarget established as the primary search-strategy unit
+- [x] Search fulfillment and outcome measurement explicitly separated
+- [x] Search provider usage/cost controls established
+- [x] Guarded Search optimization and Fleet Remediation boundaries established
 - [x] WordPress publishing compatibility bounded to a limited REST adapter
 - [x] BTLS-built websites established as the primary publishing target
 - [x] Public lead-ingestion direction established
@@ -123,9 +129,9 @@ No active implementation feature.
 
 ## Immediate
 
-1. [ ] Run `/architect` for Feature 04 — Authentication
-2. [ ] Confirm the Feature 04 plan before implementation
-3. [ ] Do not implement Feature 04 until its plan is approved
+1. [ ] Run `/architect` for Feature 06 — Storage and Media
+2. [ ] Confirm the Feature 06 plan before implementation
+3. [ ] Do not implement Feature 06 until its plan is approved
 
 ## First implementation feature
 
@@ -162,8 +168,8 @@ No active implementation feature.
 ## Phase 2 — Tenancy, Authentication, and Property Management
 
 - [x] 03 Supabase and Prisma Foundation
-- [ ] 04 Authentication
-- [ ] 05 Property Access and Admin Property Directory
+- [x] 04 Authentication
+- [x] 05 Property Access and Admin Property Directory
 
 ## Phase 3 — Shared Infrastructure
 
@@ -211,16 +217,35 @@ No active implementation feature.
 - [ ] 26 Work Packages and Tickets
 - [ ] 27 Interventions and Before/After Measurement
 
-## Phase 11 — Command Center Completion
+## Phase 11 — Search Operations Studio
 
-- [ ] 28 Property Overview
-- [ ] 29 BTLS Cross-Property Overview
+- [ ] 28 Search Program and Shared Vocabulary Foundation
+- [ ] 29 Page Semantic Classification and Search Graph
+- [ ] 30 Keyword Clusters and Search Targets
+- [ ] 31 Market Coverage Workspace
+- [ ] 32 Search Provider and Usage Foundation
+- [ ] 33 Organic and Local Ranking Evidence
+- [ ] 34 Site Inspection and Technical Audit
+- [ ] 35 Content Authority and Internal Linking
+- [ ] 36 Local Presence and External Authority Signals
+- [ ] 37 Search Opportunity and Prioritization Engine
+- [ ] 38 Search Work Integration
+- [ ] 39 Fulfillment Cycles and Delivery Proof
+- [ ] 40 Portfolio Exception Operations
+- [ ] 41 Bounded Optimization Execution
+- [ ] 42 Fleet Remediation
+- [ ] 43 Search Measurement and Business Outcomes
 
-## Phase 12 — Production Hardening and Launch
+## Phase 12 — Command Center Completion
 
-- [ ] 30 Security and Data Protection Review
-- [ ] 31 Reliability, Performance, and Accessibility
-- [ ] 32 Release Readiness
+- [ ] 44 Property Overview
+- [ ] 45 BTLS Cross-Property Overview
+
+## Phase 13 — Production Hardening and Launch
+
+- [ ] 46 Security and Data Protection Review
+- [ ] 47 Reliability, Performance, and Accessibility
+- [ ] 48 Release Readiness
 
 ---
 
@@ -258,14 +283,14 @@ Known Issues are defects, inconsistencies, or risks that need attention.
 
 Record only decisions that future sessions might otherwise reopen.
 
-- **2026-07-28** — The MVP contains Website Intelligence, Smart Blog Studio, Content Intelligence, Revenue Operations, Robin, and shared Work Management.
+- **2026-08-20** — The MVP contains Website Intelligence, Smart Blog Studio, Content Intelligence, Revenue Operations, Robin, Search Operations, and shared Work Management.
 - **2026-07-28** — Campaign Tracking, general Funnel Mapping, advertising management, predictive analytics, and full project-management features are outside the MVP.
 - **2026-07-28** — BTLS will be one multi-tenant SaaS application and one managed codebase.
 - **2026-07-28** — Client properties are database records, not separate deployments or repositories.
 - **2026-07-28** — Supabase provides PostgreSQL, Auth, Storage, and selected Realtime capabilities.
 - **2026-07-28** — Prisma is the primary server-side database and migration layer.
 - **2026-07-28** — Server-side authorization and PostgreSQL RLS jointly protect property data.
-- **2026-07-29** — Work Management is shared by Website Intelligence and Content Intelligence.
+- **2026-08-20** — Work Management is shared by Website Intelligence, Content Intelligence, and Search Operations.
 - **2026-07-29** — Inngest is the default background-job and scheduling system.
 - **2026-07-29** — Postmark is the outbound email provider for MVP.
 - **2026-07-29** — Inbound email synchronization is deferred.
@@ -281,6 +306,17 @@ Record only decisions that future sessions might otherwise reopen.
 - **2026-07-29** — pnpm 11.9.0 is the sole package manager. `pnpm-lock.yaml` is the only committed dependency lockfile.
 
 ---
+
+- **2026-08-20** — Search Operations Studio is the third BTLS studio and the recurring organic-search fulfillment control plane.
+- **2026-08-20** — SearchTarget is the strategic search unit; WebsitePage remains page identity and receives Search semantics through related records.
+- **2026-08-20** — Page structural type and strategic purpose are separate; service/location/topic assignments are normalized.
+- **2026-08-20** — Search keyword metrics, organic ranks, and local rank maps are dated evidence; coverage is a versioned derived assessment.
+- **2026-08-20** — Durable Search opportunities/problems reuse shared Findings and Work Management.
+- **2026-08-20** — SearchFulfillmentCycle proves delivery; MeasurementReview evaluates outcome.
+- **2026-08-20** — The blanket website-modification exclusion is narrowed: unbounded/AI-directed modification remains prohibited; approved `AUTO_GUARDED` actions may run only through capability- and policy-controlled Search adapters on supported managed sites.
+- **2026-08-20** — Search provider usage and estimated cost are property/program-scoped operational data.
+- **2026-08-20** — Fleet Remediation is BTLS-internal and preserves property-specific Intervention history.
+- **2026-08-20** — The canonical build roadmap now contains 13 phases and 48 numbered features; Search Operations is Phase 11, Command Center Completion Phase 12, and Hardening Phase 13.
 
 # Session Notes
 
@@ -400,7 +436,7 @@ Record only decisions that future sessions might otherwise reopen.
 - Defined the target architecture
 - Defined professional code standards
 - Defined approved libraries and providers
-- Created the 12-phase, 32-feature build plan
+- Created the original pre-Search-Operations build plan; the roadmap was expanded to 13 phases / 48 features on 2026-08-20
 - Created the dark-first UI token system
 - Created UI composition and behavior rules
 - Created this progress tracker
@@ -1050,3 +1086,22 @@ The tracker should remain a working status document, not a duplicate of `build-p
 ### Next session
 
 1. Feature 05 is complete. Do not start Feature 06 without explicit direction.
+
+## 2026-08-20 — Search Operations context reconciliation
+
+### Completed
+
+- Merged the approved Search Operations architecture into the canonical BTLS architecture.
+- Expanded the master roadmap from 32 to 48 features without changing Features 01–27.
+- Reconciled product overview, library/provider boundaries, UI rules, and this roadmap.
+- Corrected this tracker’s stale top-level status/roadmap to match its existing Feature 04/05 completion session evidence; no new implementation feature was marked complete.
+
+### Decisions
+
+- Search Operations is now governed by canonical `context/architecture.md` and `context/build-plan.md`, not a parallel Search-specific source of truth.
+- Exact Search providers and the first guarded-automation allowlist remain deferred to their owning features.
+
+### Next session
+
+1. Run `/architect` for Feature 06 — Storage and Media when implementation resumes.
+2. Do not begin Search Operations implementation before Features 01–27 reach their normal dependency point.

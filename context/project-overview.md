@@ -30,6 +30,7 @@ BTLS helps service businesses:
 - Create purposeful SEO content
 - Understand whether websites and content are producing useful business outcomes
 - Turn evidence-backed Findings into measurable improvement work
+- Operate recurring SEO fulfillment through standardized search targeting, monitoring, exception handling, and measurable work
 
 The system should reduce the need to manage leads, analytics, SEO content, communication, and improvement work through disconnected tools.
 
@@ -63,12 +64,18 @@ The Command Center provides:
 - One conversation and activity timeline
 - Robin-assisted communication and follow-up
 - One Smart Blog Studio
-- Evidence-backed Website and Content Findings
+- Evidence-backed Website, Content, and Search Findings
 - Predetermined Work Packages
 - Shared work tickets
 - Intervention history
 - Before-and-after measurement
 - Property-level and cross-property operating views
+- Search Programs and recurring fulfillment cycles
+- Search-target coverage across services, geographies, intent, and topical support
+- Organic rank and local geo-grid visibility evidence
+- Continuous technical/search monitoring
+- Bounded guarded optimization for supported BTLS-managed sites
+- Search delivery proof connected to later outcome measurement
 
 The system should present the next useful action instead of merely displaying more data.
 
@@ -76,7 +83,7 @@ The system should present the next useful action instead of merely displaying mo
 
 ## Product Structure
 
-The MVP contains two product groups.
+The MVP contains three product studios.
 
 ### Group 1 — Web Growth Studio
 
@@ -89,11 +96,15 @@ The MVP contains two product groups.
 4. Revenue Operations / Command Center
 5. Robin AI Automation Agent
 
+### Group 3 — Search Operations Studio
+
+6. Search Operations / Fulfillment
+
 ### Shared Feature
 
-6. Work Management
+7. Work Management
 
-Work Management is shared by Website Intelligence and Content Intelligence.
+Work Management is shared by Website Intelligence, Content Intelligence, and Search Operations.
 
 ---
 
@@ -176,12 +187,16 @@ Needs:
 Responsible for:
 
 - Managing leads where assigned
-- Reviewing Website and Content Findings
+- Reviewing Website, Content, and Search Findings
 - Creating and completing work tickets
 - Creating and publishing content
 - Monitoring client performance
 - Reviewing Robin handoffs
 - Explaining work to clients
+- Overseeing recurring Search Programs
+- Reviewing Search coverage/ranking/technical exceptions
+- Approving strategic or guarded Search actions
+- Managing portfolio Search fulfillment by exception rather than opening every property
 
 Needs:
 
@@ -301,6 +316,12 @@ The exact route structure may evolve, but the MVP uses the following page famili
 /[propertyId]/content-intelligence
 → Content scorecards, topic clusters, and Content Findings
 
+/[propertyId]/search-operations
+→ Search Program, targets, coverage, rankings, audits, current cycle, exceptions, actions, and delivery proof
+
+/[propertyId]/settings/search-operations
+→ Search Program priorities, site-management mode, fulfillment policy, provider quotas, and automation policy
+
 /[propertyId]/work-management
 → Shared work queue
 
@@ -334,6 +355,9 @@ The exact route structure may evolve, but the MVP uses the following page famili
 
 /admin/operations
 → Failed jobs, handoffs, and system attention
+
+/admin/search-operations
+→ Cross-property Search Program health, fulfillment exceptions, approvals, provider failures, and optimization failures
 
 /admin/audit
 → Sensitive action history
@@ -373,8 +397,9 @@ The exact route structure may evolve, but the MVP uses the following page famili
 4. Website Intelligence
 5. Smart Blog Studio
 6. Content Intelligence
-7. Work Management
-8. Settings
+7. Search Operations
+8. Work Management
+9. Settings
 
 ## Administrative Navigation
 
@@ -604,6 +629,23 @@ Navigation is capability-aware, but server authorization remains mandatory.
 
 ---
 
+## Flow 10 — Recurring Search Fulfillment
+
+1. An authorized BTLS operator activates a Search Program for a property.
+2. The program records priority services, service areas, site-management mode, fulfillment policy, provider limits, and automation policy.
+3. Existing Website Pages receive Search semantic profiles without changing their core page identity.
+4. BTLS defines SearchTargets that connect service/topic, geography, intent, keyword cluster, and intended ranking page.
+5. Scheduled jobs refresh required technical, ranking, local, and other approved Search evidence.
+6. Coverage and Search Finding rules evaluate evidence and data confidence.
+7. The operator portfolio surfaces only material exceptions, approvals, and high-value opportunities.
+8. Confirmed Search Findings create normal WorkTickets.
+9. Human work or approved guarded site actions create Interventions.
+10. The fulfillment cycle records which required scope was satisfied, waived, or blocked.
+11. A client-safe SearchDeliverySummary proves what BTLS delivered.
+12. Later MeasurementReviews compare visibility, traffic, and authorized business outcomes without claiming unsupported causation.
+
+---
+
 # Data Architecture
 
 The Prisma schema is the executable source of truth. This section defines product ownership.
@@ -694,9 +736,10 @@ The Prisma schema is the executable source of truth. This section defines produc
 ## WebsitePage
 
 - Lives in PostgreSQL.
-- Represents a discovered page and broad page role.
+- Represents discovered URL/page identity and broad web-data classification.
 - Changes through sync, reconciliation, or operator correction.
-- Used by Website and Content Intelligence.
+- Used by Website Intelligence, Content Intelligence, Smart Blog linking, and Search Operations.
+- Search-specific semantic purpose, services, locations, topics, targets, coverage, and ranking evidence live in related Search Operations records rather than bloating this entity.
 - Must not require every DOM element to become an object.
 
 ## MetricSnapshot
@@ -778,6 +821,35 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Changes through upload, publication, replacement, and removal workflows.
 - Used by content, attachments, evidence, and branding.
 - Must not permit cross-property access.
+
+---
+
+## Shared Property Search Vocabulary
+
+`PropertyService`, `BusinessLocation`, and `ServiceArea` are canonical property business facts reused across Revenue Operations, Robin, Smart Blog Studio, and Search Operations. Search-specific priority lives in the Search Program rather than these shared records.
+
+## Search Operations Records
+
+Search Operations adds property-scoped strategy, evidence, fulfillment, and execution records including:
+
+- `SearchProgram` and versioned fulfillment/automation policies
+- `PageSearchProfile` plus normalized page-service/location/topic assignments
+- `SearchTopic`
+- `SearchKeyword`, dated keyword metric snapshots, and keyword clusters
+- `SearchTarget` plus historical target-page and support relationships
+- `SearchCoverageAssessment`
+- organic rank runs/observations
+- local rank-grid runs/points
+- normalized site-inspection/technical-audit evidence
+- current internal-link graph
+- narrow local/citation/backlink authority evidence
+- `SearchFulfillmentCycle`, requirements, and `SearchDeliverySummary`
+- `SearchInterventionScope` linked to shared Interventions
+- guarded `OptimizationAction` records
+- provider usage/cost records
+- BTLS-internal Fleet Remediation with property-specific target/Intervention history
+
+Durable actionable Search conditions use the existing shared `Finding` system. Search work uses the existing shared Work Management lifecycle.
 
 ---
 
@@ -884,6 +956,29 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Duplicate prevention
 - Outcome reporting
 
+## Search Operations
+
+- Search Program configuration and recurring fulfillment policy
+- Canonical service/location reuse
+- Page semantic classification
+- Search topics, keyword clusters, and SearchTargets
+- Service × geography × intent coverage assessment
+- Organic rank tracking for selected targets
+- Local geo-grid/rank-map measurement
+- Technical site inspection and versioned Search audit checks
+- Internal-link/support evaluation
+- Google Business Profile/local presence evidence
+- Foundation/exception-driven citation checks
+- Narrow backlink/authority monitoring
+- Evidence-backed Search Findings and prioritization
+- Shared Work Package/Ticket/Intervention integration
+- Fulfillment cycles and client delivery proof
+- Cross-property exception-first Search operations
+- Provider usage, quota, and estimated-cost controls
+- Guarded, capability-aware bounded optimization on supported sites
+- BTLS-managed Fleet Remediation
+- Search MeasurementReview integration with rankings, traffic, leads, and revenue where defensible
+
 ## Shared Work Management
 
 - Finding review
@@ -915,7 +1010,7 @@ The Prisma schema is the executable source of truth. This section defines produc
 
 # Features Out of Scope
 
-- Campaign management — removed from the MVP to keep focus on the five core components.
+- Campaign management — remains outside the MVP so the platform stays focused on the approved studios.
 - General Funnel Mapper — content effectiveness is handled by Content Intelligence.
 - General Funnel Leak Detection — useful diagnostics belong in fixed Website and Content Findings.
 - Advertising management — campaign spend and ad-platform control are deferred.
@@ -923,7 +1018,7 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Predictive analytics — current and historical diagnosis comes first.
 - Cross-client benchmarks — deferred until sufficient comparable data exists.
 - Full project-management software — Work Management remains purpose-built and narrow.
-- Automatic website code modification — operators approve and perform work.
+- Unbounded or AI-directed website modification — Search Operations may execute only explicitly allowlisted, deterministic, policy-authorized guarded actions on supported BTLS-managed sites.
 - Inbound email synchronization — Postmark is outbound-only in MVP.
 - Arbitrary WordPress compatibility — only native REST-compatible posts are supported.
 - Page-builder-specific WordPress editing — Elementor, Divi, WPBakery, and custom layouts are deferred.
@@ -931,6 +1026,11 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Unrestricted Robin autonomy — all actions remain tool-, permission-, and mode-controlled.
 - Cross-session identity stitching — deferred due complexity, consent, and attribution limits.
 - General CRM replacement — Revenue Operations is designed around BTLS service-business workflows.
+- Mass automated service/location page generation — strategy remains human-controlled.
+- Autonomous AI content publication — customer-facing publication follows approved review policy.
+- Automated backlink marketplace or mass outreach — external authority work remains restrained and human-directed.
+- Search billing/subscription ownership — SearchProgram owns fulfillment state, not commercial billing truth.
+- Unlimited keyword, competitor, rank, crawl, citation, or backlink tracking — provider-intensive work is policy/quota controlled.
 
 ---
 
@@ -976,11 +1076,21 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Twilio for two-way SMS
 - Cronofy for calendar and scheduling
 
-## Web Growth Data
+## Web Growth and Search Data
 
 - Google Analytics Data API
 - Google Search Console API
 - Google Business Profile APIs
+- BTLS `KeywordMetricsProvider`
+- BTLS `OrganicRankProvider`
+- BTLS `LocalRankGridProvider`
+- BTLS `SiteInspectionAdapter`
+- BTLS `PagePerformanceProvider`
+- BTLS `CitationProvider` and `BacklinkProvider` when enabled
+- BTLS `CallAttributionProvider` when enabled
+- BTLS `SiteOptimizationAdapter`
+
+Exact Search vendors remain deferred to the owning build features unless separately approved.
 
 ## Public Form Protection
 
@@ -1099,6 +1209,31 @@ measurement.review_completed
 finding.resolved
 finding.reopened
 ```
+
+## Search Operations
+
+- `search.program.created`
+- `search.program.activated`
+- `search.program.paused`
+- `search.target.created`
+- `search.target.updated`
+- `search.coverage.assessed`
+- `search.organic_rank.completed`
+- `search.organic_rank.failed`
+- `search.local_grid.completed`
+- `search.local_grid.failed`
+- `search.inspection.completed`
+- `search.inspection.failed`
+- `search.audit.completed`
+- `search.audit.failed`
+- `search.cycle.opened`
+- `search.cycle.fulfilled`
+- `search.optimization.proposed`
+- `search.optimization.approved`
+- `search.optimization.executed`
+- `search.optimization.failed`
+- `search.delivery_summary.generated`
+- `search.fleet_remediation.completed`
 
 ### Common event parameters
 
@@ -1224,6 +1359,18 @@ A client employee who:
 - Measurement Reviews compare reproducible before-and-after periods.
 - Findings can be resolved, monitored, or reopened based on evidence.
 
+## Search Operations
+
+- One operator can identify Search Programs needing attention without opening every property.
+- SearchTargets connect commercial services/topics, geography, intent, keyword clusters, and intended ranking assets.
+- Technical, organic-rank, local-grid, and other Search evidence is versioned and provider-normalized.
+- Search Findings reuse the shared Finding/work lifecycle.
+- Fulfillment cycles prove what BTLS delivered without claiming that delivery caused improvement.
+- Guarded automatic execution exists only where adapter capability and property policy permit it.
+- Unsupported external sites degrade safely to human work.
+- Provider cost/usage remains bounded and attributable.
+- Search Interventions can later be measured against visibility, traffic, and authorized business outcomes.
+
 ## Usability
 
 - A new developer can locate feature code, validation, authorization, data access, and tests.
@@ -1292,6 +1439,7 @@ Website opportunity
 → sales progression
 → fulfillment and payment
 → website and content intelligence
+→ recurring search fulfillment
 → evidence-backed work
 → measured improvement
 ```

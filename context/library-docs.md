@@ -1,6 +1,6 @@
 # BTLS Library Docs
 
-> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Robin, shared Work Management, integrations, and background jobs.
+> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Search Operations Studio, Robin, shared Work Management, integrations, and background jobs.
 >
 > **Repository location:** `context/library-docs.md`
 >
@@ -1014,6 +1014,146 @@ Rules:
 
 ---
 
+# Search Operations Provider Boundaries
+
+Search Operations adds provider-intensive capabilities without selecting vendors prematurely. Feature code depends on BTLS-owned interfaces and normalized types. Exact providers are selected only during the owning numbered feature with an explicit dependency/library decision.
+
+## Search Provider Interfaces
+
+```text
+KeywordMetricsProvider
+OrganicRankProvider
+LocalRankGridProvider
+SiteInspectionAdapter
+PagePerformanceProvider
+LocalPresenceProvider
+CitationProvider
+BacklinkProvider
+CallAttributionProvider
+SiteOptimizationAdapter
+```
+
+Rules:
+
+- Provider SDK imports stay inside `src/server/integrations/...`.
+- Validate provider responses at the adapter boundary.
+- Normalize provider-specific results into BTLS-owned contracts before feature code sees them.
+- Treat timeouts, partial data, rate limits, and provider outages explicitly.
+- Record property/program usage units and estimated cost for provider-intensive Search operations.
+- Provider failure is operational failure, not evidence that SEO performance declined.
+- Do not install multiple providers for the same capability without an approved reason.
+
+## Keyword Metrics Provider
+
+Used for dated search-demand evidence such as volume, CPC, difficulty, and related provider metrics when a Search Program enables it.
+
+Rules:
+
+- Store normalized values as dated `KeywordMetricSnapshot` evidence.
+- Do not write mutable provider metrics directly onto `SearchKeyword`.
+- Batch where the selected provider supports it.
+- Respect program keyword-count and refresh-frequency quotas.
+
+Exact provider: **deferred to Feature 32 — Search Provider and Usage Foundation**.
+
+## Organic Rank Provider
+
+Used for point-in-time organic ranking observations.
+
+Rules:
+
+- Do not treat Search Console average position as an OrganicRankProvider result.
+- Persist search context, device, capture time, found/not-found state, result URL, and matched WebsitePage where possible.
+- Respect program tracked-keyword/location/depth quotas.
+
+Exact provider: **deferred to Feature 32/33**.
+
+## Local Rank Grid Provider
+
+Used for local/Maps geo-grid evidence.
+
+Rules:
+
+- Persist grid geometry and capture time with each run.
+- Keep partial/failed state explicit.
+- Store deterministic aggregates used frequently by the product, while avoiding unnecessary full SERP retention.
+- Respect grid-size and frequency quotas because request count can scale quickly.
+
+Exact provider: **deferred to Feature 32/33**.
+
+## Site Inspection Adapter
+
+Used for normalized technical crawl/inspection evidence.
+
+Before choosing a crawler implementation, the owning feature must explicitly resolve:
+
+- robots behavior
+- sitemap behavior
+- crawl/page limits
+- JavaScript rendering requirements
+- rate limiting/concurrency
+- timeouts
+- URL normalization
+- redirect behavior
+- content-type limits
+- SSRF/private-network protection
+- runtime/provider compatibility
+
+Do not store full HTML history by default.
+
+Exact crawler: **deferred to Feature 34 — Site Inspection and Technical Audit**.
+
+## Page Performance Provider
+
+Used for standardized page-performance evidence in Search audits. Google PageSpeed-compatible implementation may be selected when Feature 34 is specified.
+
+Rules:
+
+- Call from server/background jobs only.
+- Persist normalized evidence and capture context.
+- Provider failure becomes unavailable evidence, not a negative Finding.
+
+Exact implementation: **deferred to Feature 34**.
+
+## Citation and Backlink Providers
+
+These are narrow evidence providers, not the foundation of a general Ahrefs/Semrush replacement.
+
+Rules:
+
+- Citation checks are onboarding/foundation and exception driven.
+- Backlink collection focuses on useful new/lost/referring-domain evidence.
+- Do not add automated mass outreach behavior.
+- Use low-frequency policy defaults unless a service tier explicitly requires more.
+
+Exact providers: **deferred to Feature 36**.
+
+## Call Attribution Provider
+
+Optional Search measurement input when call tracking is commercially enabled. Revenue Operations remains the source of truth for Leads and downstream business outcomes.
+
+Exact provider: **deferred**.
+
+## Site Optimization Adapter
+
+Search Operations executes site changes only through a capability-aware BTLS adapter.
+
+Rules:
+
+- Adapter declares supported operation capabilities.
+- Feature code never assumes every site supports the same operations.
+- `AUTO_GUARDED` still requires application policy and authorization; adapter capability alone is insufficient.
+- Validate and idempotently execute every action.
+- Persist exact execution result.
+- Expose preview before approval where meaningful.
+- Expose rollback/reversal only when genuinely supported.
+- AI does not call the adapter directly and never grants execution authority.
+- Unsupported external sites return a typed unsupported/manual result.
+
+Exact first operation allowlist: **deferred to Feature 41 — Bounded Optimization Execution**.
+
+---
+
 # Publishing and Website Compatibility
 
 ## 24. BTLS Publishing Adapter
@@ -1372,7 +1512,13 @@ Do not add MVP dependencies for:
 - Full project management
 - Real-time collaborative article editing
 - Arbitrary WordPress page-builder support
-- Automatic site code modification
+- Generic libraries/frameworks for unbounded or AI-directed site modification
+- Search keyword-metrics provider until Feature 32
+- Organic-rank provider until Feature 32/33
+- Local rank-grid provider until Feature 32/33
+- Search crawler/site-inspection implementation until Feature 34
+- Citation/backlink providers until Feature 36
+- First Search `AUTO_GUARDED` operation allowlist until Feature 41
 
 ## 36. Final Rule
 

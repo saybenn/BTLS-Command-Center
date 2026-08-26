@@ -1,6 +1,6 @@
 # BTLS Code Standards
 
-> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Robin, shared platform code, integrations, background jobs, and future MVP extensions.
+> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Search Operations Studio, Robin, shared platform code, integrations, background jobs, and future MVP extensions.
 >
 > **Primary goal:** Produce code that is safe, predictable, readable, testable, and easy to debug.
 >
@@ -67,8 +67,10 @@ Business rules belong in the feature or domain that owns them.
 Examples:
 
 - Lead lifecycle rules belong in Revenue Operations
-- Finding evaluation belongs in Website Intelligence
+- Website Finding evaluation belongs in Website Intelligence
+- Content Finding evaluation belongs in Content Intelligence
 - Content readiness rules belong in Smart Blog Studio
+- Search Finding evaluation, Search-target, fulfillment-cycle, and guarded Search execution rules belong in Search Operations
 - Robin action permissions belong in Robin
 - Tenant and permission rules belong in shared authorization infrastructure
 
@@ -339,6 +341,7 @@ src/
 
     smart-blog-studio/
     content-intelligence/
+    search-operations/
     revenue-operations/
     robin/
 

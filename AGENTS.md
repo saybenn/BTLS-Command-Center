@@ -4,14 +4,26 @@
 
 **BTLS Command Center** is a greenfield, multi-tenant SaaS platform for local service businesses and BTLS operators.
 
-The MVP contains:
+The MVP contains three product studios and one shared execution feature:
+
+### Web Growth Studio
 
 1. Website Intelligence
 2. Smart Blog Studio
 3. Content Intelligence
+
+### Revenue Operations Studio
+
 4. Revenue Operations / Command Center
 5. Robin AI Automation Agent
-6. Shared Work Management
+
+### Search Operations Studio
+
+6. Search Operations / Fulfillment
+
+### Shared
+
+**Work Management** is shared by Website Intelligence, Content Intelligence, and Search Operations.
 
 Build one shared application, backend, database, and permission system for all client properties.
 
@@ -34,7 +46,9 @@ Before planning or implementing work, read the relevant files in this order:
 
 These files are authoritative.
 
-Do not override them based on convenience, framework defaults, generated patterns, or assumptions.
+Search Operations is governed by the Search Operations sections integrated into canonical `context/architecture.md` and Phase 11 of canonical `context/build-plan.md`. Do not create or rely on a second parallel Search Operations architecture or build plan.
+
+Do not override the canonical context based on convenience, framework defaults, generated patterns, or assumptions.
 
 When two context files appear to conflict:
 
@@ -295,6 +309,8 @@ Approved providers include:
 
 Do not add a new major provider or overlapping library without approval.
 
+Search Operations may define and consume BTLS-owned interfaces for keyword metrics, organic ranks, local rank grids, site inspection, page performance, local presence, citations, backlinks, call attribution, and site optimization. A concrete new paid Search provider still requires the approved architecture/library decision for its owning feature.
+
 Use current official documentation for the installed version.
 
 ### AI and Robin
@@ -342,6 +358,49 @@ Publishing targets:
 3. Manual/export fallback
 
 Do not promise compatibility with arbitrary WordPress page builders, custom layouts, or unsupported plugins.
+
+### Search Operations
+
+Search Operations is a fulfillment/orchestration system, not an unrestricted autonomous SEO agent.
+
+Required rules:
+
+- Treat `SearchTarget` as the strategic search unit.
+- Keep `WebsitePage` as discovered page identity; Search-specific semantics belong in Search Operations records.
+- Reuse shared Findings, Work Management, Interventions, and Measurement Reviews rather than creating parallel systems.
+- Keep organic rank tracking, local rank grids, Search Console evidence, technical audits, and business outcomes as distinct evidence sources.
+- Keep provider SDKs behind BTLS-owned Search provider interfaces.
+- Track provider-intensive Search usage against program policy and quotas.
+- A fulfilled Search cycle proves agreed work was delivered; it does not prove rankings or revenue improved.
+- Search strategy, consequential content/page decisions, and unsupported external-site changes remain human-controlled.
+
+#### Search optimization authority
+
+Do not implement unbounded or AI-directed automatic website modification.
+
+Search Operations execution classes are:
+
+```text
+AUTO_GUARDED
+APPROVAL_REQUIRED
+HUMAN_ONLY
+UNSUPPORTED
+```
+
+`AUTO_GUARDED` is allowed only when all applicable safeguards pass:
+
+- the property is on a supported BTLS-managed site;
+- the site adapter declares the capability;
+- the operation is explicitly allowlisted;
+- the property automation policy permits it;
+- inputs are deterministic and runtime-validated;
+- the action is idempotent;
+- the action is traceable and auditable;
+- conflicting active work is checked;
+- rollback or reversal exists where risk requires it;
+- no human strategy decision is required.
+
+AI may propose, classify, explain, or draft. AI never grants itself execution authority.
 
 ---
 
@@ -403,7 +462,7 @@ Do not add:
 - Predictive analytics
 - Cross-client benchmarking
 - Full project-management features
-- Automatic website code modification
+- Unbounded or AI-directed automatic website modification
 - Inbound email synchronization
 - Arbitrary WordPress page-builder support
 - Unrestricted AI autonomy
@@ -420,10 +479,10 @@ Run focused tests during implementation.
 Before declaring a numbered feature complete, run the repository’s required equivalents of:
 
 ```bash
-npm run typecheck
-npm run lint
-npm run test
-npm run build
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
 ```
 
 Run end-to-end tests when the feature affects a critical user journey.
@@ -441,6 +500,11 @@ Critical areas require tests for:
 - Finding generation
 - Finding-to-ticket flow
 - Before-and-after measurement
+- Search page/target ownership and cross-tenant denial
+- Organic/local ranking normalization and provider-failure behavior
+- Search fulfillment-cycle requirements
+- Search optimization policy, approval, idempotency, and unsupported-site denial
+- Fleet Remediation property isolation
 
 Do not disable tests, lint rules, strict typing, RLS, or authorization to make checks pass.
 
@@ -545,6 +609,7 @@ Update documentation only when needed.
 - Update `progress-tracker.md` after every implementation session.
 - Update `ui-registry.md` after approving reusable UI patterns.
 - Update `architecture.md` only when a binding architecture decision changes.
+- Keep Search Operations architecture inside canonical `context/architecture.md`; do not create a competing standalone governing architecture.
 - Update `library-docs.md` only when an approved library pattern changes.
 - Update `ui-tokens.md` or `ui-rules.md` only when the design system changes.
 - Do not regenerate whole context files to make a small edit.
@@ -552,15 +617,16 @@ Update documentation only when needed.
 
 ---
 
-## First Feature
+## Current Implementation Target
 
-Begin with:
+Do not hardcode the next feature in this file.
 
-```text
-Phase 1
-Feature 01 — Repository and Tooling
-```
+At the start of each implementation session:
 
-Use `/architect` first.
+1. Read `context/progress-tracker.md`.
+2. Confirm the next not-started numbered feature against `context/build-plan.md`.
+3. Run `/architect` for that feature.
+4. Do not begin implementation until the feature plan is approved.
+5. Do not advance to the following numbered feature until the current feature exit gate passes.
 
-Do not build another feature until Feature 01 passes its exit gate.
+As of the current reconciled context, Features 01–05 are complete and Feature 06 — Storage and Media is the next implementation target. If `context/progress-tracker.md` changes later, the tracker controls.

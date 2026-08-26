@@ -179,8 +179,9 @@ Use this primary order:
 4. Website Intelligence
 5. Smart Blog Studio
 6. Content Intelligence
-7. Work Management
-8. Settings
+7. Search Operations
+8. Work Management
+9. Settings
 
 Administrative items appear in a separate lower group:
 
@@ -905,6 +906,98 @@ Rules:
 
 ---
 
+## 22A. Search Operations
+
+Search Operations is an exception-first fulfillment interface, not a generic SEO metrics dashboard.
+
+### Property workspace
+
+Prioritize:
+
+1. Search Program status
+2. Current fulfillment cycle
+3. Needs Attention items
+4. Awaiting approval
+5. Active Search work
+6. Coverage and ranking evidence
+7. Technical/local audit health
+8. Completed work and delivery proof
+9. Measurement pending/results
+
+### Portfolio workspace
+
+The BTLS-only `/admin/search-operations` view prioritizes:
+
+- Active programs
+- Healthy
+- Needs Attention
+- Blocked
+- Awaiting approval
+- Failed integration/provider collection
+- Failed audit
+- Overdue cycle
+- Failed optimization
+- Provider budget pressure
+
+### SearchTarget and coverage views
+
+- Present the SearchTarget as the strategic unit.
+- Keep service, geography, search intent, keyword cluster, and intended ranking page visible.
+- Coverage states must show the evidence/reason behind `Missing`, `Weak`, `Covered`, `Strong`, `Declining`, `Cannibalized`, or `Insufficient data`.
+- Do not reduce coverage to one unexplained SEO score.
+
+### Organic and local rankings
+
+- Organic rank history and Search Console average position must be labeled as different evidence sources.
+- Rank maps use a geographic grid with clear point ranks, capture date, search term, center/radius, and partial/failed state.
+- Always provide an accessible textual summary of rank-map change.
+- Do not imply visibility where a provider run failed or returned incomplete data.
+
+### Fulfillment and outcome labels
+
+- `Fulfilled` means scoped work was completed or explicitly resolved.
+- `Healthy` means no material operational exception.
+- Neither label means rankings, leads, or revenue improved.
+- Improvement requires Measurement Review evidence.
+
+### Optimization actions
+
+Every action clearly displays one execution class:
+
+- `Auto — Guarded`
+- `Approval required`
+- `Human only`
+- `Unsupported`
+
+Rules:
+
+- Never hide whether an action was automatic, approved, or manual.
+- Show the proposed change/preview before approval where meaningful.
+- Show the exact execution result afterward.
+- Show rollback/reversal only when the adapter genuinely supports it.
+- Strategic or dangerous changes never expose an automatic option.
+- `BTLS managed`, `Supported external`, and `Manual external` site states must be visible so operators do not assume direct execution exists.
+
+### Client-safe Search summaries
+
+Show:
+
+- What BTLS worked on
+- What was fixed or published
+- Visibility changes supported by data
+- Business outcomes where attribution is defensible
+- What is next
+
+Hide:
+
+- Internal hypotheses
+- Dismissed Findings
+- Provider economics
+- Cross-client/fleet data
+- Unapproved strategic notes
+
+---
+
 ## 23. Settings
 
 Settings pages should use a left-side local navigation or clear section tabs.
@@ -1343,6 +1436,8 @@ Before a UI feature is complete, verify:
 - Are dynamic changes announced when needed?
 
 ### Product integrity
+
+For Search Operations, verify that fulfillment status is not presented as SEO success, rank-map failures are not presented as ranking declines, and guarded/approval/manual execution state is explicit.
 
 - Does the UI match the feature’s real authority?
 - Is client-visible content properly approved?
