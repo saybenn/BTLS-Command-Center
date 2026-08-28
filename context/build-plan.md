@@ -1,7 +1,7 @@
 # BTLS Build Plan
 
 > **Repository location:** `context/build-plan.md`  
-> **Project state:** Greenfield; no existing repository  
+> **Project state:** Active implementation; Features 01–05 complete
 > **Companion files:** `context/project-overview.md`, `context/architecture.md`, `context/code-standards.md`, `context/library-docs.md`  
 > **MVP:** Website Intelligence, Smart Blog Studio, Content Intelligence, Revenue Operations / Command Center, Robin, Search Operations Studio, and shared Work Management
 

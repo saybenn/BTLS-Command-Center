@@ -116,6 +116,7 @@ Feature 02 provides semantic dark/light tokens, local theme preference, accessib
 - [x] `context/build-plan.md`
 - [x] `context/ui-tokens.md`
 - [x] `context/ui-rules.md`
+- [x] `context/ui-registry.md`
 - [x] `context/progress-tracker.md`
 
 ---
@@ -133,29 +134,6 @@ No active implementation feature.
 1. [ ] Run `/architect` for Feature 06 — Storage and Media
 2. [ ] Confirm the Feature 06 plan before implementation
 3. [ ] Do not implement Feature 06 until its plan is approved
-
-## First implementation feature
-
-### Phase 1 — Project Bootstrap
-
-#### Feature 01 — Repository and Tooling
-
-- [x] Initialize Next.js App Router application
-- [x] Enable strict TypeScript
-- [x] Add Tailwind CSS
-- [x] Add shadcn/ui foundation
-- [x] Add linting and formatting
-- [x] Add Vitest
-- [x] Add React Testing Library
-- [x] Add Playwright
-- [x] Add Zod environment validation
-- [x] Create approved folder structure
-- [x] Add health Route Handler
-- [x] Add development status page
-- [x] Add CI checks
-- [x] Commit initial context files into repository
-- [x] Run type-check, lint, unit tests, Playwright, and production build
-- [x] Verify Feature 01 exit gate
 
 ---
 

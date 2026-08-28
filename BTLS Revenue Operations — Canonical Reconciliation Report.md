@@ -1,7 +1,7 @@
 # BTLS Revenue Operations — Canonical Reconciliation Report
 
-> **Completed:** 2026-08-26  
-> **Scope:** Canonical documentation/context reconciliation only  
+> **Completed:** 2026-08-26
+> **Scope:** Canonical documentation/context reconciliation only
 > **Controlling specification:** BTLS Revenue Operations — Canonical Reconciliation Plan
 
 ## 1. Files Changed
@@ -131,6 +131,10 @@ No retired uppercase Lead lifecycle code remains in the canonical context.
 
 Verified:
 
+- final repository audit on 2026-08-27 compared baseline `0344b21` through the working tree;
+- the changed-file allowlist contains exactly the ten documentation/report files listed in this report;
+- `git diff --check 0344b21` passes and `context/ui-registry.md` remains unchanged;
+- no Prisma, migration, application-source, dependency, lockfile, Supabase, or configuration path changed;
 - domain ownership and terminology are consistent;
 - source-domain lifecycles and derived-state rules are explicit;
 - Conversation uses Customer plus required primary Contact;
