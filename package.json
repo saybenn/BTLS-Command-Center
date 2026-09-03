@@ -26,6 +26,7 @@
     "db:migrate:supabase-security": "tsx scripts/apply-supabase-security-migrations.ts",
     "db:migrate:reset": "prisma migrate reset --force",
     "db:seed": "prisma db seed",
+    "maintenance:media-cleanup": "node --conditions=react-server --import tsx scripts/maintenance/run-media-cleanup.ts",
     "db:local:deploy": "tsx scripts/deploy-local-database.ts",
     "db:reset": "tsx scripts/reset-local-database.ts"
   },

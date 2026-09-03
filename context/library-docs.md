@@ -1,6 +1,6 @@
 # BTLS Library Docs
 
-> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Robin, shared Work Management, integrations, and background jobs.
+> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Search Operations Studio, Robin, shared Work Management, integrations, and background jobs.
 >
 > **Repository location:** `context/library-docs.md`
 >
@@ -529,7 +529,7 @@ Rules:
 
 Use TanStack Table for data-heavy operator views such as:
 
-- Unified Lead Inbox
+- Revenue Operations action and Customer/Lead tables
 - Property overview tables
 - Findings queues
 - Work-ticket queues
@@ -694,31 +694,51 @@ Rules:
 
 The OpenAI SDK is used behind `src/server/integrations/openai`.
 
-Feature modules and Robin tools do not instantiate provider clients directly.
+Feature modules, Quick Capture, and Robin tools do not instantiate provider clients directly.
 
 ### Structured output
 
 Use schema-constrained structured output or tool calling for:
 
-- Lead extraction
-- Qualification result
-- Suggested next action
-- Plain-language Finding explanation
-- Ticket draft
+- Quick Capture extraction from operator text or transcribed audio
+- Generated Job Brief drafts
+- Suggested next actions
+- Contextual AttentionFlag summaries backed by stored source facts
+- Plain-language Finding explanations
+- Ticket drafts
 - Content planning assistance
 
 Rules:
 
 - Model names are configured centrally, not scattered in feature code.
 - Every structured result is runtime validated.
-- Treat model output as untrusted input.
+- Treat model output as an untrusted proposal until a user or authorized automation accepts it.
+- Persist the source, proposed actions, validation outcome, and acceptance or rejection for material Quick Capture and Robin runs.
 - Do not give the model database credentials or unrestricted query tools.
-- Do not let AI decide tenant access or application permissions.
+- Do not let AI decide tenant access, application permissions, source-record truth, or derived operational state.
 - Preserve prompt, tool, Knowledge Pack, and model versions for material Robin runs.
 - Use lower-variance settings for extraction, classification, and tool selection.
 - Use creative generation only where the product explicitly needs it.
-- Never claim a Finding or intervention succeeded based only on model text.
-- Avoid sending unnecessary personal or sensitive data.
+- Never claim a Finding, intervention, payment, acceptance, or completed job based only on model text.
+- Avoid sending unnecessary personal, payment, or other sensitive data.
+
+### Typed proposal pattern
+
+```text
+Human Quick Capture text or validated transcript
+→ model produces typed proposals with source references
+→ Zod validation
+→ property, capability, duplicate, conflict, and business-context checks
+→ proposal is always shown with confidence and before/after effects
+→ human confirms selected proposals
+→ normal application service
+→ persisted source-domain records and audit trail
+```
+
+Quick Capture is not a free-form database mutation channel and never uses Robin automatic
+mode. A separately governed Robin action may execute only through its own approved
+operating-mode checks. Generated Job Brief content remains derived and non-authoritative,
+and AttentionFlag explanations must point back to stored source facts.
 
 ### Robin tool pattern
 
@@ -732,20 +752,22 @@ Model proposes typed tool action
 → persisted result and audit trail
 ```
 
+Robin consumes Revenue Operations services. It does not own Customer, Contact, Lead, Estimate, Appointment, Job, Invoice, Payment, Conversation, Message, or derived attention state.
+
 ---
 
 ## 17. Postmark
 
 **Package:** `postmark`
 
-Postmark is the BTLS outbound email provider for MVP.
+Postmark is the BTLS outbound email provider for MVP behind the BTLS-owned `EmailProvider` adapter.
 
 ### MVP scope
 
 Included:
 
 - Transactional system email
-- Lead acknowledgment email
+- Customer acknowledgments, estimate delivery, reminders, invoice delivery, and review requests
 - Robin-approved outbound email
 - Employee notifications
 - Delivery and bounce status handling
@@ -755,6 +777,19 @@ Deferred:
 - Inbound email synchronization
 - Full mailbox behavior
 - Reply ingestion into the Command Center
+- Connected Gmail or Yahoo mailbox sending
+
+### Sending identity
+
+A property-owned `SendingIdentity` selects the approved sending mode and customer-facing reply address without leaking provider concepts into Revenue Operations services.
+
+Approved modes:
+
+- `BTLS_MANAGED` — BTLS-managed transactional sender with a configured property reply-to address
+- `CUSTOM_DOMAIN` — verified customer domain through the provider adapter
+- `CONNECTED_MAILBOX` — reserved for a later approved mailbox integration; not implemented by Postmark alone
+
+For MVP, Gmail and Yahoo addresses may be used as reply-to addresses on BTLS-managed mail. Do not represent that as authenticated sending from those consumer domains.
 
 ### Sending pattern
 
@@ -773,7 +808,9 @@ Use Postmark templates for stable system messages such as:
 - Invitations
 - Account notifications
 - Standard acknowledgments
+- Estimate and invoice delivery
 - Scheduled reminders
+- Review requests
 
 Use a validated direct transactional body when Robin generates approved conversational content.
 
@@ -781,12 +818,12 @@ Rules:
 
 - Use the official Node SDK.
 - Use the Transactional Message Stream for operational mail.
+- Resolve the authorized `SendingIdentity` before sending.
 - Store the Postmark `MessageID` for delivery correlation.
 - Provide both HTML and plain-text content where applicable.
 - Do not expose the server token.
-- Do not call Postmark directly from feature components or Robin.
-- Respect client/property sender configuration.
-- Separate system identity from client-facing reply addresses.
+- Do not call Postmark directly from feature components, Revenue domain services, or Robin.
+- Keep system identity, envelope sender, visible From identity, and Reply-To behavior explicit.
 - Treat bounce and delivery webhooks as idempotent provider events.
 - Outbound-only MVP means customer replies are not imported into BTLS.
 
@@ -809,14 +846,15 @@ Webhook handlers must:
 
 **Package:** `twilio`
 
-Twilio provides two-way SMS for Robin and human lead communication.
+Twilio provides two-way SMS for human and Robin-assisted Customer and Contact communication.
 
 ### MVP operating model
 
 - One Twilio Messaging Service for the BTLS application or controlled environment.
 - A dedicated SMS-capable number assigned to each participating client property.
 - The property-number mapping is stored in BTLS.
-- Inbound and outbound messages appear in the lead conversation timeline.
+- Inbound and outbound messages appear in a Customer-owned Conversation with a required primary Contact.
+- A Conversation may reference a Lead, Estimate, Appointment, Job, Invoice, or another approved operational context without owning that record.
 - Robin uses the same approved messaging tools as human-triggered automation.
 - MMS may be accepted for customer images only when storage and safety handling are enabled.
 
@@ -838,6 +876,7 @@ Rules:
 
 - Normalize telephone numbers to E.164.
 - Resolve the sending number or Messaging Service from the property configuration.
+- Resolve the authorized Customer, primary Contact, and Conversation in the application service.
 - Store the Twilio Message SID.
 - Configure delivery-status callbacks.
 - Check consent and opt-out state before every automated send.
@@ -854,8 +893,9 @@ Twilio inbound webhook
 → validate normalized payload
 → store webhook receipt
 → resolve property from destination number
-→ match or create conversation/contact as allowed
-→ store inbound message
+→ match Contact and Customer by normalized phone under that property
+→ resolve or create the allowed Conversation
+→ store inbound Message
 → update consent/opt-out state
 → dispatch Robin or human-notification job
 → return promptly
@@ -866,6 +906,7 @@ Rules:
 - Use Twilio's official request-validation helper.
 - Trust neither `From` nor `To` until validation succeeds.
 - Resolve the property from a server-owned phone-number mapping.
+- Do not silently create a Customer or Lead when identity is ambiguous; route unmatched inbound messages to an explicit exception or human-resolution path.
 - Store media references only after controlled import and validation.
 - Do not perform the full Robin response inside the webhook request.
 - Correlate duplicate webhooks by provider identifiers.
@@ -888,29 +929,45 @@ Do not ship automated US application-to-person messaging until required registra
 
 ## 19. Cronofy
 
-**Provider:** Cronofy API through a BTLS adapter
+**Provider:** Cronofy API through a BTLS-owned calendar adapter
 
-Cronofy provides calendar connection, availability, and approved scheduling.
+BTLS `Appointment` and scheduled `JobVisit` records are the source of operational truth. Cronofy supplies connected-calendar availability and approved projection or synchronization behavior.
 
 Use it for:
 
 - Connected calendar accounts
 - Availability lookup
-- Booking approved appointment types
-- Calendar event creation
-- Rescheduling and cancellation where supported
+- Projecting approved BTLS appointments or visits to external calendars
+- Rescheduling and cancellation synchronization where supported
 
 Rules:
 
 - Keep Cronofy credentials and tokens server-only.
-- Store external profile/calendar identifiers in the property/user integration records.
+- Store external profile/calendar identifiers in property or user integration records.
 - Normalize availability and event data into BTLS-owned types.
-- Store the external event ID after creation.
-- Use idempotency for scheduling.
+- Store the external event ID and synchronization outcome after projection.
+- Use idempotency for scheduling and sync commands.
 - Confirm time zone explicitly.
+- Never infer that a provider calendar event creates or changes a BTLS Appointment or JobVisit unless the authorized application service accepts the change.
 - Robin may schedule only approved workflow steps and configured appointment types.
 - Do not assume a calendar write succeeded until the provider response is persisted.
-- Provider outage creates a human handoff rather than repeated customer promises.
+- Provider outage creates an explicit sync exception and human handoff rather than repeated customer promises.
+
+---
+
+## Deferred Revenue Provider Interfaces
+
+These BTLS-owned boundaries may be introduced only when the owning feature needs them:
+
+- `TranscriptionProvider` — provider-independent transcription for Feature 21 voice Quick Capture; no vendor is selected.
+- `PaymentProvider` — optional future online payment execution normalized into BTLS Invoice/Payment truth; core manual/external Payment never requires a processor ID.
+- `AddressLookupProvider` — optional future address assistance; manual ServiceLocation entry remains the default.
+- Connected-mailbox sending/synchronization remains deferred and is not part of Postmark outbound behavior.
+
+Browser signature capture uses private shared MediaAsset storage. Commercial document or
+signed-artifact generation remains BTLS controlled; Feature 16 may select a local/server
+library if required. No external signature or document-generation SaaS is required by the
+architecture.
 
 ---
 
@@ -1011,6 +1068,146 @@ Rules:
 - Never claim an exact GBP query belongs to an individual lead.
 - Import through scheduled jobs.
 - Surface connection or permission failures through Data Health.
+
+---
+
+# Search Operations Provider Boundaries
+
+Search Operations adds provider-intensive capabilities without selecting vendors prematurely. Feature code depends on BTLS-owned interfaces and normalized types. Exact providers are selected only during the owning numbered feature with an explicit dependency/library decision.
+
+## Search Provider Interfaces
+
+```text
+KeywordMetricsProvider
+OrganicRankProvider
+LocalRankGridProvider
+SiteInspectionAdapter
+PagePerformanceProvider
+LocalPresenceProvider
+CitationProvider
+BacklinkProvider
+CallAttributionProvider
+SiteOptimizationAdapter
+```
+
+Rules:
+
+- Provider SDK imports stay inside `src/server/integrations/...`.
+- Validate provider responses at the adapter boundary.
+- Normalize provider-specific results into BTLS-owned contracts before feature code sees them.
+- Treat timeouts, partial data, rate limits, and provider outages explicitly.
+- Record property/program usage units and estimated cost for provider-intensive Search operations.
+- Provider failure is operational failure, not evidence that SEO performance declined.
+- Do not install multiple providers for the same capability without an approved reason.
+
+## Keyword Metrics Provider
+
+Used for dated search-demand evidence such as volume, CPC, difficulty, and related provider metrics when a Search Program enables it.
+
+Rules:
+
+- Store normalized values as dated `KeywordMetricSnapshot` evidence.
+- Do not write mutable provider metrics directly onto `SearchKeyword`.
+- Batch where the selected provider supports it.
+- Respect program keyword-count and refresh-frequency quotas.
+
+Exact provider: **deferred to Feature 40 — Search Provider and Usage Foundation**.
+
+## Organic Rank Provider
+
+Used for point-in-time organic ranking observations.
+
+Rules:
+
+- Do not treat Search Console average position as an OrganicRankProvider result.
+- Persist search context, device, capture time, found/not-found state, result URL, and matched WebsitePage where possible.
+- Respect program tracked-keyword/location/depth quotas.
+
+Exact provider: **deferred to Features 40–41**.
+
+## Local Rank Grid Provider
+
+Used for local/Maps geo-grid evidence.
+
+Rules:
+
+- Persist grid geometry and capture time with each run.
+- Keep partial/failed state explicit.
+- Store deterministic aggregates used frequently by the product, while avoiding unnecessary full SERP retention.
+- Respect grid-size and frequency quotas because request count can scale quickly.
+
+Exact provider: **deferred to Features 40–41**.
+
+## Site Inspection Adapter
+
+Used for normalized technical crawl/inspection evidence.
+
+Before choosing a crawler implementation, the owning feature must explicitly resolve:
+
+- robots behavior
+- sitemap behavior
+- crawl/page limits
+- JavaScript rendering requirements
+- rate limiting/concurrency
+- timeouts
+- URL normalization
+- redirect behavior
+- content-type limits
+- SSRF/private-network protection
+- runtime/provider compatibility
+
+Do not store full HTML history by default.
+
+Exact crawler: **deferred to Feature 42 — Site Inspection and Technical Audit**.
+
+## Page Performance Provider
+
+Used for standardized page-performance evidence in Search audits. Google PageSpeed-compatible implementation may be selected when Feature 42 is specified.
+
+Rules:
+
+- Call from server/background jobs only.
+- Persist normalized evidence and capture context.
+- Provider failure becomes unavailable evidence, not a negative Finding.
+
+Exact implementation: **deferred to Feature 42**.
+
+## Citation and Backlink Providers
+
+These are narrow evidence providers, not the foundation of a general Ahrefs/Semrush replacement.
+
+Rules:
+
+- Citation checks are onboarding/foundation and exception driven.
+- Backlink collection focuses on useful new/lost/referring-domain evidence.
+- Do not add automated mass outreach behavior.
+- Use low-frequency policy defaults unless a service tier explicitly requires more.
+
+Exact providers: **deferred to Feature 44**.
+
+## Call Attribution Provider
+
+Optional Search measurement input when call tracking is commercially enabled. Revenue Operations remains the source of truth for Leads and downstream business outcomes.
+
+Exact provider: **deferred**.
+
+## Site Optimization Adapter
+
+Search Operations executes site changes only through a capability-aware BTLS adapter.
+
+Rules:
+
+- Adapter declares supported operation capabilities.
+- Feature code never assumes every site supports the same operations.
+- `AUTO_GUARDED` still requires application policy and authorization; adapter capability alone is insufficient.
+- Validate and idempotently execute every action.
+- Persist exact execution result.
+- Expose preview before approval where meaningful.
+- Expose rollback/reversal only when genuinely supported.
+- AI does not call the adapter directly and never grants execution authority.
+- Unsupported external sites return a typed unsupported/manual result.
+
+Exact first operation allowlist: **deferred to Feature 49 — Bounded Optimization Execution**.
 
 ---
 
@@ -1363,7 +1560,11 @@ The expected library/provider set is:
 
 Do not add MVP dependencies for:
 
-- Inbound email synchronization
+- Inbound email synchronization or connected-mailbox sending
+- A concrete `TranscriptionProvider` until Feature 21 selects an approved implementation
+- A concrete `PaymentProvider`; manual and external payment recording is sufficient for MVP
+- An `AddressLookupProvider` until an approved feature requires it
+- External document-generation or electronic-signature SaaS; Feature 16 must first use BTLS-owned document and acceptance boundaries
 - General campaign management
 - Paid-ad platform ingestion
 - Advanced call attribution
@@ -1372,7 +1573,13 @@ Do not add MVP dependencies for:
 - Full project management
 - Real-time collaborative article editing
 - Arbitrary WordPress page-builder support
-- Automatic site code modification
+- Generic libraries/frameworks for unbounded or AI-directed site modification
+- Search keyword-metrics provider until Feature 40
+- Organic-rank provider until Features 40–41
+- Local rank-grid provider until Features 40–41
+- Search crawler/site-inspection implementation until Feature 42
+- Citation/backlink providers until Feature 44
+- First Search `AUTO_GUARDED` operation allowlist until Feature 49
 
 ## 36. Final Rule
 

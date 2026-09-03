@@ -111,7 +111,9 @@ describe("Feature 05 Slice 2 server-scoped property context", () => {
 
     expect(resolution).toMatchObject({
       status: "authorized",
-      context: { capabilities: { property: [] } },
+      context: {
+        capabilities: { property: ["media.view", "media.manage", "media.sensitive.view"] },
+      },
     });
 
     const ownerMembership = {
@@ -138,7 +140,14 @@ describe("Feature 05 Slice 2 server-scoped property context", () => {
       status: "authorized",
       context: {
         effectiveRole: "CLIENT_OWNER",
-        capabilities: { property: ["property.member.manage"] },
+        capabilities: {
+          property: [
+            "property.member.manage",
+            "media.view",
+            "media.manage",
+            "media.sensitive.view",
+          ],
+        },
       },
     });
   });
@@ -158,14 +167,23 @@ describe("Feature 05 Slice 2 server-scoped property context", () => {
       context: {
         membership: null,
         propertyAccess: null,
-        capabilities: { platform: ["platform.property.read"] },
+        capabilities: {
+          platform: ["platform.property.read", "platform.media.view", "platform.media.manage"],
+        },
       },
     });
     expect(admin).toMatchObject({
       status: "authorized",
       context: {
         capabilities: {
-          platform: ["platform.property.read", "platform.property.manage", "platform.user.manage"],
+          platform: [
+            "platform.property.read",
+            "platform.property.manage",
+            "platform.user.manage",
+            "platform.media.view",
+            "platform.media.manage",
+            "platform.media.sensitive.view",
+          ],
         },
       },
     });

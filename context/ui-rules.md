@@ -179,8 +179,9 @@ Use this primary order:
 4. Website Intelligence
 5. Smart Blog Studio
 6. Content Intelligence
-7. Work Management
-8. Settings
+7. Search Operations
+8. Work Management
+9. Settings
 
 Administrative items appear in a separate lower group:
 
@@ -748,45 +749,223 @@ Show:
 
 ## 19. Revenue Operations
 
-### Lead Inbox
+Revenue Operations follows five binding interface principles:
 
-The inbox should emphasize:
+```text
+ACTION FIRST
+CONTEXT SECOND
+ADVANCED DETAIL ON DEMAND
+ROBUST UNDERNEATH / SIMPLE IN FRONT
+CALM ATTENTION
+```
 
-- Newness
-- owner
-- next action
-- age
-- lifecycle status
-- value where known
-- overdue state
+The durable domain may be detailed. The normal worker path must use defaults,
+composition, and progressive disclosure so users are not forced to maintain the entire
+entity graph.
 
-Do not prioritize decorative lead scores over actual workflow state.
+### Revenue Operations home
 
-### Lead detail
+The primary question is:
 
-Recommended order:
+> **What should I do next?**
 
-1. Customer and opportunity summary
-2. Next action
-3. Lifecycle controls
-4. Conversation
-5. Activity history
-6. Estimate, job, and payment details
-7. Attribution
-8. Internal notes
+Recommended hierarchy:
 
-### Rules
+1. priority NextRequiredActions;
+2. material BusinessExceptions;
+3. active assigned work;
+4. concise Customer and operating context;
+5. drill-down.
 
-- The parent lead status is visually primary.
-- Estimate, job, and payment data must not create competing lifecycle banners.
+Do not make a KPI dashboard the primary operating screen. Summaries support decisions;
+they do not displace the next useful action.
+
+### Owner and director view
+
+The primary question is:
+
+> **What is not being handled?**
+
+Group ordinary attention into understandable operating areas such as:
+
+- Follow-up
+- Scheduling
+- Billing
+- Collections
+- Customer care
+- Communication, delivery, and integration failures
+
+Use danger styling only for genuine urgency or risk. Ordinary exceptions should use
+neutral, informational, or soft-warning treatment plus a plain-language reason and next
+action.
+
+### Customer
+
+Customer is the durable operating folder.
+
+Recommended default order:
+
+1. identity and primary Contact;
+2. next required action;
+3. open opportunities and work;
+4. material AttentionFlags and BusinessExceptions;
+5. active Estimate, Job, and Invoice summaries;
+6. Customer/Contact communication;
+7. history, notes, and files;
+8. advanced locations, assets, and other detail.
+
+Internal RevenueNote content must never look like a customer-facing Message.
+
+### Lead
+
+Lead is one commercial opportunity.
+
+Show:
+
+- requested service;
+- source and attribution;
+- owner;
+- actual sales stage;
+- next required action;
+- related Appointment and Estimate;
+- relevant communication and RevenueActivity;
+- win or loss outcome.
+
+Do not show Estimate delivery, Job progress, Invoice state, Payment state, follow-up,
+stale, or overdue facts as Lead lifecycle stages.
+
+### Estimate
+
+Employee action flow:
+
+```text
+Draft
+→ Issue
+→ Send / Present
+→ Accepted
+```
+
+An employee may record rejection. A salesperson controls revisions.
+
+Customer-facing flow:
+
+```text
+View
+→ Agreement
+→ Sign and Accept
+```
+
+Do not expose customer edit, comment, revision-request, or public Reject controls.
+Acceptance must identify the exact revision. Orthogonal facts may coexist quietly, for
+example:
+
+```text
+Issued · Sent · Accepted · Job Scheduled
+```
+
+### Schedule
+
+One visual schedule may combine Appointment and JobVisit, but each item must retain a
+clear type label, meaning, and owning status. Do not collapse them into one domain merely
+because they share a calendar.
+
+### Job
+
+Primary actions are business verbs:
+
+```text
+Start work
+Work complete
+Close
+```
+
+Do not use a generic status picker as the normal field workflow.
+
+Show visits, tasks, notes, photos/files, ServiceAssets, ChangeOrders, and ServiceIssues
+only when useful. They are not mandatory gates for simple work unless a later explicit
+property policy requires them.
+
+### Invoice
+
+Primary summary:
+
+```text
+Total
+Paid
+Balance
+Due
+```
+
+The authorized user records factual Payment input:
+
+```text
+amount
+method
+received date
+optional note/reference
+```
+
+The interface derives and explains `UNPAID / PARTIALLY_PAID / PAID / OVERDUE`. Do not
+ask the user to set those values manually. Issue, void, record Payment, and
+reverse/correct Payment remain explicit consequential actions.
+
+### Quick Capture
+
+Always show:
+
+- source text or transcript;
+- confidence;
+- source phrase where useful;
+- before/current value;
+- after/proposed value;
+- proposed new records;
+- missing or ambiguous information;
+- resulting derived effects;
+- selected proposals and Confirm.
+
+Low-confidence proposals may be unselected by default. There is no auto-apply mode.
+Consequential proposals route through the owning confirmation workflow instead of hiding
+several legal, financial, or external effects behind one AI button.
+
+### Time
+
+Default field interaction:
+
+```text
+Clock In
+→ current session / elapsed time
+→ Clock Out
+```
+
+Personal history is secondary. Authorized team history, correction with reason, and
+export are manager/detail surfaces rather than the default clock flow.
+
+### Progressive disclosure
+
+Use:
+
+- collapsible sections;
+- secondary tabs;
+- drawers or sheets;
+- contextual panels;
+- “More details” controls;
+- property defaults.
+
+Do not force optional ServiceLocation, ServiceAsset, Appointment, JobVisit, JobTask,
+notes, photos, files, ChangeOrder, or ServiceIssue into every simple flow.
+
+### Revenue UI rules
+
 - Human and Robin actions must be distinguishable.
-- Overdue and stale states must be clear.
-- Conversation history is chronological.
-- Internal notes must not resemble customer-facing messages.
-- Revenue fields require the correct capability.
+- Conversation history is chronological and Customer/Contact scoped.
+- RevenueActivity and internal notes remain visually distinct from customer Messages.
+- BusinessException and AttentionFlag do not automatically mean red alert.
+- Status meaning uses existing semantic tokens; do not create feature-specific Revenue colors.
+- Sensitive revenue and financial controls require the correct capability.
+- Loading, empty, error, disabled, and success states are required.
+- Consequential actions clearly state the business effect before confirmation.
 
 ---
-
 ## 20. Robin
 
 Robin should feel helpful and controlled.
@@ -902,6 +1081,98 @@ Rules:
 - Missing attribution must reduce certainty, not erase useful evidence.
 - Topic-cluster views should explain cluster contribution in plain language.
 - Avoid recreating a general Funnel Mapper.
+
+---
+
+## 22A. Search Operations
+
+Search Operations is an exception-first fulfillment interface, not a generic SEO metrics dashboard.
+
+### Property workspace
+
+Prioritize:
+
+1. Search Program status
+2. Current fulfillment cycle
+3. Needs Attention items
+4. Awaiting approval
+5. Active Search work
+6. Coverage and ranking evidence
+7. Technical/local audit health
+8. Completed work and delivery proof
+9. Measurement pending/results
+
+### Portfolio workspace
+
+The BTLS-only `/admin/search-operations` view prioritizes:
+
+- Active programs
+- Healthy
+- Needs Attention
+- Blocked
+- Awaiting approval
+- Failed integration/provider collection
+- Failed audit
+- Overdue cycle
+- Failed optimization
+- Provider budget pressure
+
+### SearchTarget and coverage views
+
+- Present the SearchTarget as the strategic unit.
+- Keep service, geography, search intent, keyword cluster, and intended ranking page visible.
+- Coverage states must show the evidence/reason behind `Missing`, `Weak`, `Covered`, `Strong`, `Declining`, `Cannibalized`, or `Insufficient data`.
+- Do not reduce coverage to one unexplained SEO score.
+
+### Organic and local rankings
+
+- Organic rank history and Search Console average position must be labeled as different evidence sources.
+- Rank maps use a geographic grid with clear point ranks, capture date, search term, center/radius, and partial/failed state.
+- Always provide an accessible textual summary of rank-map change.
+- Do not imply visibility where a provider run failed or returned incomplete data.
+
+### Fulfillment and outcome labels
+
+- `Fulfilled` means scoped work was completed or explicitly resolved.
+- `Healthy` means no material operational exception.
+- Neither label means rankings, leads, or revenue improved.
+- Improvement requires Measurement Review evidence.
+
+### Optimization actions
+
+Every action clearly displays one execution class:
+
+- `Auto — Guarded`
+- `Approval required`
+- `Human only`
+- `Unsupported`
+
+Rules:
+
+- Never hide whether an action was automatic, approved, or manual.
+- Show the proposed change/preview before approval where meaningful.
+- Show the exact execution result afterward.
+- Show rollback/reversal only when the adapter genuinely supports it.
+- Strategic or dangerous changes never expose an automatic option.
+- `BTLS managed`, `Supported external`, and `Manual external` site states must be visible so operators do not assume direct execution exists.
+
+### Client-safe Search summaries
+
+Show:
+
+- What BTLS worked on
+- What was fixed or published
+- Visibility changes supported by data
+- Business outcomes where attribution is defensible
+- What is next
+
+Hide:
+
+- Internal hypotheses
+- Dismissed Findings
+- Provider economics
+- Cross-client/fleet data
+- Unapproved strategic notes
 
 ---
 
@@ -1198,17 +1469,20 @@ Rules:
 ### Revenue Operations mobile web
 
 - Revenue Operations web screens must be responsive and usable from a phone browser.
-- Mobile web is not expected to equal the eventual native application.
-- Field-critical actions must remain simple:
+- Mobile web supports the current field workflow; native mobile remains a later validated direction.
+- Field-critical actions must remain simple and touch friendly:
   - Call
   - Text
+  - Quick Capture
   - Add note
-  - Change status
-  - Complete task
+  - Start work
+  - Work complete
   - Upload photo
+  - Record Payment when authorized
+  - Clock in/out
 - Avoid hover-only controls.
-- Avoid desktop-only dense tables for Lead workflows.
-- Lead detail should convert into a prioritized mobile layout.
+- Avoid desktop-only dense tables for Customer, Lead, schedule, Job, and Invoice workflows.
+- Customer and work detail should convert into a prioritized mobile layout.
 - Touch controls should be comfortably sized.
 - Smart Blog Studio and detailed Intelligence workflows may remain desktop-first.
 
@@ -1343,6 +1617,8 @@ Before a UI feature is complete, verify:
 - Are dynamic changes announced when needed?
 
 ### Product integrity
+
+For Search Operations, verify that fulfillment status is not presented as SEO success, rank-map failures are not presented as ranking declines, and guarded/approval/manual execution state is explicit.
 
 - Does the UI match the feature’s real authority?
 - Is client-visible content properly approved?

@@ -1290,26 +1290,16 @@ failed action:       danger treatment
 
 Do not turn every Robin surface into a purple gradient. The product should remain operational, not futuristic decoration.
 
-## Lead status
+## Revenue status mapping
 
-| Status | Suggested treatment |
-|---|---|
-| New | Info |
-| Contacted | Accent |
-| Qualified | Intelligence |
-| Estimate Scheduled | Warning |
-| Estimate Sent | Warning |
-| Follow-Up | Warning |
-| Sale Won | Success |
-| Lost | Danger |
-| Stale | Neutral muted |
-| Job Scheduled | Info |
-| Job In Progress | Accent |
-| Job Complete | Success |
-| Payment Due | Warning |
-| Paid | Success |
+Revenue uses the existing semantic status treatments; it does not receive a
+feature-specific color family.
 
-The final status mapping belongs in shared UI components, not repeated feature code.
+Lead stages are limited to `NEW`, `CONTACTED`, `QUALIFIED`, `WON`, and `LOST`.
+Appointment, Estimate, Job, Invoice, Payment, next-action, and exception states retain
+their owning domain meaning and must not be flattened into one Lead-status table.
+
+The final contextual mapping belongs in shared UI components, not repeated feature code.
 
 ## Work tickets
 

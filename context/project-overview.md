@@ -11,9 +11,9 @@
 
 ## About the Project
 
-The BTLS Command Center is a multi-tenant business operations and web-growth platform for local service businesses.
+The BTLS Command Center is a multi-tenant service-business operations and web-growth platform for local service businesses.
 
-It brings lead management, customer follow-up, content production, website performance diagnosis, and improvement work into one property-scoped workspace.
+It connects customer acquisition to communication, sales, scheduling, field fulfillment, invoicing, collected revenue, content production, website performance diagnosis, recurring Search fulfillment, and measurable improvement work in one property-scoped workspace.
 
 The product is managed from one BTLS codebase. Each client business and website is represented by records, permissions, settings, and integrations in the shared platform rather than by a separate application deployment.
 
@@ -23,15 +23,17 @@ The product is managed from one BTLS codebase. Each client business and website 
 
 BTLS helps service businesses:
 
-- Capture website opportunities
-- Respond to leads quickly
-- Track opportunities through sales, fulfillment, and payment
-- Automate approved customer communication
+- Capture opportunities into durable Customer, Contact, and Lead records
+- Respond and communicate quickly
+- Estimate, schedule, perform authorized work, invoice, and record money received
+- Surface clear next actions and operational exceptions
+- Automate only approved customer communication and lifecycle work
 - Create purposeful SEO content
 - Understand whether websites and content are producing useful business outcomes
 - Turn evidence-backed Findings into measurable improvement work
+- Operate recurring SEO fulfillment through standardized search targeting, monitoring, exception handling, and measurable work
 
-The system should reduce the need to manage leads, analytics, SEO content, communication, and improvement work through disconnected tools.
+The system should reduce the need to manage customer operations, analytics, SEO content, communication, and improvement work through disconnected tools.
 
 ---
 
@@ -58,17 +60,25 @@ A service business or BTLS operator may need to:
 
 The Command Center provides:
 
-- One Unified Lead Inbox
-- One lead lifecycle
-- One conversation and activity timeline
-- Robin-assisted communication and follow-up
+- One durable Customer operating record
+- One prioritized Revenue Operations workspace
+- Separate, connected Lead, Appointment, Estimate, Job, Invoice, and Payment truth
+- Clear next actions and operational exceptions
+- Customer/Contact communication history
+- Robin-assisted communication and approved lifecycle work
 - One Smart Blog Studio
-- Evidence-backed Website and Content Findings
+- Evidence-backed Website, Content, and Search Findings
 - Predetermined Work Packages
 - Shared work tickets
 - Intervention history
 - Before-and-after measurement
 - Property-level and cross-property operating views
+- Search Programs and recurring fulfillment cycles
+- Search-target coverage across services, geographies, intent, and topical support
+- Organic rank and local geo-grid visibility evidence
+- Continuous technical/search monitoring
+- Bounded guarded optimization for supported BTLS-managed sites
+- Search delivery proof connected to later outcome measurement
 
 The system should present the next useful action instead of merely displaying more data.
 
@@ -76,7 +86,7 @@ The system should present the next useful action instead of merely displaying mo
 
 ## Product Structure
 
-The MVP contains two product groups.
+The MVP contains three product studios.
 
 ### Group 1 — Web Growth Studio
 
@@ -89,11 +99,21 @@ The MVP contains two product groups.
 4. Revenue Operations / Command Center
 5. Robin AI Automation Agent
 
+Revenue Operations is the service-business operating core for Customers, opportunities,
+communication, scheduling, Estimates/acceptance, Jobs/field work, Invoices/Payments,
+next actions, operational exceptions, basic time tracking, and Quick Capture. Robin is a
+controlled consumer of the approved application services, not a separate owner of that
+business truth.
+
+### Group 3 — Search Operations Studio
+
+6. Search Operations / Fulfillment
+
 ### Shared Feature
 
-6. Work Management
+7. Work Management
 
-Work Management is shared by Website Intelligence and Content Intelligence.
+Work Management is shared by Website Intelligence, Content Intelligence, and Search Operations.
 
 ---
 
@@ -101,18 +121,9 @@ Work Management is shared by Website Intelligence and Content Intelligence.
 
 Web Growth Studio is the primary commercial MVP.
 
-Revenue Operations launches as a clearly labeled web beta. It is expected to become a dedicated mobile application later, while the web version remains the administrative and desktop workspace.
+Revenue Operations launches as a clearly labeled, field-capable responsive web beta. The web version supports call/text, Estimate presentation and acceptance, schedule visibility, Start Work and Work Complete, photos and notes, authorized Payment recording, clock in/out, and Quick Capture from a phone browser.
 
-The eventual mobile application will focus on field workflows:
-
-- Assigned leads
-- Calls and messages
-- Status updates
-- Notes and photos
-- Appointments
-- Job updates
-- Payment status
-- Robin handoffs and notifications
+A dedicated native mobile application remains post-MVP. Its scope will be designed only after real field usage validates needs such as offline work, background behavior, and deeper device integration. The responsive web application remains the administrative and desktop workspace.
 
 ---
 
@@ -120,9 +131,9 @@ The eventual mobile application will focus on field workflows:
 
 ```text
 One BTLS application
-→ many client accounts
+→ many ClientAccounts subscribing to BTLS
 → one or more properties per account
-→ property-scoped users, data, integrations, settings, and automation
+→ property-scoped users, end Customers, operating data, integrations, settings, and automation
 ```
 
 A `ClientProperty` represents one business website and its connected operating data.
@@ -176,12 +187,16 @@ Needs:
 Responsible for:
 
 - Managing leads where assigned
-- Reviewing Website and Content Findings
+- Reviewing Website, Content, and Search Findings
 - Creating and completing work tickets
 - Creating and publishing content
 - Monitoring client performance
 - Reviewing Robin handoffs
 - Explaining work to clients
+- Overseeing recurring Search Programs
+- Reviewing Search coverage/ranking/technical exceptions
+- Approving strategic or guarded Search actions
+- Managing portfolio Search fulfillment by exception rather than opening every property
 
 Needs:
 
@@ -195,51 +210,56 @@ Needs:
 
 Responsible for:
 
-- Understanding business performance
-- Managing client users
-- Reviewing leads and outcomes
+- Understanding Customer, work, collection, and growth outcomes
+- Managing client users and Revenue defaults
+- Reviewing unresolved operational exceptions
+- Overseeing Job, Invoice, Payment, and team state at the authorized level
 - Approving selected work or automation
 - Viewing approved Findings and completed work
 
 Needs:
 
 - Plain-English summaries
-- Revenue and lead outcomes
+- Revenue outcomes and what is not being handled
 - Visibility into planned and completed work
-- Control over Robin and user access
+- Control over Robin, Revenue settings, and user access
 
 ## Client Manager
 
 Responsible for:
 
-- Managing leads
-- Assigning employees
-- Reviewing follow-up
-- Updating estimates, jobs, and payments
+- Managing Customer and Lead records
+- Assigning employees and scheduling Appointments or field work
+- Creating and managing Estimates, Jobs, Invoices, and factual Payments where authorized
+- Correcting team TimeEntries with reason and audit
+- Resolving next actions, AttentionFlags, and BusinessExceptions
 - Approving operational actions where permitted
 
 Needs:
 
-- Daily operational clarity
-- Overdue and stale opportunity alerts
-- Conversation history
-- Employee assignment
+- Daily action-first clarity
+- Clear operational exceptions and balances
+- Customer/Contact conversation history
+- Schedule and employee assignment
 
 ## Client Staff Member
 
 Responsible for:
 
-- Responding to assigned leads
-- Completing follow-ups
-- Updating opportunity status
-- Recording notes
-- Performing assigned work where applicable
+- Responding to assigned Customer, Lead, Appointment, and Job work
+- Completing next actions
+- Performing permitted Estimate and field workflows
+- Clocking in and out
+- Recording notes and photos
+- Using Quick Capture with confirmation
+- Recording a Payment only when explicitly authorized
 
 Needs:
 
 - A focused assigned-work view
-- Simple status updates
+- Simple business actions instead of generic status maintenance
 - Clear next actions
+- Field-capable mobile web
 - Limited access to sensitive financial data
 
 ## Client Viewer
@@ -277,11 +297,35 @@ The exact route structure may evolve, but the MVP uses the following page famili
 /[propertyId]/overview
 → Property summary and prioritized attention
 
+/[propertyId]/media
+→ Shared property media library for public content images and private attachments
+
 /[propertyId]/revenue-operations
-→ Unified Lead Inbox and operational reporting
+→ Action-first Revenue home and attention workspace
+
+/[propertyId]/revenue-operations/customers
+→ Customer directory
+
+/[propertyId]/revenue-operations/customers/[customerId]
+→ Durable Customer operating record
 
 /[propertyId]/revenue-operations/leads/[leadId]
-→ Lead detail, lifecycle, conversation, tasks, estimate, job, payment, and attribution
+→ One opportunity, sales stage, next action, attribution, and related commercial context
+
+/[propertyId]/revenue-operations/schedule
+→ Unified visual schedule for distinct Appointments and JobVisits
+
+/[propertyId]/revenue-operations/estimates/[estimateId]
+→ Estimate drafting, revision history, delivery, presentation, and acceptance evidence
+
+/[propertyId]/revenue-operations/jobs/[jobId]
+→ Authorized work and field detail
+
+/[propertyId]/revenue-operations/invoices/[invoiceId]
+→ Invoice, balance, and factual Payment detail
+
+/[propertyId]/revenue-operations/time
+→ Own and authorized team time
 
 /[propertyId]/robin
 → Robin activity, approvals, handoffs, and automation outcomes
@@ -301,6 +345,12 @@ The exact route structure may evolve, but the MVP uses the following page famili
 /[propertyId]/content-intelligence
 → Content scorecards, topic clusters, and Content Findings
 
+/[propertyId]/search-operations
+→ Search Program, targets, coverage, rankings, audits, current cycle, exceptions, actions, and delivery proof
+
+/[propertyId]/settings/search-operations
+→ Search Program priorities, site-management mode, fulfillment policy, provider quotas, and automation policy
+
 /[propertyId]/work-management
 → Shared work queue
 
@@ -315,6 +365,9 @@ The exact route structure may evolve, but the MVP uses the following page famili
 
 /[propertyId]/settings/robin
 → Robin modes, knowledge, workflows, and capabilities
+
+/[propertyId]/settings/revenue-operations
+→ Revenue workflow defaults and shared sending-identity selection
 
 /[propertyId]/settings/users
 → Property users and permissions
@@ -334,6 +387,9 @@ The exact route structure may evolve, but the MVP uses the following page famili
 
 /admin/operations
 → Failed jobs, handoffs, and system attention
+
+/admin/search-operations
+→ Cross-property Search Program health, fulfillment exceptions, approvals, provider failures, and optimization failures
 
 /admin/audit
 → Sensitive action history
@@ -373,8 +429,9 @@ The exact route structure may evolve, but the MVP uses the following page famili
 4. Website Intelligence
 5. Smart Blog Studio
 6. Content Intelligence
-7. Work Management
-8. Settings
+7. Search Operations
+8. Work Management
+9. Settings
 
 ## Administrative Navigation
 
@@ -421,80 +478,120 @@ Navigation is capability-aware, but server authorization remains mandatory.
 ## Flow 2 — Website Lead Capture
 
 1. A visitor submits a form on a client website.
-2. The website sends the submission to the BTLS public ingestion endpoint.
-3. The system validates:
-   - Public form key
-   - Turnstile result
-   - Honeypot
-   - Rate limit
-   - Payload
-   - Duplicate submission identifier
-4. The system resolves the correct property.
-5. The system matches or creates a Contact.
-6. The system creates a Lead.
-7. Attribution information is preserved where available.
-8. A `lead.created` event is published.
-9. Assigned employees are notified.
-10. Robin may acknowledge the lead according to property settings.
-11. The Lead appears in the Unified Lead Inbox.
+2. The shared public endpoint validates the revocable form key, Turnstile, honeypot, rate limit, payload, and submission idempotency.
+3. The system resolves the property server-side.
+4. Safe matching resolves or creates the end Customer and person-only Contact.
+5. The system creates one Lead opportunity and preserves permitted source/landing-page attribution.
+6. RevenueActivity records the intake fact.
+7. A `lead.created` event notifies assigned employees and may dispatch an eligible Robin job.
+8. The Lead appears in the action workspace.
 
 ---
 
-## Flow 3 — Lead Management
+## Flow 3 — Customer and Lead Management
 
-1. A user opens the Unified Lead Inbox.
-2. The user filters or searches leads.
-3. The user opens a Lead.
-4. The user reviews:
-   - Contact information
-   - Service requested
-   - Source and landing page
-   - Conversation
-   - Activity history
-   - Next action
-5. The user contacts or qualifies the Lead.
-6. The Lead progresses through:
-   - New
-   - Contacted
-   - Qualified
-   - Estimate Scheduled
-   - Estimate Sent
-   - Follow-Up
-   - Sale Won
-7. The Lead may instead become Lost or Stale.
-8. A won sale continues through fulfillment and payment.
-9. Every meaningful change is recorded in the activity history.
-10. Reports update from the source records.
+1. A user opens the action-first Revenue Operations workspace.
+2. The user sees prioritized next work and material operational exceptions.
+3. The user opens a durable Customer record and one related Lead opportunity.
+4. The user reviews identity, requested service, source, owner, sales stage, next action, related Appointment/Estimate, communication, and history.
+5. The Lead moves only through `NEW`, `CONTACTED`, `QUALIFIED`, and `WON` or `LOST` sales stages.
+6. Estimate, Job, Invoice, Payment, follow-up, stale, and overdue facts remain in their owning records.
+7. Meaningful business actions append RevenueActivity and update reports from source truth.
 
 ---
 
-## Flow 4 — Robin-Assisted Response
+## Flow 4 — Human Communication
 
-1. A new Lead or due follow-up triggers a Robin job.
-2. The system loads:
-   - Property configuration
-   - Business Knowledge Pack
-   - Progression workflow
-   - Business hours
-   - Enabled tools
+1. An authorized user selects an identified Customer and primary Contact.
+2. Consent, endpoint, property route, capability, business hours, and duplicate protections are checked.
+3. The system resolves a concrete Customer/Contact SMS or outbound-email Conversation.
+4. Twilio handles two-way SMS; Postmark handles outbound email.
+5. Message delivery and provider evidence are stored idempotently.
+6. Optional Lead, Estimate, Appointment, Job, or Invoice context belongs to the Message/RevenueActivity, not Conversation ownership.
+7. Unmatched inbound SMS enters bounded resolution without guessing a Customer.
+8. Inbound email synchronization remains deferred.
+
+---
+
+## Flow 5 — Estimate and Acceptance
+
+1. An employee creates an Estimate from the known Customer and obvious/default Contact.
+2. ServiceLocation, ServiceAsset, Pricebook, and agreement detail use defaults or progressive disclosure where available.
+3. Draft content becomes an immutable issued revision with line and agreement snapshots.
+4. The employee presents or sends the exact revision through scoped customer access.
+5. The customer may view the Estimate and Agreement, then sign and accept.
+6. The customer cannot edit, comment, request revisions, or publicly reject in MVP.
+7. Acceptance binds exact signer/signature evidence; a linked Lead may become `WON` through the application service.
+8. Material post-acceptance changes use ChangeOrder.
+
+---
+
+## Flow 6 — Scheduling and Field Work
+
+1. An Appointment records a sales/evaluation event when required.
+2. Accepted or otherwise authorized work resolves a Job.
+3. The user selects Start Work; the Job becomes `IN_PROGRESS`.
+4. JobVisit supports scheduled field visits when needed but is not a clerical gate for simple work.
+5. Authorized staff may add notes, tasks, ServiceAssets, photos/files, and ServiceIssues when relevant.
+6. Work Complete makes the Job `WORK_COMPLETE`.
+7. An authorized user closes the completed Job.
+8. Cronofy supplies availability and external calendar projection while BTLS remains schedule truth.
+
+---
+
+## Flow 7 — Invoice and Payment
+
+1. An authorized user drafts and issues an Invoice with immutable historical line content.
+2. User-entered tax input is snapshotted only when supplied; BTLS does not determine tax law.
+3. The Invoice may be delivered through scoped customer access.
+4. The business receives money by cash, check, external card/ACH/bank flow, or another method.
+5. The user records one or more factual Payments.
+6. BTLS derives total paid, balance, `UNPAID / PARTIALLY_PAID / PAID`, and `OVERDUE`.
+7. Mistakes use traceable reversal/correction rather than deletion.
+8. Integrated payment processing is optional; BTLS is not an accounting ledger.
+
+---
+
+## Flow 8 — Quick Capture
+
+1. An authorized user enters natural text or voice.
+2. Voice is transcribed through a future provider boundary when required.
+3. Structured extraction produces typed source-mutation proposals.
+4. Runtime, authorization, and business-context validation run.
+5. The proposal window always shows confidence, before/after values, new records, missing information, and derived effects.
+6. The human confirms selected proposals.
+7. Normal application services execute and persist audit/activity/events.
+8. Quick Capture never directly writes derived state and is distinct from Robin.
+
+---
+
+## Flow 9 — Robin-Assisted Response
+
+1. An eligible Revenue event or due action triggers a durable Robin job.
+2. The system loads property configuration, Customer context, Business Knowledge Pack, implemented workflow, business hours, and enabled tools.
 3. Robin creates a typed proposed action.
-4. The system validates the action.
-5. The system checks:
-   - Property capability
-   - Automation mode
-   - Consent
-   - Duplicate action
-   - Business hours
-   - Escalation rules
-6. In Approval Required mode, a human reviews the action.
-7. In Automatic mode, an approved tool may execute.
-8. The action uses normal application services.
-9. Messages, field changes, and outcomes are recorded.
-10. Unsafe, failed, or uncertain actions create a human handoff.
+4. Runtime validation, property authorization, capability, operating-mode, consent, duplicate, and business-hour checks run.
+5. Approval Required mode waits for human review; Automatic mode may execute only an already-approved implemented tool.
+6. Normal application services own every mutation or provider action.
+7. Message, RevenueActivity, RobinRun, RobinAction, and audit evidence are recorded.
+8. Unsafe, failed, or uncertain actions create a human handoff.
+9. Robin cannot fabricate signature or Payment truth or own Conversation/Message.
 
 ---
 
-## Flow 5 — Content Creation
+## Flow 10 — Review Request and Lifecycle Follow-Up
+
+1. An eligible completed Job reaches the property’s approved review-request timing.
+2. One idempotent ReviewRequest is scheduled without changing or gating Job completion.
+3. Consent, opt-out, business hours, duplicate, and communication-route checks run.
+4. The normal Customer/Contact communication service sends the request.
+5. Scheduled, sent, delivered, failed, or cancelled evidence is recorded.
+6. Provider failure remains visible and retryable where safe.
+7. A ReviewRequest never reopens operational truth or becomes a reputation-management platform.
+
+---
+
+## Flow 11 — Content Creation
 
 1. A BTLS operator creates a content strategy brief.
 2. The operator defines:
@@ -522,7 +619,7 @@ Navigation is capability-aware, but server authorization remains mandatory.
 
 ---
 
-## Flow 6 — Website Data Collection
+## Flow 12 — Website Data Collection
 
 1. A property connects GA4, Search Console, and optionally Google Business Profile.
 2. Scheduled background jobs request provider data.
@@ -544,7 +641,7 @@ Navigation is capability-aware, but server authorization remains mandatory.
 
 ---
 
-## Flow 7 — Finding Evaluation
+## Flow 13 — Finding Evaluation
 
 1. The system selects eligible fixed Finding definitions.
 2. It checks required inputs and evidence minimums.
@@ -565,7 +662,7 @@ Navigation is capability-aware, but server authorization remains mandatory.
 
 ---
 
-## Flow 8 — Finding to Measured Work
+## Flow 14 — Finding to Measured Work
 
 1. An operator reviews a Finding.
 2. The operator confirms, edits, defers, monitors, dismisses, or groups it.
@@ -593,7 +690,7 @@ Navigation is capability-aware, but server authorization remains mandatory.
 
 ---
 
-## Flow 9 — Client Review
+## Flow 15 — Client Review
 
 1. A client user opens the property overview.
 2. The client sees authorized lead and business outcomes.
@@ -601,6 +698,23 @@ Navigation is capability-aware, but server authorization remains mandatory.
 4. The client sees planned and completed work where visible.
 5. The client sees before-and-after results.
 6. Internal hypotheses, dismissed Findings, and operator-only notes remain hidden.
+
+---
+
+## Flow 16 — Recurring Search Fulfillment
+
+1. An authorized BTLS operator activates a Search Program for a property.
+2. The program records priority services, service areas, site-management mode, fulfillment policy, provider limits, and automation policy.
+3. Existing Website Pages receive Search semantic profiles without changing their core page identity.
+4. BTLS defines SearchTargets that connect service/topic, geography, intent, keyword cluster, and intended ranking page.
+5. Scheduled jobs refresh required technical, ranking, local, and other approved Search evidence.
+6. Coverage and Search Finding rules evaluate evidence and data confidence.
+7. The operator portfolio surfaces only material exceptions, approvals, and high-value opportunities.
+8. Confirmed Search Findings create normal WorkTickets.
+9. Human work or approved guarded site actions create Interventions.
+10. The fulfillment cycle records which required scope was satisfied, waived, or blocked.
+11. A client-safe SearchDeliverySummary proves what BTLS delivered.
+12. Later MeasurementReviews compare visibility, traffic, and authorized business outcomes without claiming unsupported causation.
 
 ---
 
@@ -618,7 +732,7 @@ The Prisma schema is the executable source of truth. This section defines produc
 ## ClientAccount
 
 - Lives in PostgreSQL.
-- Represents the client organization or customer relationship.
+- Represents the organization/business subscribing to BTLS, never a Revenue Operations end Customer.
 - Owns one or more Client Properties.
 - Changes through authorized administration.
 - Must not be used as a substitute for property ownership on property-specific records.
@@ -650,31 +764,27 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Used by background jobs and provider adapters.
 - Must not expose refresh tokens or secrets to the browser.
 
-## Contact
+## Revenue Operations Records
 
-- Lives in PostgreSQL.
-- Represents a person or organization known to a property.
-- Changes when approved contact information is added or corrected.
-- May own multiple Leads.
-- Must not contain opportunity lifecycle state.
+- `Customer` is the property-scoped durable end-customer parent.
+- `Contact` is one person associated with a Customer and carries communication endpoint/consent context.
+- `ServiceLocation` is an end-customer work location; optional `ServiceAsset` supplies basic equipment/item context.
+- `Lead` is one commercial opportunity with sales stages only.
+- `RevenueActivity`, `RevenueNote`, Tags, `NextRequiredAction`, `AttentionFlag`, and `BusinessException` preserve history, next work, contextual concerns, and deterministic operating conditions without flattening them into Lead status.
+- `Conversation` belongs to a Customer and required primary Contact; `Message` may carry optional Lead/Estimate/Appointment/Job/Invoice context.
+- `EmployeeProfile` and `TimeEntry` support assignments and basic clock in/out without becoming payroll or HR.
+- `Appointment` is sales/evaluation scheduling; `JobVisit` is scheduled field fulfillment.
+- `Pricebook`, versioned `Estimate` revisions, agreement snapshots, delivery/view/acceptance evidence, and scoped document grants preserve commercial history.
+- `Job`, `JobVisit`, `JobTask`, `ChangeOrder`, and `ServiceIssue` own authorized field-work truth.
+- `Invoice`, immutable issued line content, delivery evidence, and factual `Payment` records own operational collection truth; balance and payment/overdue states are derived.
+- `QuickCaptureRun` and typed mutation proposals always require review before normal services execute.
+- `ReviewRequest` is basic post-work lifecycle communication.
+- `RevenueOperationsSettings` owns Revenue defaults and references shared communication configuration; it never owns provider credentials.
 
-## Lead
-
-- Lives in PostgreSQL.
-- Represents one commercial opportunity.
-- Changes through lead workflows and Robin tools.
-- Owns the opportunity lifecycle.
-- Used for assignments, reporting, estimates, jobs, payments, and attribution.
-- Must not be modified without property scope and capability checks.
-
-## LeadActivity
-
-- Lives in PostgreSQL.
-- Records communication, status changes, notes, and system actions.
-- Changes append-only through relevant workflows.
-- Used for chronological history.
-- Must not be silently rewritten to change history.
-
+Shared `PropertyService` remains the offered-service identity, and shared `MediaAsset`
+remains file-byte truth. Revenue owns only its contextual relationships to those shared
+records. Generated Job Brief, Estimate intelligence, customer journey presentation, and
+Invoice payment/overdue state are derived rather than separate authoritative records.
 ## ContentAsset
 
 - Lives in PostgreSQL.
@@ -694,9 +804,10 @@ The Prisma schema is the executable source of truth. This section defines produc
 ## WebsitePage
 
 - Lives in PostgreSQL.
-- Represents a discovered page and broad page role.
+- Represents discovered URL/page identity and broad web-data classification.
 - Changes through sync, reconciliation, or operator correction.
-- Used by Website and Content Intelligence.
+- Used by Website Intelligence, Content Intelligence, Smart Blog linking, and Search Operations.
+- Search-specific semantic purpose, services, locations, topics, targets, coverage, and ranking evidence live in related Search Operations records rather than bloating this entity.
 - Must not require every DOM element to become an object.
 
 ## MetricSnapshot
@@ -781,6 +892,35 @@ The Prisma schema is the executable source of truth. This section defines produc
 
 ---
 
+## Shared Property Search Vocabulary
+
+`PropertyService`, `BusinessLocation`, and `ServiceArea` are canonical property business facts reused across Revenue Operations, Robin, Smart Blog Studio, and Search Operations. Search-specific priority lives in the Search Program rather than these shared records.
+
+## Search Operations Records
+
+Search Operations adds property-scoped strategy, evidence, fulfillment, and execution records including:
+
+- `SearchProgram` and versioned fulfillment/automation policies
+- `PageSearchProfile` plus normalized page-service/location/topic assignments
+- `SearchTopic`
+- `SearchKeyword`, dated keyword metric snapshots, and keyword clusters
+- `SearchTarget` plus historical target-page and support relationships
+- `SearchCoverageAssessment`
+- organic rank runs/observations
+- local rank-grid runs/points
+- normalized site-inspection/technical-audit evidence
+- current internal-link graph
+- narrow local/citation/backlink authority evidence
+- `SearchFulfillmentCycle`, requirements, and `SearchDeliverySummary`
+- `SearchInterventionScope` linked to shared Interventions
+- guarded `OptimizationAction` records
+- provider usage/cost records
+- BTLS-internal Fleet Remediation with property-specific target/Intervention history
+
+Durable actionable Search conditions use the existing shared `Finding` system. Search work uses the existing shared Work Management lifecycle.
+
+---
+
 # Features In Scope
 
 ## Website Intelligence
@@ -844,25 +984,22 @@ The Prisma schema is the executable source of truth. This section defines produc
 
 ## Revenue Operations
 
-- Property dashboard
-- Unified Lead Inbox
-- Contacts and Leads
-- Lead lifecycle
-- Assignment
-- Notes and tags
-- Next actions
-- Follow-up tasks
-- Conversation history
-- Activity timeline
-- Estimates
-- Jobs
-- Payments
-- Attribution
-- Response reporting
-- Qualification reporting
-- Sales and loss reporting
-- Revenue reporting
-- Cross-property BTLS alerts
+- Action-first Revenue home and Customer operating record
+- Customer, person-only Contact, ServiceLocation, and optional ServiceAsset
+- Lead opportunity and attribution
+- Next required actions, contextual attention, and deterministic BusinessExceptions
+- Customer/Contact SMS and outbound-email communication history
+- Employee assignment and basic TimeEntry clock in/out
+- Appointment scheduling and unified Appointment/JobVisit schedule view
+- Pricebook-assisted Estimate drafting
+- Immutable Estimate revisions, agreement snapshots, delivery, scoped presentation, and acceptance
+- Authorized Job, optional field visits/tasks/assets/files, ChangeOrder, and basic ServiceIssue
+- Immutable issued Invoice, factual Payment, derived balance/partial/paid/overdue state
+- Safe text and voice Quick Capture proposal review
+- Generated Job Brief and Customer journey presentation as derived assistance
+- Basic ReviewRequest lifecycle
+- Revenue and attribution reporting through collected Payment where evidence exists
+- Property and cross-property operational attention for authorized BTLS users
 
 ## Robin
 
@@ -883,6 +1020,29 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Complete action logging
 - Duplicate prevention
 - Outcome reporting
+
+## Search Operations
+
+- Search Program configuration and recurring fulfillment policy
+- Canonical service/location reuse
+- Page semantic classification
+- Search topics, keyword clusters, and SearchTargets
+- Service × geography × intent coverage assessment
+- Organic rank tracking for selected targets
+- Local geo-grid/rank-map measurement
+- Technical site inspection and versioned Search audit checks
+- Internal-link/support evaluation
+- Google Business Profile/local presence evidence
+- Foundation/exception-driven citation checks
+- Narrow backlink/authority monitoring
+- Evidence-backed Search Findings and prioritization
+- Shared Work Package/Ticket/Intervention integration
+- Fulfillment cycles and client delivery proof
+- Cross-property exception-first Search operations
+- Provider usage, quota, and estimated-cost controls
+- Guarded, capability-aware bounded optimization on supported sites
+- BTLS-managed Fleet Remediation
+- Search MeasurementReview integration with rankings, traffic, leads, and revenue where defensible
 
 ## Shared Work Management
 
@@ -915,7 +1075,7 @@ The Prisma schema is the executable source of truth. This section defines produc
 
 # Features Out of Scope
 
-- Campaign management — removed from the MVP to keep focus on the five core components.
+- Campaign management — remains outside the MVP so the platform stays focused on the approved studios.
 - General Funnel Mapper — content effectiveness is handled by Content Intelligence.
 - General Funnel Leak Detection — useful diagnostics belong in fixed Website and Content Findings.
 - Advertising management — campaign spend and ad-platform control are deferred.
@@ -923,14 +1083,19 @@ The Prisma schema is the executable source of truth. This section defines produc
 - Predictive analytics — current and historical diagnosis comes first.
 - Cross-client benchmarks — deferred until sufficient comparable data exists.
 - Full project-management software — Work Management remains purpose-built and narrow.
-- Automatic website code modification — operators approve and perform work.
+- Unbounded or AI-directed website modification — Search Operations may execute only explicitly allowlisted, deterministic, policy-authorized guarded actions on supported BTLS-managed sites.
 - Inbound email synchronization — Postmark is outbound-only in MVP.
 - Arbitrary WordPress compatibility — only native REST-compatible posts are supported.
 - Page-builder-specific WordPress editing — Elementor, Divi, WPBakery, and custom layouts are deferred.
 - Real-time collaborative article editing — unnecessary for MVP.
 - Unrestricted Robin autonomy — all actions remain tool-, permission-, and mode-controlled.
 - Cross-session identity stitching — deferred due complexity, consent, and attribution limits.
-- General CRM replacement — Revenue Operations is designed around BTLS service-business workflows.
+- Universal CRM, ERP, accounting/general-ledger, payroll, inventory, advanced dispatch/route optimization, tax-compliance, and general project-management suites — Revenue Operations is intentionally bounded to supported service-business workflows.
+- Mass automated service/location page generation — strategy remains human-controlled.
+- Autonomous AI content publication — customer-facing publication follows approved review policy.
+- Automated backlink marketplace or mass outreach — external authority work remains restrained and human-directed.
+- Search billing/subscription ownership — SearchProgram owns fulfillment state, not commercial billing truth.
+- Unlimited keyword, competitor, rank, crawl, citation, or backlink tracking — provider-intensive work is policy/quota controlled.
 
 ---
 
@@ -974,13 +1139,23 @@ The Prisma schema is the executable source of truth. This section defines produc
 - OpenAI API through a BTLS adapter
 - Postmark for outbound email
 - Twilio for two-way SMS
-- Cronofy for calendar and scheduling
+- Cronofy for availability and external calendar projection/synchronization; BTLS remains operational schedule truth
 
-## Web Growth Data
+## Web Growth and Search Data
 
 - Google Analytics Data API
 - Google Search Console API
 - Google Business Profile APIs
+- BTLS `KeywordMetricsProvider`
+- BTLS `OrganicRankProvider`
+- BTLS `LocalRankGridProvider`
+- BTLS `SiteInspectionAdapter`
+- BTLS `PagePerformanceProvider`
+- BTLS `CitationProvider` and `BacklinkProvider` when enabled
+- BTLS `CallAttributionProvider` when enabled
+- BTLS `SiteOptimizationAdapter`
+
+Exact Search vendors remain deferred to the owning build features unless separately approved.
 
 ## Public Form Protection
 
@@ -1023,23 +1198,34 @@ property.integration_disconnected
 ## Revenue Operations
 
 ```text
+customer.created
 lead.created
 lead.opened
 lead.assigned
-lead.status_changed
-lead.marked_lost
-lead.marked_stale
+lead.stage_changed
+lead.won
+lead.lost
 
-follow_up.created
-follow_up.completed
+next_required_action.created
+next_required_action.completed
+
+appointment.scheduled
 
 estimate.created
+estimate.revision_issued
 estimate.sent
+estimate.viewed
+estimate.accepted
 
-job.scheduled
-job.completed
+job.started
+job.work_completed
+job.closed
 
+invoice.issued
 payment.recorded
+
+quick_capture.confirmed
+review_request.sent
 ```
 
 ## Robin
@@ -1099,6 +1285,31 @@ measurement.review_completed
 finding.resolved
 finding.reopened
 ```
+
+## Search Operations
+
+- `search.program.created`
+- `search.program.activated`
+- `search.program.paused`
+- `search.target.created`
+- `search.target.updated`
+- `search.coverage.assessed`
+- `search.organic_rank.completed`
+- `search.organic_rank.failed`
+- `search.local_grid.completed`
+- `search.local_grid.failed`
+- `search.inspection.completed`
+- `search.inspection.failed`
+- `search.audit.completed`
+- `search.audit.failed`
+- `search.cycle.opened`
+- `search.cycle.fulfilled`
+- `search.optimization.proposed`
+- `search.optimization.approved`
+- `search.optimization.executed`
+- `search.optimization.failed`
+- `search.delivery_summary.generated`
+- `search.fleet_remediation.completed`
 
 ### Common event parameters
 
@@ -1171,13 +1382,16 @@ A client employee who:
 
 ## Revenue Operations
 
-- Public website submissions reliably create Leads.
-- New Leads appear in the correct property inbox.
-- Lead source and landing-page data are retained when available.
-- Users can move a Lead through the complete MVP lifecycle.
-- Lead activity provides a trustworthy chronological history.
-- Overdue and stale opportunities are visible.
-- Confirmed revenue derives from recorded payments rather than estimated values.
+- Public inquiries reliably become the correct property-scoped Customer, Contact, and Lead without unsafe matching.
+- The next useful action and material operational exceptions are obvious.
+- Lead source and landing-page evidence are retained when available, while Lead state remains sales-only.
+- Customer/Contact communication reaches the correct thread and respects consent.
+- Issued Estimate revisions, agreement snapshots, scoped presentation, and exact-revision acceptance remain trustworthy and immutable.
+- Accepted or otherwise authorized work can be scheduled, started, completed, and closed through field-capable responsive web workflows.
+- Invoice, partial Payment, balance, and overdue math derive correctly from durable facts.
+- Quick Capture reduces clerical entry while always previewing and confirming typed proposals.
+- Basic TimeEntry clock in/out works without becoming payroll.
+- Confirmed collected revenue derives from recorded Payments and can connect to source evidence without unsupported causal claims.
 
 ## Robin
 
@@ -1224,6 +1438,18 @@ A client employee who:
 - Measurement Reviews compare reproducible before-and-after periods.
 - Findings can be resolved, monitored, or reopened based on evidence.
 
+## Search Operations
+
+- One operator can identify Search Programs needing attention without opening every property.
+- SearchTargets connect commercial services/topics, geography, intent, keyword clusters, and intended ranking assets.
+- Technical, organic-rank, local-grid, and other Search evidence is versioned and provider-normalized.
+- Search Findings reuse the shared Finding/work lifecycle.
+- Fulfillment cycles prove what BTLS delivered without claiming that delivery caused improvement.
+- Guarded automatic execution exists only where adapter capability and property policy permit it.
+- Unsupported external sites degrade safely to human work.
+- Provider cost/usage remains bounded and attributable.
+- Search Interventions can later be measured against visibility, traffic, and authorized business outcomes.
+
 ## Usability
 
 - A new developer can locate feature code, validation, authorization, data access, and tests.
@@ -1258,9 +1484,12 @@ The product should initially measure:
 - Percentage of Robin actions requiring correction
 - Human-handoff rate
 - Lead qualification rate
-- Estimate-scheduling rate
-- Sales win rate
-- Confirmed revenue capture completeness
+- Estimate issue, delivery, and acceptance rates
+- Time from accepted work to scheduled/started work
+- Job work-completion and close rates
+- Invoice-to-Payment collection and overdue rates
+- Quick Capture proposal correction/rejection rate
+- Confirmed collected-revenue capture completeness
 - Google integration sync success rate
 - Percentage of Findings confirmed versus dismissed
 - Percentage of confirmed Findings converted into work
@@ -1288,10 +1517,13 @@ It is a shared operating system that connects:
 
 ```text
 Website opportunity
-→ lead response
-→ sales progression
-→ fulfillment and payment
+→ Customer and Lead response
+→ Estimate and acceptance
+→ scheduling and authorized field work
+→ Invoice and collected Payment
+→ follow-up and review
 → website and content intelligence
+→ recurring search fulfillment
 → evidence-backed work
 → measured improvement
 ```

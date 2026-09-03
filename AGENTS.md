@@ -4,14 +4,26 @@
 
 **BTLS Command Center** is a greenfield, multi-tenant SaaS platform for local service businesses and BTLS operators.
 
-The MVP contains:
+The MVP contains three product studios and one shared execution feature:
+
+### Web Growth Studio
 
 1. Website Intelligence
 2. Smart Blog Studio
 3. Content Intelligence
+
+### Revenue Operations Studio
+
 4. Revenue Operations / Command Center
 5. Robin AI Automation Agent
-6. Shared Work Management
+
+### Search Operations Studio
+
+6. Search Operations / Fulfillment
+
+### Shared
+
+**Work Management** is shared by Website Intelligence, Content Intelligence, and Search Operations.
 
 Build one shared application, backend, database, and permission system for all client properties.
 
@@ -34,7 +46,9 @@ Before planning or implementing work, read the relevant files in this order:
 
 These files are authoritative.
 
-Do not override them based on convenience, framework defaults, generated patterns, or assumptions.
+Search Operations is governed by the Search Operations sections integrated into canonical `context/architecture.md` and Phase 11 of canonical `context/build-plan.md`. Do not create or rely on a second parallel Search Operations architecture or build plan.
+
+Do not override the canonical context based on convenience, framework defaults, generated patterns, or assumptions.
 
 When two context files appear to conflict:
 
@@ -163,8 +177,8 @@ Recommended naming:
 
 ```text
 feature/01-repository-tooling
-feature/09-unified-lead-inbox
-feature/23-website-intelligence-interface
+feature/09-lead-operations-action-workspace
+feature/31-website-intelligence-interface
 ```
 
 Rules:
@@ -229,11 +243,31 @@ Web interfaces call reusable application services.
 
 This is required so Revenue Operations can later support a dedicated mobile client without duplicating business logic.
 
+### Revenue Operations
+
+Revenue Operations is the supported service-business operating core, not a Lead-only CRM.
+
+Required guardrails:
+
+- `Customer` is the property-scoped operational end-customer parent.
+- `Contact` is a person associated with a Customer.
+- `Lead` is one commercial opportunity with sales-stage truth only.
+- Do not flatten Appointment, Estimate, Job, Invoice, Payment, next-action, stale, or overdue truth into Lead status.
+- Preserve the robust-underneath/simple-in-front path: Lead → Estimate → Start work → Work done → Record payment → Close.
+- `Conversation` and `Message` belong to Revenue Operations communication truth; a customer-facing Conversation requires Customer and primary Contact.
+- Lead, Estimate, Appointment, Job, Invoice, and Robin do not own Conversation.
+- Quick Capture is a Revenue input workflow, not Robin. It always shows typed proposals and requires human confirmation before normal application services execute them.
+- AI never fabricates signature or Payment truth and never writes derived operational state directly.
+- BTLS owns operational financial truth, not accounting, payroll, or tax-compliance truth. Integrated payment processing is optional.
+- Preserve shared `PropertyService` and `MediaAsset`; Revenue may add only explicit contextual relationships.
+- `JobTask != WorkTicketTask` and `BusinessException != Finding`.
+- Revenue Leak is a BusinessException rule family, not another model.
+
 ### Web and future mobile boundary
 
 The current product is a responsive web application.
 
-Revenue Operations launches as a web beta.
+Revenue Operations launches as a field-capable responsive web beta.
 
 A future mobile application is post-MVP.
 
@@ -295,6 +329,8 @@ Approved providers include:
 
 Do not add a new major provider or overlapping library without approval.
 
+Search Operations may define and consume BTLS-owned interfaces for keyword metrics, organic ranks, local rank grids, site inspection, page performance, local presence, citations, backlinks, call attribution, and site optimization. A concrete new paid Search provider still requires the approved architecture/library decision for its owning feature.
+
 Use current official documentation for the installed version.
 
 ### AI and Robin
@@ -324,11 +360,19 @@ Robin must not:
 - Present possible causes as proven facts
 - Act outside the property Business Knowledge Pack and enabled capabilities
 
+Quick Capture does not use Robin automation mode. Its natural-language extraction follows
+typed validation, property authorization, before/after proposal review, explicit human
+confirmation, normal application services, and durable audit/activity evidence.
+
 ### Communication
 
-- Postmark is outbound-only email for MVP.
-- Twilio provides two-way SMS.
-- Inbound email synchronization is deferred.
+- Postmark is outbound-only email for MVP behind the shared `EmailProvider`.
+- Shared communication/integration configuration owns `SendingIdentity`; Revenue settings may reference a default identity but never own credentials or sender verification.
+- `BTLS_MANAGED` sending uses a verified BTLS-owned From identity and may use a client Gmail, Yahoo, or custom address as Reply-To.
+- Twilio provides two-way SMS for Customer/Contact Conversations.
+- A customer-facing Conversation belongs to Customer and requires a primary Contact; operational records may be optional Message/RevenueActivity context but never become the Conversation owner.
+- Robin sends through the same authorized communication application services and never owns Conversation or Message.
+- Inbound email synchronization and connected mailboxes are deferred.
 - Respect consent, opt-out state, business hours, and duplicate protection.
 - Store provider identifiers and delivery outcomes.
 - Process provider webhooks idempotently.
@@ -342,6 +386,49 @@ Publishing targets:
 3. Manual/export fallback
 
 Do not promise compatibility with arbitrary WordPress page builders, custom layouts, or unsupported plugins.
+
+### Search Operations
+
+Search Operations is a fulfillment/orchestration system, not an unrestricted autonomous SEO agent.
+
+Required rules:
+
+- Treat `SearchTarget` as the strategic search unit.
+- Keep `WebsitePage` as discovered page identity; Search-specific semantics belong in Search Operations records.
+- Reuse shared Findings, Work Management, Interventions, and Measurement Reviews rather than creating parallel systems.
+- Keep organic rank tracking, local rank grids, Search Console evidence, technical audits, and business outcomes as distinct evidence sources.
+- Keep provider SDKs behind BTLS-owned Search provider interfaces.
+- Track provider-intensive Search usage against program policy and quotas.
+- A fulfilled Search cycle proves agreed work was delivered; it does not prove rankings or revenue improved.
+- Search strategy, consequential content/page decisions, and unsupported external-site changes remain human-controlled.
+
+#### Search optimization authority
+
+Do not implement unbounded or AI-directed automatic website modification.
+
+Search Operations execution classes are:
+
+```text
+AUTO_GUARDED
+APPROVAL_REQUIRED
+HUMAN_ONLY
+UNSUPPORTED
+```
+
+`AUTO_GUARDED` is allowed only when all applicable safeguards pass:
+
+- the property is on a supported BTLS-managed site;
+- the site adapter declares the capability;
+- the operation is explicitly allowlisted;
+- the property automation policy permits it;
+- inputs are deterministic and runtime-validated;
+- the action is idempotent;
+- the action is traceable and auditable;
+- conflicting active work is checked;
+- rollback or reversal exists where risk requires it;
+- no human strategy decision is required.
+
+AI may propose, classify, explain, or draft. AI never grants itself execution authority.
 
 ---
 
@@ -403,7 +490,9 @@ Do not add:
 - Predictive analytics
 - Cross-client benchmarking
 - Full project-management features
-- Automatic website code modification
+- Universal CRM or general ERP behavior
+- General accounting, general ledger, bank reconciliation, payroll, inventory-suite, advanced dispatch/route optimization, or tax-compliance behavior
+- Unbounded or AI-directed automatic website modification
 - Inbound email synchronization
 - Arbitrary WordPress page-builder support
 - Unrestricted AI autonomy
@@ -420,10 +509,10 @@ Run focused tests during implementation.
 Before declaring a numbered feature complete, run the repository’s required equivalents of:
 
 ```bash
-npm run typecheck
-npm run lint
-npm run test
-npm run build
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
 ```
 
 Run end-to-end tests when the feature affects a critical user journey.
@@ -434,13 +523,23 @@ Critical areas require tests for:
 - Authorization
 - Cross-tenant denial
 - Public lead ingestion
-- Lead lifecycle transitions
+- Customer/Contact/Lead ownership and tenant isolation
+- Source-domain lifecycle and derived-state rules
+- Estimate revision, scoped acceptance, and immutability
+- Conversation consent and thread correlation
+- Invoice/Payment derivation and correction
+- Quick Capture proposal and confirmation safety
 - Robin approval and automatic modes
 - Messaging consent and opt-out
 - Content publishing
 - Finding generation
 - Finding-to-ticket flow
 - Before-and-after measurement
+- Search page/target ownership and cross-tenant denial
+- Organic/local ranking normalization and provider-failure behavior
+- Search fulfillment-cycle requirements
+- Search optimization policy, approval, idempotency, and unsupported-site denial
+- Fleet Remediation property isolation
 
 Do not disable tests, lint rules, strict typing, RLS, or authorization to make checks pass.
 
@@ -545,6 +644,7 @@ Update documentation only when needed.
 - Update `progress-tracker.md` after every implementation session.
 - Update `ui-registry.md` after approving reusable UI patterns.
 - Update `architecture.md` only when a binding architecture decision changes.
+- Keep Search Operations architecture inside canonical `context/architecture.md`; do not create a competing standalone governing architecture.
 - Update `library-docs.md` only when an approved library pattern changes.
 - Update `ui-tokens.md` or `ui-rules.md` only when the design system changes.
 - Do not regenerate whole context files to make a small edit.
@@ -552,15 +652,14 @@ Update documentation only when needed.
 
 ---
 
-## First Feature
+## Current Implementation Target
 
-Begin with:
+Do not hardcode the next feature in this file.
 
-```text
-Phase 1
-Feature 01 — Repository and Tooling
-```
+At the start of each implementation session:
 
-Use `/architect` first.
-
-Do not build another feature until Feature 01 passes its exit gate.
+1. Read `context/progress-tracker.md`.
+2. Confirm the next not-started numbered feature against `context/build-plan.md`.
+3. Run `/architect` for that feature.
+4. Do not begin implementation until the feature plan is approved.
+5. Do not advance to the following numbered feature until the current feature exit gate passes.

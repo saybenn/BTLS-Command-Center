@@ -52,6 +52,46 @@ enum PendingInvitationStatus {
   APPLIED
 }
 
+/// Server-owned storage profile. This classifies Storage behavior only; it is not a domain owner.
+enum MediaAssetProfile {
+  BRAND_IMAGE
+  CONTENT_IMAGE
+  ATTACHMENT
+  EVIDENCE
+  GENERATED_DOCUMENT
+  TEMPORARY_INPUT
+}
+
+enum MediaVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum MediaSensitivity {
+  NORMAL
+  SENSITIVE
+}
+
+enum MediaDurability {
+  DURABLE
+  TEMPORARY
+}
+
+enum MediaStorageBucket {
+  PUBLIC_MEDIA
+  PUBLIC_CONTENT
+  PRIVATE_MEDIA
+  TEMPORARY_UPLOADS
+}
+
+/// Byte lifecycle only. Library removal/visibility is tracked separately by removedAt.
+enum MediaAssetStatus {
+  PENDING_UPLOAD
+  READY
+  DELETION_PENDING
+  DELETED
+}
+
 model AppUser {
   /// Must equal the corresponding Supabase auth.users UUID.
   id           String        @id @db.Uuid
@@ -63,8 +103,10 @@ model AppUser {
   updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   accountMemberships AccountMembership[]
-  auditEvents        AuditEvent[]        @relation("AuditEventActor")
+  auditEvents        AuditEvent[]               @relation("AuditEventActor")
   sentInvitations    PendingAccountInvitation[] @relation("PendingInvitationInviter")
+
+  createdMediaAssets MediaAsset[] @relation("MediaAssetCreator")
 
   @@map("app_users")
 }
@@ -76,10 +118,10 @@ model ClientAccount {
   createdAt DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  properties   ClientProperty[]
-  memberships  AccountMembership[]
-  featureFlags FeatureFlag[]
-  auditEvents  AuditEvent[]
+  properties         ClientProperty[]
+  memberships        AccountMembership[]
+  featureFlags       FeatureFlag[]
+  auditEvents        AuditEvent[]
   pendingInvitations PendingAccountInvitation[]
 
   @@index([status])
@@ -95,11 +137,13 @@ model ClientProperty {
   createdAt DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  account          ClientAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  account          ClientAccount           @relation(fields: [accountId], references: [id], onDelete: Restrict)
   propertyAccesses PropertyAccess[]
   featureFlags     FeatureFlag[]
   auditEvents      AuditEvent[]
   pendingAccesses  PendingPropertyAccess[]
+
+  mediaAssets MediaAsset[]
 
   @@unique([id, accountId])
   @@index([accountId, status])
@@ -161,8 +205,8 @@ model PendingAccountInvitation {
   createdAt     DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  account        ClientAccount          @relation(fields: [accountId], references: [id], onDelete: Restrict)
-  invitedBy      AppUser                @relation("PendingInvitationInviter", fields: [invitedById], references: [id], onDelete: Restrict)
+  account        ClientAccount           @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  invitedBy      AppUser                 @relation("PendingInvitationInviter", fields: [invitedById], references: [id], onDelete: Restrict)
   propertyGrants PendingPropertyAccess[]
 
   @@unique([id, accountId])
@@ -174,13 +218,13 @@ model PendingAccountInvitation {
 }
 
 model PendingPropertyAccess {
-  id                  String                  @id @default(uuid()) @db.Uuid
-  accountId           String                  @map("account_id") @db.Uuid
-  pendingInvitationId String                  @map("pending_invitation_id") @db.Uuid
-  propertyId          String                  @map("property_id") @db.Uuid
-  roleOverride        AccountRole?            @map("role_override")
-  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                  String       @id @default(uuid()) @db.Uuid
+  accountId           String       @map("account_id") @db.Uuid
+  pendingInvitationId String       @map("pending_invitation_id") @db.Uuid
+  propertyId          String       @map("property_id") @db.Uuid
+  roleOverride        AccountRole? @map("role_override")
+  createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   pendingInvitation PendingAccountInvitation @relation(fields: [pendingInvitationId, accountId], references: [id, accountId], onDelete: Cascade)
   property          ClientProperty           @relation(fields: [propertyId, accountId], references: [id, accountId], onDelete: Cascade)
@@ -189,6 +233,7 @@ model PendingPropertyAccess {
   @@index([propertyId])
   @@map("pending_property_accesses")
 }
+
 model FeatureFlag {
   id         String           @id @default(uuid()) @db.Uuid
   key        String
@@ -207,8 +252,67 @@ model FeatureFlag {
   @@map("feature_flags")
 }
 
+/// Shared property-scoped stored-file lifecycle. Owning feature relationships are intentionally
+/// absent: future features add their own explicit MediaAsset foreign keys.
+model MediaAsset {
+  id                         String             @id @default(uuid()) @db.Uuid
+  propertyId                 String             @map("property_id") @db.Uuid
+  createdById                String?            @map("created_by_id") @db.Uuid
+  replacesAssetId            String?            @map("replaces_asset_id") @db.Uuid
+  profile                    MediaAssetProfile
+  visibility                 MediaVisibility
+  sensitivity                MediaSensitivity
+  durability                 MediaDurability
+  storageBucket              MediaStorageBucket @map("storage_bucket")
+  pathFamily                 String             @map("path_family")
+  targetKey                  String?            @map("target_key")
+  objectPath                 String             @map("object_path")
+  displayFilename            String             @map("display_filename")
+  declaredMimeType           String             @map("declared_mime_type")
+  declaredByteSize           Int                @map("declared_byte_size")
+  expectedExtension          String             @map("expected_extension")
+  verifiedMimeType           String?            @map("verified_mime_type")
+  verifiedByteSize           Int?               @map("verified_byte_size")
+  verifiedExtension          String?            @map("verified_extension")
+  storageObjectId            String?            @map("storage_object_id")
+  storageObjectVersion       String?            @map("storage_object_version")
+  storageEtag                String?            @map("storage_etag")
+  status                     MediaAssetStatus   @default(PENDING_UPLOAD)
+  uploadUrlExpiresAt         DateTime           @map("upload_url_expires_at") @db.Timestamptz(6)
+  finalizationDeadlineAt     DateTime           @map("finalization_deadline_at") @db.Timestamptz(6)
+  finalizedAt                DateTime?          @map("finalized_at") @db.Timestamptz(6)
+  expiresAt                  DateTime?          @map("expires_at") @db.Timestamptz(6)
+  removedAt                  DateTime?          @map("removed_at") @db.Timestamptz(6)
+  cleanupEligibleAt          DateTime?          @map("cleanup_eligible_at") @db.Timestamptz(6)
+  deletionClaimId            String?            @map("deletion_claim_id") @db.Uuid
+  deletionClaimedAt          DateTime?          @map("deletion_claimed_at") @db.Timestamptz(6)
+  deletionLeaseExpiresAt     DateTime?          @map("deletion_lease_expires_at") @db.Timestamptz(6)
+  deletionAttemptCount       Int                @default(0) @map("deletion_attempt_count")
+  finalizationAttemptCount   Int                @default(0) @map("finalization_attempt_count")
+  lastFinalizationAttemptAt  DateTime?          @map("last_finalization_attempt_at") @db.Timestamptz(6)
+  lastFailureCategory        String?            @map("last_failure_category")
+  lastFailureAt              DateTime?          @map("last_failure_at") @db.Timestamptz(6)
+  lastCleanupFailureCategory String?            @map("last_cleanup_failure_category")
+  lastCleanupFailureAt       DateTime?          @map("last_cleanup_failure_at") @db.Timestamptz(6)
+  deletedAt                  DateTime?          @map("deleted_at") @db.Timestamptz(6)
+  createdAt                  DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  property      ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  createdBy     AppUser?       @relation("MediaAssetCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  replacesAsset MediaAsset?    @relation("MediaAssetReplacement", fields: [replacesAssetId], references: [id], onDelete: Restrict)
+  replacements  MediaAsset[]   @relation("MediaAssetReplacement")
+
+  @@unique([storageBucket, objectPath])
+  @@index([propertyId, profile, status, removedAt, createdAt])
+  @@index([status, cleanupEligibleAt, deletionLeaseExpiresAt])
+  @@index([propertyId, status, finalizationDeadlineAt])
+  @@index([replacesAssetId])
+  @@map("media_assets")
+}
+
+/// Append-only: application services must not update or delete audit events.
 model AuditEvent {
-  /// Append-only: application services must not update or delete audit events.
   id          String   @id @default(uuid()) @db.Uuid
   actorId     String?  @map("actor_id") @db.Uuid
   accountId   String?  @map("account_id") @db.Uuid

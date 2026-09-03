@@ -19,10 +19,12 @@ function initials(name: string) {
 }
 
 export function PropertyOverviewShell({
+  activeNavigation = "overview",
   context,
   properties,
   children,
 }: Readonly<{
+  activeNavigation?: "media" | "overview";
   children?: ReactNode;
   context: AuthorizedPropertyContext;
   properties: AuthorizedPropertySummary[];
@@ -31,6 +33,9 @@ export function PropertyOverviewShell({
   const canManageUsers =
     context.capabilities.platform.includes("platform.user.manage") ||
     context.capabilities.property.includes("property.member.manage");
+  const canViewMedia =
+    context.capabilities.platform.includes("platform.media.view") ||
+    context.capabilities.property.includes("media.view");
   const display = {
     property: {
       initials: initials(context.property.name),
@@ -41,17 +46,27 @@ export function PropertyOverviewShell({
       {
         href: `/${context.property.id}/overview`,
         icon: "overview" as const,
-        isActive: true,
+        isActive: activeNavigation === "overview",
         label: "Overview",
       },
     ],
     administrativeNavigation:
-      canReadProperties || canManageUsers
+      canReadProperties || canManageUsers || canViewMedia
         ? {
             label: "Administration",
             items: [
               ...(canReadProperties
                 ? [{ href: "/admin/properties", icon: "properties" as const, label: "Properties" }]
+                : []),
+              ...(canViewMedia
+                ? [
+                    {
+                      href: `/${context.property.id}/media`,
+                      icon: "media" as const,
+                      isActive: activeNavigation === "media",
+                      label: "Media",
+                    },
+                  ]
                 : []),
               ...(canManageUsers
                 ? [

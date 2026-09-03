@@ -1,6 +1,6 @@
 # BTLS Code Standards
 
-> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Robin, shared platform code, integrations, background jobs, and future MVP extensions.
+> **Applies to:** BTLS Command Center, Web Growth Studio, Revenue Operations Studio, Search Operations Studio, Robin, shared platform code, integrations, background jobs, and future MVP extensions.
 >
 > **Primary goal:** Produce code that is safe, predictable, readable, testable, and easy to debug.
 >
@@ -66,9 +66,11 @@ Business rules belong in the feature or domain that owns them.
 
 Examples:
 
-- Lead lifecycle rules belong in Revenue Operations
-- Finding evaluation belongs in Website Intelligence
+- Revenue source-domain lifecycle and derived-state rules belong in Revenue Operations
+- Website Finding evaluation belongs in Website Intelligence
+- Content Finding evaluation belongs in Content Intelligence
 - Content readiness rules belong in Smart Blog Studio
+- Search Finding evaluation, Search-target, fulfillment-cycle, and guarded Search execution rules belong in Search Operations
 - Robin action permissions belong in Robin
 - Tenant and permission rules belong in shared authorization infrastructure
 
@@ -171,12 +173,8 @@ export const LEAD_STATUSES = [
   "NEW",
   "CONTACTED",
   "QUALIFIED",
-  "ESTIMATE_SCHEDULED",
-  "ESTIMATE_SENT",
-  "FOLLOW_UP",
-  "SALE_WON",
+  "WON",
   "LOST",
-  "STALE",
 ] as const;
 
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
@@ -217,18 +215,10 @@ function getLeadStatusLabel(status: LeadStatus): string {
       return "Contacted";
     case "QUALIFIED":
       return "Qualified";
-    case "ESTIMATE_SCHEDULED":
-      return "Estimate Scheduled";
-    case "ESTIMATE_SENT":
-      return "Estimate Sent";
-    case "FOLLOW_UP":
-      return "Follow-Up";
-    case "SALE_WON":
-      return "Sale Won";
+    case "WON":
+      return "Won";
     case "LOST":
       return "Lost";
-    case "STALE":
-      return "Stale";
     default:
       return assertNever(status);
   }
@@ -339,6 +329,7 @@ src/
 
     smart-blog-studio/
     content-intelligence/
+    search-operations/
     revenue-operations/
     robin/
 
@@ -469,7 +460,7 @@ Application services own business workflows.
 Examples:
 
 - `createLeadFromFormSubmission`
-- `transitionLeadStatus`
+- `transitionLeadSalesStage`
 - `publishContentAsset`
 - `evaluatePropertyFindings`
 - `executeRobinAction`
@@ -779,7 +770,7 @@ Use JSON only for:
 
 Do not store core lifecycle or ownership facts only in JSON.
 
-### 11.3 Currency values
+### 11.3 Money, quantities, and user-entered tax
 
 Store money as integer cents.
 
@@ -787,9 +778,39 @@ Store money as integer cents.
 estimatedValueCents: number;
 ```
 
-Never use floating-point values for money.
+Never use floating-point values for money. Quantity and unit-price calculations must use
+a decimal-safe representation and rounding policy so they cannot introduce money drift.
+Calculate authoritative totals on the server.
 
-### 11.4 Migrations are append-only history
+Tax is optional user-entered commercial input. Snapshot the entered rate and/or amount
+into the relevant historical record, but do not infer taxability, jurisdiction, or a
+statutory rate.
+
+### 11.4 Derive state from durable source facts
+
+Do not persist a manually editable status when the same business fact should derive from
+durable source records.
+
+Examples:
+
+```text
+Estimate sent summary ← EstimateDelivery
+Invoice payment state ← valid Payment records
+Invoice overdue       ← dueAt + remaining balance
+```
+
+A derived projection must be reproducible and must not compete with its source records.
+
+### 11.5 Preserve commercial snapshots
+
+Changes to current catalog or template data must never rewrite issued, accepted, signed,
+or otherwise historical commercial content.
+
+Examples include PricebookItem content snapshotted into EstimateLineItem,
+AgreementTemplate content snapshotted into EstimateAgreementSnapshot, issued
+EstimateRevision content, and issued InvoiceLineItem content.
+
+### 11.6 Migrations are append-only history
 
 Do not rewrite applied migrations.
 
@@ -802,7 +823,7 @@ Every schema change requires:
 - Verification against a clean database
 - Verification against realistic existing data
 
-### 11.5 Avoid N+1 queries
+### 11.7 Avoid N+1 queries
 
 Review list pages and dashboards for query count.
 
@@ -896,10 +917,15 @@ Use:
 
 ### 13.2 Mutations should be explicit
 
-Prefer:
+Prefer commands that record the source business fact:
 
 - `markLeadQualified`
-- `scheduleEstimate`
+- `scheduleEstimateAppointment`
+- `issueEstimateRevision`
+- `recordEstimateDelivery`
+- `createNextRequiredAction`
+- `recordPayment`
+- `closeJob`
 - `publishContentAsset`
 
 Avoid broad mutation methods such as:
@@ -907,6 +933,18 @@ Avoid broad mutation methods such as:
 - `updateEverything`
 - `saveRecord`
 - `patchEntity`
+
+### 13.3 Correct consequential history explicitly
+
+Correct consequential history with an authorized business operation such as:
+
+```text
+reverse / void / replace / supersede / compensate
+```
+
+Do not hide mistakes through deceptive deletion. A mistaken Payment is reversed or
+corrected, an Invoice is voided/reissued, a commercial document is superseded, and
+corrective history is appended. An external communication cannot be made unsent.
 
 ---
 
@@ -930,11 +968,25 @@ Feature code should depend on internal contracts, not provider-specific payloads
 
 ### 14.2 Normalize provider data
 
-Do not let Google, email, SMS, or calendar payload shapes leak throughout the application.
+Do not let Google, email, SMS, calendar, AI, or future payment payload shapes leak
+throughout the application.
 
 Convert them into BTLS-owned types at the integration boundary.
 
-### 14.3 Treat external systems as unreliable
+### 14.3 Preserve provider-independent operational truth
+
+Provider objects and identifiers may supply execution correlation or evidence, but they
+do not replace BTLS-owned business truth.
+
+Examples:
+
+```text
+Cronofy event       != Appointment
+Postmark MessageID  != EstimateDelivery
+future processor ID != Payment
+```
+
+### 14.4 Treat external systems as unreliable
 
 Every integration must account for:
 
@@ -947,7 +999,7 @@ Every integration must account for:
 - Missing fields
 - Provider outages
 
-### 14.4 Verify webhooks
+### 14.5 Verify webhooks
 
 Webhook handlers must:
 
@@ -1002,7 +1054,26 @@ AI must not be treated as a trusted authority.
 
 Validate every AI-generated tool argument before execution.
 
-### 16.2 Robin acts through narrow tools
+### 16.2 AI extraction produces proposals, not authority
+
+When AI extracts a possible mutation, use:
+
+```text
+AI extraction
+→ typed proposal
+→ runtime validation
+→ property authorization and business-context checks
+→ before/after preview
+→ explicit confirmation when consequential or required by the workflow
+→ normal application service
+→ persisted result and audit trail
+```
+
+Quick Capture always shows the proposal and requires human confirmation. AI must not
+fabricate signature or Payment truth, write derived state directly, or bypass an owning
+application service.
+
+### 16.3 Robin acts through narrow tools
 
 Robin may only perform actions through approved, typed application tools.
 
@@ -1010,14 +1081,14 @@ Examples:
 
 - Read approved business information
 - Send an approved message
-- Update approved lead fields
-- Schedule an approved next step
-- Create a human follow-up task
-- Escalate a conversation
+- Update an approved Lead sales field
+- Schedule an approved Appointment
+- Create a NextRequiredAction
+- Escalate a Conversation
 
 Robin must not receive unrestricted database access.
 
-### 16.3 Respect automation mode
+### 16.4 Respect automation mode
 
 Every Robin action must check:
 
@@ -1029,7 +1100,7 @@ Every Robin action must check:
 - Duplicate-action protections
 - Human escalation rules
 
-### 16.4 Log every material AI action
+### 16.5 Log every material AI action
 
 Record:
 
@@ -1039,7 +1110,7 @@ Record:
 - Approval state
 - Result
 - Error
-- Related lead
+- Related Customer, Lead, or other subject
 - Related property
 - Model and prompt version where relevant
 
