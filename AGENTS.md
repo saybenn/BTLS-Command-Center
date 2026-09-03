@@ -663,4 +663,3 @@ At the start of each implementation session:
 3. Run `/architect` for that feature.
 4. Do not begin implementation until the feature plan is approved.
 5. Do not advance to the following numbered feature until the current feature exit gate passes.
-
