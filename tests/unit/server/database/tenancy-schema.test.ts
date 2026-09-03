@@ -51,3 +51,18 @@ describe("initial tenancy schema", () => {
     expect(initialMigration).toContain('CREATE UNIQUE INDEX "feature_flags_global_key_key"');
   });
 });
+
+it("defines a property-owned MediaAsset lifecycle without domain attachment fields", () => {
+  const mediaAssetModel = schema.slice(
+    schema.indexOf("model MediaAsset {"),
+    schema.indexOf("model AuditEvent {"),
+  );
+
+  expect(mediaAssetModel).toContain("propertyId");
+  expect(mediaAssetModel).toContain("replacesAssetId");
+  expect(mediaAssetModel).toContain("status                     MediaAssetStatus");
+  expect(mediaAssetModel).toContain("objectPath");
+  expect(mediaAssetModel).toContain("cleanupEligibleAt");
+  expect(mediaAssetModel).not.toContain("subjectType");
+  expect(mediaAssetModel).not.toContain("subjectId");
+});

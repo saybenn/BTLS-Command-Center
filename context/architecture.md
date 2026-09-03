@@ -1223,10 +1223,10 @@ The database owns file metadata and relationships. Supabase Storage owns file by
 
 | Bucket | Visibility | Path pattern | Contents |
 |---|---|---|---|
-| `public-media` | Public | `{propertyId}/brand/{assetId}/{filename}` | Client logos and approved public brand assets |
-| `public-content` | Public | `{propertyId}/content/{contentAssetId}/{assetId}/{filename}` | Published article images and featured images |
-| `private-media` | Private | `{propertyId}/{purpose}/{assetId}/{filename}` | Attachments, signatures, commercial artifacts, field evidence, internal screenshots, Knowledge Pack files |
-| `temporary-uploads` | Private | `{propertyId}/{uploadId}/{filename}` | Unfinalized, pending-validation, or cleanup-eligible temporary inputs such as future Quick Capture audio |
+| `public-media` | Public | `{propertyId}/{pathFamily}/{targetKey?}/{assetId}.{verifiedExtension}` | Server-owned public brand assets |
+| `public-content` | Public | `{propertyId}/{pathFamily}/{targetKey?}/{assetId}.{verifiedExtension}` | Server-owned public content images |
+| `private-media` | Private | `{propertyId}/{pathFamily}/{targetKey?}/{assetId}.{verifiedExtension}` | Attachments, signatures, commercial artifacts, evidence, and documents |
+| `temporary-uploads` | Private | `{propertyId}/{pathFamily}/{targetKey?}/{assetId}.{verifiedExtension}` | Pending or temporary inputs eligible for expiry cleanup |
 
 ### Storage rules
 
@@ -1239,7 +1239,7 @@ The database owns file metadata and relationships. Supabase Storage owns file by
 - Finalized bytes are never overwritten in place. Replacement finalizes a new MediaAsset and later changes the owning relationship.
 - Generic semantics distinguish public/private, temporary/durable, ordinary attachment, and durable evidence/generated document without one purpose value per Revenue noun.
 - Removing a database relationship does not silently delete a reusable file.
-- Orphan and cleanup-eligible temporary uploads are processed by scheduled background jobs; owning features decide business retention.
+- Feature 06 owns cleanup eligibility, deletion claims, tombstones, retry-safe physical deletion, and a bounded server-only maintenance entry point. Feature 07 later schedules that same service; owning features decide business retention.
 - Published content should not depend on short-lived signed URLs.
 - Private access remains compatible with property authorization plus owning-record authorization and short-lived signed delivery.
 - Client users cannot list or access another property's paths.

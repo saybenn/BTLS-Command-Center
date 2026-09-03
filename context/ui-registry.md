@@ -509,3 +509,22 @@ Last updated: 2026-08-18
 | Accent usage | Primary send action and checkbox accent only; invitation state uses semantic warning/success/neutral Badge variants |
 
 **Pattern notes:** Pending invitations remain visibly distinct from active member access. Pair each pending recipient with an explicit status and expiry, and show cancellation only while pending. The invitation form must explain that intended grants activate only after verified identity acceptance; never render credentials, tokens, or provider state.
+
+### Media Upload, Preview, and Selection
+
+Files: `src/components/media/media-upload-control.tsx`, `src/components/media/media-file-card.tsx`, `src/components/media/media-picker.tsx`, `src/components/media/media-library.tsx`
+Last updated: 2026-09-01
+
+| Property | Class |
+|---|---|
+| Background | Preview cards `bg-surface-secondary`; image/file well `bg-surface-tertiary`; selection adds `bg-surface-selected` |
+| Border | Cards `border border-border`; selected picker option adds `border-border-focus` |
+| Border radius | Preview cards and picker option `rounded-lg`; media preview `rounded-md`; actions use shared `rounded-md` Button |
+| Text — primary | File names and upload state `text-text-primary` with `text-sm font-medium` |
+| Text — secondary | File metadata and helper copy `text-text-muted text-xs`; picker prompt `text-text-secondary text-sm` |
+| Spacing | Upload sections `space-y-4`; card metadata `p-3 gap-3`; responsive action stack `gap-2` |
+| Hover state | Shared Button treatment; picker options preserve standard visible focus ring rather than a hover-only state |
+| Shadow | none |
+| Accent usage | Progress fill uses `bg-accent`; selection uses focus border and semantic selected surface; errors/recovery use shared Alert variants |
+
+**Pattern notes:** Media controls remain one-column and full-width on mobile, then return actions to intrinsic width at `sm`. Use browser-standard `capture="environment"` only as a progressive camera hint for image inputs. Preview URLs must already be authorized by the consuming workflow; never render Storage paths, upload tokens, or private delivery URLs in the card. Recovery returns an explicit `READY` or `RESELECT_FILE` outcome so the UI never implies a missing file was restored.

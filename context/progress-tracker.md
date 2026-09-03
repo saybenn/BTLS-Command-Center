@@ -1116,3 +1116,34 @@ The tracker should remain a working status document, not a duplicate of `build-p
 
 1. Run /architect for Feature 06 when implementation is explicitly resumed.
 2. Do not start Feature 06, Feature 07, or Feature 08 as part of this reconciliation.
+
+## 2026-09-02 — Phase 3, Feature 06: Storage and Media (complete)
+
+### Completed
+
+- Added property-scoped, server-owned Supabase Storage adapter paths, MediaAsset policy/lifecycle, signed upload/finalization, immutable replacement, private/public delivery, sensitive auditing, cleanup service, and bounded server-only maintenance launcher.
+- Added `/[propertyId]/media` as a secondary-navigation proof surface with reusable MediaUploadControl, MediaPicker, previews, private attachment access, and capability-gated mutations.
+- Added server-authoritative pending-upload recovery: normal CONTENT_IMAGE/ATTACHMENT PENDING_UPLOAD records are rediscovered after reload and classified as FINALIZE, RESTART, EXPIRED, or temporary UNAVAILABLE. The UI never claims missing local bytes were restored.
+- Corrected Media Library recovery rendering so each pending upload appears only in its corresponding Content Images or Attachments view.
+- Updated project route documentation, Storage architecture path/cleanup boundary, and UI registry Media pattern.
+
+### Final verification
+
+- All 50 unit-test files pass in bounded direct Vitest groups (191 tests); the Feature 06 storage group passes 59 tests and final media UI tests pass 14 tests.
+- Local database integration exits successfully (`0`); Playwright’s final authoritative record reports `passed` with no failed tests.
+- Typecheck, lint (zero errors; one intentional dynamic-image preview warning), scoped supported-file Prettier check, and production build all pass.
+- Scoped Feature 06 tracked and untracked whitespace checks are clean. Global `git diff --check` reports only the intentionally preserved unrelated `AGENTS.md` final blank-line change.
+- Final review found and corrected duplicate cross-tab recovery-card rendering. The remediation review also added Zod validation to every generic Media Library browser action and a server-only normal-library asset guard, preventing forged profile values or same-property infrastructure/sensitive asset IDs from reaching shared mutations. No unresolved critical or high-severity review findings remain.
+
+### Exit gate
+
+- Passed: public content images receive durable delivery URLs.
+- Passed: private attachments require server authorization and short-lived signed URLs.
+- Passed: property authorization, capability checks, scoped queries, and tests deny cross-property access.
+- Passed: failed/abandoned pending uploads are rediscovered after reload, recover uploaded bytes only when verified, and remain cleanup eligible.
+- Passed: finalized assets are immutable; replacement creates a distinct MediaAsset.
+- Passed: responsive web upload controls support file/image selection and browser camera capture hints without native-mobile dependencies.
+
+### Next session
+
+1. Feature 06 is complete. Do not start Feature 07 without explicit direction.

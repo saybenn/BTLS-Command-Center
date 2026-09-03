@@ -11,6 +11,7 @@ export const navigationIcons = [
   "users-and-permissions",
   "integrations",
   "audit-log",
+  "media",
 ] as const;
 
 export type NavigationIcon = (typeof navigationIcons)[number];

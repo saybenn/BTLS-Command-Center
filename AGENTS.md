@@ -664,4 +664,3 @@ At the start of each implementation session:
 4. Do not begin implementation until the feature plan is approved.
 5. Do not advance to the following numbered feature until the current feature exit gate passes.
 
-As of the current reconciled context, Features 01–05 are complete and Feature 06 — Storage and Media is the next implementation target. If `context/progress-tracker.md` changes later, the tracker controls.

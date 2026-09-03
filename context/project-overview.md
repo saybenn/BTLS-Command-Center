@@ -297,6 +297,9 @@ The exact route structure may evolve, but the MVP uses the following page famili
 /[propertyId]/overview
 → Property summary and prioritized attention
 
+/[propertyId]/media
+→ Shared property media library for public content images and private attachments
+
 /[propertyId]/revenue-operations
 → Action-first Revenue home and attention workspace
 
