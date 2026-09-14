@@ -366,7 +366,7 @@ confirmation, normal application services, and durable audit/activity evidence.
 
 ### Communication
 
-- Postmark is outbound-only email for MVP behind the shared `EmailProvider`.
+- Postmark is outbound-only email for MVP behind the shared `TransactionalEmailProvider`.
 - Shared communication/integration configuration owns `SendingIdentity`; Revenue settings may reference a default identity but never own credentials or sender verification.
 - `BTLS_MANAGED` sending uses a verified BTLS-owned From identity and may use a client Gmail, Yahoo, or custom address as Reply-To.
 - Twilio provides two-way SMS for Customer/Contact Conversations.

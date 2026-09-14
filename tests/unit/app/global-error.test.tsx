@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/font/google", () => ({
@@ -9,13 +9,15 @@ import GlobalError from "@/app/global-error";
 
 describe("GlobalError", () => {
   it("keeps the dark semantic-token baseline and a retry action", () => {
-    render(<GlobalError reset={vi.fn()} />);
+    const markup = renderToStaticMarkup(<GlobalError reset={vi.fn()} />);
+    const document = new DOMParser().parseFromString(markup, "text/html");
+    const heading = document.querySelector("h1");
+    const retryButton = document.querySelector("button");
 
-    expect(screen.getByRole("heading", { name: "Application unavailable" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Try again" })).toHaveClass("bg-accent");
-    expect(screen.getByRole("button", { name: "Try again" })).toHaveClass(
-      "focus-visible:outline-focus-ring",
-    );
-    expect(document.documentElement).toHaveClass("dark");
+    expect(heading?.textContent).toContain("Application unavailable");
+    expect(retryButton?.textContent).toContain("Try again");
+    expect(retryButton?.classList.contains("bg-accent")).toBe(true);
+    expect(retryButton?.classList.contains("focus-visible:outline-focus-ring")).toBe(true);
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
   });
 });

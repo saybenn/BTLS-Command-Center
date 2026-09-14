@@ -699,11 +699,14 @@ Log structured fields rather than long unsearchable strings.
 Prefer:
 
 ```ts
-logger.info("Lead created", {
-  leadId,
-  propertyId,
-  source,
-});
+logger.info(
+  {
+    leadId,
+    propertyId,
+    source,
+  },
+  "Lead created",
+);
 ```
 
 ### 10.2 Important workflows need traceability
@@ -1069,7 +1072,7 @@ AI extraction
 → persisted result and audit trail
 ```
 
-Quick Capture always shows the proposal and requires human confirmation. AI must not
+Current MVP Quick Capture is text-based, always previews proposed mutations, always requires human confirmation, and remains separate from Robin authority modes. Quick Capture never uses Robin Automatic mode. AI must not
 fabricate signature or Payment truth, write derived state directly, or bypass an owning
 application service.
 
@@ -1095,10 +1098,20 @@ Every Robin action must check:
 - Property configuration
 - Enabled capability
 - Automation mode
+- Shadow Mode evaluation overlay
+- Consent/opt-out and valid business context
 - Required approval
 - Business hours
 - Duplicate-action protections
 - Human escalation rules
+
+Shadow Mode runs the reasoning/validation/proposal path but must suppress mutating application-service execution and customer-facing provider side effects. Suppressed intended effects remain traceable in RobinRun/RobinAction history. It is an evaluation overlay, not a fourth authority mode; Off / Approval Required / Automatic remain unchanged.
+
+### Uncertainty reduces authority
+
+Robin must not convert unsupported knowledge, ambiguous context, provider uncertainty, or low-confidence material interpretation into a confident business mutation or customer claim. It must ask, propose, or hand off according to the configured workflow. Unsupported or materially uncertain work requires handoff.
+
+Robin implementations must not introduce ordinary phone-call recording, listening, ingestion, or transcription. Relevant call outcomes are supplied deliberately by a human through normal Revenue input or Quick Capture.
 
 ### 16.5 Log every material AI action
 
@@ -1174,11 +1187,35 @@ Cover critical journeys:
 
 - User signs in and accesses the correct property
 - Lead is created and progressed
-- Robin requests approval or acts correctly
+- Robin 1.0 live and Shadow Mode journeys below
 - Content is created and published
 - Finding becomes a ticket
 - Completed work enters measurement review
 - Cross-tenant access is denied
+
+#### Robin 1.0 live path
+
+```text
+website Lead
+→ Robin acknowledgment
+→ summary / missing information
+→ bounded Knowledge Pack response or qualification
+→ Appointment scheduling OR human handoff
+→ NextRequiredAction
+→ traceable staff/customer history
+```
+
+#### Shadow Mode path
+
+```text
+same eligible Lead
+→ Robin reasons and records proposed actions
+→ zero customer-facing sends
+→ zero durable business mutation side effects
+→ proposed/suppressed action remains inspectable
+```
+
+Also cover duplicate event retry, opt-out, unsupported questions, provider outage, property isolation, and automatic-mode capability denial. Feature 13 proves the non-scheduling path; Feature 14 adds scheduling and is the Robin 1.0 milestone. Later Feature 23 tools must not regress it.
 
 ### 18.5 End-to-end reliability
 

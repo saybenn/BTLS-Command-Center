@@ -68,6 +68,16 @@ The MVP does not include:
 - A native offline field application during the MVP
 - Unbounded or AI-directed automatic website modification
 - Unapproved autonomous AI actions
+- Inbound connected-mailbox / email intelligence
+- General phone-call recording, listening, or transcription by Robin
+- Voice Quick Capture and Generated Job Brief for the current MVP
+- Generalized Robin Business Knowledge Ocean and Business Graph
+- Generalized company ontology/vocabulary-learning engine
+- User-configurable Operational Registers
+- Generalized Commitment Engine / Commitment Intelligence
+- Generalized Handoff Package subsystem
+- Native/offline Robin field runtime and role-specific Robin 2.0 companions
+- Cross-system/cross-studio Robin orchestration as an MVP requirement
 
 Shared infrastructure required by the six primary MVP components is allowed.
 
@@ -130,6 +140,16 @@ Search Operations may execute bounded website actions only through the approved 
 
 18. **Provider-independent operational truth**
     A provider may execute or project a capability without becoming the source of the underlying BTLS business fact.
+
+---
+
+### Robin consumes domain truth
+
+Robin augments and coordinates existing authoritative domains. It must not create a competing Customer, Lead, Conversation, Appointment, Estimate, Job, Invoice, Payment, Quick Capture, Finding, or Work Management source of truth.
+
+### Uncertainty reduces authority
+
+When Robin lacks supported knowledge, valid context, permission, or sufficient confidence for a material action, it asks, proposes, or hands off rather than inventing business truth.
 
 ---
 
@@ -781,7 +801,7 @@ The Prisma schema is the executable source of truth. This section defines the in
 | `SendingIdentity` | Shared verified sender identity and mode, separate from provider credentials and Revenue defaults | Property/integration configuration |
 | `MediaAsset` | Shared ownership and metadata for stored files | Property, uploader, owning-feature relationships |
 | `AuditEvent` | Append-only history of sensitive actions | Actor, property, subject |
-| `Notification` | In-app notification and delivery status | User, property |
+| `Notification` | Generic in-app notification: origin/source, validated subject link, concise title/body, read/delivery state, practical destination/action route, and correlation context | Recipient user, property |
 | `WebhookReceipt` | Idempotency and processing history | Provider, external event ID |
 | `JobExecution` | Optional application record for important background work | Property, job type, status |
 
@@ -832,7 +852,7 @@ history boundaries below are binding.
 | `InvoiceDelivery` | One Invoice delivery attempt | Invoice, Message/provider correlation |
 | `Payment` | Factual money received or explicit reversal/correction | Invoice, method/date/reference; provider linkage optional |
 | `ReviewRequest` | Basic post-work review request without operational gating | Customer, Job, communication evidence |
-| `QuickCaptureRun` | One natural-language/text/voice capture and review context | Property, actor, source MediaAsset when applicable |
+| `QuickCaptureRun` | One natural-text capture and human-confirmed proposal review context | Property, actor, source MediaAsset when applicable |
 | `QuickCaptureMutationProposal` | Typed proposed source mutation with confidence and before/after preview | QuickCaptureRun; applies only after confirmation through normal services |
 
 Canonical distinctions:
@@ -843,16 +863,16 @@ Canonical distinctions:
 - Shared `MediaAsset` owns file-byte lifecycle. Revenue owns explicit contextual relationships only.
 - `JobTask != WorkTicketTask` and `BusinessException != Finding`.
 - Revenue Leak is a `BusinessException` rule family/category, not another model.
-- Generated Job Brief, customer journey views, Estimate intelligence, and Invoice payment/overdue states are derived projections, not competing source records.
+- Customer journey views, Estimate intelligence, and Invoice payment/overdue states are derived projections, not competing source records. Voice capture and Generated Job Brief are post-MVP.
 
 ### Robin
 
 | Entity | Purpose | Key relationships |
 |---|---|---|
-| `BusinessKnowledgePack` | Approved facts Robin may use | Property, version |
-| `RobinConfiguration` | Modes, tools, hours, and capability settings | Property |
+| `BusinessKnowledgePack` | Versioned property-approved facts, FAQs, services, service areas, workflow/qualification guidance, scheduling guidance, and escalation knowledge Robin may use | Property, version |
+| `RobinConfiguration` | Property authority modes, Shadow Mode, enabled capabilities/tools, business hours, escalation policy, and operating settings | Property |
 | `RobinRun` | One agent reasoning/execution session | Customer/Lead context, property, configuration version |
-| `RobinAction` | Proposed or executed typed tool action | Robin run, approval, result |
+| `RobinAction` | Proposed/executed/suppressed typed tool action, approval/result, and handoff state/context where applicable | Robin run, approval, result |
 
 Conversation and Message belong to Revenue Operations communication truth. Robin may
 consume them and send through the same authorized application services as a human, but
@@ -1069,8 +1089,7 @@ not determine jurisdiction, taxability, or statutory rates.
 ### 11.8 Quick Capture
 
 ```text
-Natural text or voice
-→ transcription when required
+Natural text
 → structured extraction
 → typed mutation proposals
 → runtime, authorization, and business-context validation
@@ -1243,7 +1262,7 @@ The database owns file metadata and relationships. Supabase Storage owns file by
 - Published content should not depend on short-lived signed URLs.
 - Private access remains compatible with property authorization plus owning-record authorization and short-lived signed delivery.
 - Client users cannot list or access another property's paths.
-- Shared MediaAsset supports future signatures, signed Estimate artifacts, customer/location/asset/job photos, ServiceIssue evidence, temporary capture audio, and commercial documents without prebuilding Revenue attachment models.
+- Shared MediaAsset supports future signatures, signed Estimate artifacts, customer/location/asset/job photos, ServiceIssue evidence, temporary capture audio (post-MVP only), and commercial documents without prebuilding Revenue attachment models.
 
 ---
 
@@ -1299,16 +1318,17 @@ Every connection tracks:
 
 ### Communication and scheduling provider boundaries
 
-- `EmailProvider` accepts a normalized shared `SendingIdentity`, display name, Reply-To, recipients, business correlation, and idempotency input. Postmark remains the outbound implementation.
+- `TransactionalEmailProvider` accepts a normalized shared `SendingIdentity`, display name, Reply-To, recipients, business correlation, provider correlation, and idempotency input. Postmark remains the outbound transactional/system-email implementation.
+- `ConnectedMailboxProvider` is a future boundary for connected business-mailbox capabilities. It is distinct from `TransactionalEmailProvider`; Feature 07 does not select or implement it, mailbox OAuth, synchronization, inbound email, or connected-mailbox sending.
 - Sending modes are `BTLS_MANAGED`, `CUSTOM_DOMAIN`, and deferred `CONNECTED_MAILBOX`. `BTLS_MANAGED` uses a verified BTLS-owned From identity and may use a client's Gmail, Yahoo, or custom address as Reply-To.
 - `SmsProvider` executes Customer/Contact messaging only after consent, property-number routing, and idempotency checks. Twilio remains the implementation.
 - BTLS `Appointment` and `JobVisit` records are operational schedule truth. Cronofy supplies availability and external calendar projection/synchronization; provider failure never erases valid BTLS schedule state.
 
 ### Deferred Revenue capability interfaces
 
-The architecture recognizes replaceable `PaymentProvider`, `AddressLookupProvider`, and
-`TranscriptionProvider` boundaries without selecting vendors. Manual ServiceLocation
-entry, manual/external Payment recording, and text Quick Capture remain complete paths.
+The architecture recognizes replaceable `PaymentProvider` and `AddressLookupProvider` boundaries without selecting vendors. Manual ServiceLocation entry and manual/external Payment recording remain complete paths.
+
+`TranscriptionProvider` is a post-MVP Robin 2.0 / field-intelligence boundary. No provider is selected or required for the current Command Center MVP. Text Quick Capture is the complete current capture path.
 Signature capture and commercial document generation do not require an external SaaS
 provider.
 
@@ -1329,15 +1349,28 @@ CallAttributionProvider
 SiteOptimizationAdapter
 ```
 
+Search call attribution may consume approved call metadata/attribution evidence. This does not authorize Robin call recording, listening, or transcription.
+
 Provider SDK types remain inside integration adapters. Exact vendors remain deferred until the owning build feature unless already approved in `context/library-docs.md`.
 
 ### Provider failure rule
 
 External systems are treated as delayed and unreliable. Adapters must handle timeouts, expired credentials, rate limits, partial data, missing fields, duplicate events, and provider outages.
+`ProviderDispatch` is infrastructure execution, idempotency, and correlation evidence only. A duplicate dispatch resolves successfully only when the existing record is `ACCEPTED`. `PENDING` means a durable request exists without an authoritative provider outcome: a fresh pending lease remains in progress, while an expired pending lease becomes `UNCERTAIN` without an automatic resend. `UNCERTAIN` means the provider effect may have happened. `REJECTED` and `FAILED` also remain explicit non-success outcomes. None of these records replaces owning business delivery truth.
+
+`WebhookReceipt.processingStartedAt` is the processing claim and fencing token. A worker cannot claim a receipt while that lease is active. After lease expiry, one worker may atomically replace the claim. Completion or failure must present the exact current claim timestamp, so an abandoned worker cannot overwrite the replacement worker's result.
 
 ---
 
 ## 14. Internal Events
+
+### Shared notification context
+
+`Notification.source` identifies its owning producer (`system` or `infrastructure.proof` in Feature 07); `type` identifies the notice kind. The source registry and typed subject resolver are extended additively by implemented owning features. New notices require a UUID `correlationId` inherited from the originating event/job, independent of the property/recipient-scoped business deduplication key. Existing notices may retain null source/correlation when historical provenance is unknown; do not invent provenance during migration.
+
+Persist subject identity, never a destination URL. The resolver derives routes only to implemented workflows and checks recipient/property access again when a notice is opened. Media destinations reuse Feature 06 access and generic-library boundaries; unavailable, deleted, unsupported, or unauthorized subjects yield no destination. Job-detail navigation resolves to the internal operations surface only for BTLS Admin or an Operator with explicit active property access; client recipients receive an unavailable destination. New service inputs reject unknown fields, unsupported source/subject types, and malformed identifiers.
+
+Notifications are created by trusted server-side owning services, not browser database inserts. Reads and read-state mutations remain recipient-specific, including for administrators. BTLS Admin may access its notices across active properties; ordinary BTLS Operators require explicit active property access. External delivery is separate from the in-app read state.
 
 Internal events decouple completed business facts from follow-on work.
 
@@ -1439,7 +1472,7 @@ Use background jobs for:
 - Estimate and Invoice delivery and signed-document generation
 - External calendar projection/synchronization
 - BusinessException evaluation
-- Quick Capture extraction/transcription follow-on work
+- Text Quick Capture extraction follow-on work
 - ReviewRequest delivery
 - Measurement reviews
 - Webhook follow-on work
@@ -1872,13 +1905,12 @@ Examples include Lead untouched, accepted Estimate unscheduled, Work Complete wi
 Invoice, and Invoice overdue. Revenue Leak is a BusinessException rule family/category,
 not a separate model. BusinessException never reuses shared growth Finding.
 
-### 19.9 Quick Capture and derived assistance
+### 19.9 Quick Capture
 
 Quick Capture is a Revenue Operations input workflow, not Robin:
 
 ```text
-text / voice
-→ transcription when required
+text
 → structured extraction
 → typed source-mutation proposals
 → runtime, property, capability, and business validation
@@ -1900,8 +1932,7 @@ Consequential Undo uses compensating business operations: reverse/correct Paymen
 void/replace Invoice, supersede a commercial document, or append corrective history.
 Externally sent communication cannot be made unsent.
 
-Generated Job Brief is a derived, evidence-cited, non-authoritative projection from
-trusted Revenue sources. It never becomes a competing Job record.
+Voice Quick Capture, transcription, Generated Job Brief, and richer natural field-capture assistance are post-MVP capabilities and are not required by the current Command Center architecture.
 
 ### 19.10 Revenue settings, sending identity, and review requests
 
@@ -1947,23 +1978,39 @@ they must not claim unsupported individual or multi-touch causation.
 
 ## 20. Robin Architecture
 
-Robin is a controlled application agent, not an autonomous database user.
+Robin 1.0 is the Revenue Response Sidekick. It is a controlled application agent focused first on preventing new Revenue opportunities and immediate follow-up work from falling through the cracks. Robin consumes authoritative Revenue Operations context and acts only through owning application services.
 
-Robin consumes the approved Customer/Contact/Lead/Conversation context and only the
-Revenue application services that already exist. Robin supports:
+### Robin 1.0 primary domain
 
-- approved acknowledgment and communication;
-- approved qualification and sales-stage updates;
-- approved scheduling through Appointment services;
-- approved next actions and follow-up;
-- bounded Estimate/Job/Invoice/Payment assistance only after the owning service exists;
-- human escalation;
-- agent run/action records;
-- automation outcome reporting.
+```text
+Customer
+→ Contact
+→ Lead
+→ Conversation / Message
+→ NextRequiredAction
+→ Appointment
+```
 
-Robin does not own Conversation, Message, Quick Capture, or any Revenue aggregate. It
-cannot fabricate acceptance/signature or Payment truth, directly mutate derived state,
-or invent tools for unfinished features.
+Features 12–14 make Robin 1.0 operational: Feature 12 establishes configuration, approved knowledge, and Shadow Mode; Feature 13 activates core non-scheduling response; Feature 14 adds approved Appointment scheduling and the Robin 1.0 milestone. Feature 23 expands onto later Revenue services incrementally after they exist; it does not activate Robin for the first time.
+
+### Supported behavior
+
+- Eligible `lead.created` response and approved acknowledgment
+- Lead summary and missing-information detection
+- Bounded Business Knowledge Pack Q&A and approved qualification
+- Explicitly approved Lead field/stage updates and NextRequiredAction through owning services
+- Bounded follow-up/re-engagement
+- Approved Appointment scheduling once Feature 14's normal service exists
+- Contextual employee notification and explicit human handoff/takeover
+- Robin run/action history and outcome reporting
+
+The versioned Business Knowledge Pack is bounded property-approved knowledge: business identity, services, service areas, hours, customer-facing FAQs/facts, qualification/workflow guidance, scheduling policy, and escalation policy. It is not a Knowledge Ocean.
+
+### Ownership boundary
+
+Robin does not own Conversation, Message, Customer, Contact, Lead, Appointment, Estimate, Job, Invoice, Payment, NextRequiredAction, Quick Capture, AttentionFlag, BusinessException, Finding, or WorkTicket truth.
+
+Robin uses Twilio-backed SMS through normal Customer/Contact Conversation and Message services, preserving required primary Contact, consent, opt-out, routing, and provider correlation. It cannot fabricate acceptance/signature or Payment truth, directly mutate derived state, or invent tools for unfinished features. Quick Capture remains a separate text-based, always-previewed, human-confirmed input workflow and never uses Robin Automatic mode.
 
 ### Modes
 
@@ -1971,32 +2018,60 @@ or invent tools for unfinished features.
 - **Approval Required**
 - **Automatic**
 
-Modes are property-scoped and capability-specific.
+Authority modes are property-scoped and capability-specific. Off is the default and grants no execution authority. Approval Required blocks execution until human approval; Automatic permits only explicitly enabled tools.
+
+### Shadow Mode
+
+Shadow Mode is an evaluation overlay rather than a fourth authority mode. Authorized evaluation may process real eligible events and execute the complete reasoning/validation path, but mutating application-service calls and customer-facing provider effects are suppressed. RobinRun/RobinAction preserves the proposed/suppressed result. Evaluation evidence may persist; no durable business mutation or customer send may occur.
 
 ### Tool boundary
 
-Robin can act only through typed tools that call normal application services.
-
 ```text
-AI proposes tool call
-→ tool arguments validated
-→ property configuration checked
-→ automation mode checked
-→ duplicate/permission checks
-→ application service executes
-→ result and audit trail recorded
+eligible Revenue event
+→ load authorized property/domain context
+→ model proposes typed action
+→ Zod validation
+→ property/capability check
+→ Robin configuration and authority-mode check
+→ Shadow Mode check
+→ duplicate/consent/business-hours/context checks
+→ normal application service OR suppressed Shadow result
+→ persisted Robin result and audit trail
+→ human handoff on unsupported, failed, or materially uncertain state
 ```
+
+### Lightweight handoff
+
+Robin 1.0 handoff uses RobinRun/RobinAction state plus generic Notification and links to the owning Revenue records. It preserves the reason Robin stopped, what Robin already did, relevant Customer/Lead/Conversation context, recommended human next action, optional configured recipient, and takeover state. It is not the generalized Robin 2.0 Handoff Package subsystem.
+
+Shared Notification remains feature-neutral; owning workflows supply source, recipient, subject, useful title/body, destination, and correlation context. Feature 10 baseline employee awareness and later Robin workflow-state notifications must avoid noisy duplicates for the same business condition. Lead ingestion never depends on Robin configuration. In Shadow Mode, intended handoffs/notifications are recorded as suppressed evaluation results rather than executed business effects.
+
+### Scheduling boundary
+
+Only implemented, configured Appointment operations are exposed as typed tools. Normalize allowed availability; offer only valid options; revalidate a customer's selected slot and create through the owning Appointment service before confirming through communication services. Preserve mode, capability, consent, business-hour, property, and idempotency checks. Never invent availability or promise a time before successful BTLS creation. Cronofy remains a provider projection, not Appointment truth; unavailable or ambiguous provider/slot state requires handoff.
+
+### Hard no-call boundary
+
+Robin does not record, listen to, transcribe, or ingest ordinary phone-call content. Relevant call outcomes are deliberately reported by a user through normal Revenue input or Quick Capture. Search call-attribution metadata does not authorize Robin call-content ingestion.
+
+### Email boundary
+
+Robin 1.0 does not read connected inboxes. Postmark remains outbound transactional/customer communication infrastructure behind the existing TransactionalEmailProvider boundary. Connected mailbox and designated-folder intelligence are deferred.
 
 ### Robin invariants
 
-- No unrestricted Prisma client
-- No direct SQL
-- No raw provider credentials
+- No unrestricted Prisma client, direct SQL, raw provider credentials, or unrestricted provider APIs
 - No action outside enabled property capabilities
 - No automatic action when approval is required
 - No unsupported claim presented as business fact
-- Every material action is recorded
-- Human handoff is available and explicit
+- Every material action is recorded with prompt/model/configuration/Knowledge Pack versions and traceable Message/RevenueActivity/audit evidence
+- Human handoff/takeover is available and explicit
+- Shadow Mode cannot create customer-facing or durable business mutation effects
+- Unsupported or materially uncertain cases hand off rather than improvise; uncertainty reduces authority
+- Robin 1.0 does not require Feature 21; that slot is deferred and is not an MVP gate
+- Robin 1.0 is complete only when the Feature 14 end-to-end response/scheduling-or-handoff path passes; Feature 23 is not required
+- No call-content ingestion or connected-mailbox ingestion
+- No Robin 2.0 Business Knowledge Ocean, generalized Business Graph, ontology/vocabulary engine, Operational Registers, Commitment Engine, generalized Handoff Packages, offline field runtime, role companions, or cross-system/cross-studio orchestration substrate in the MVP
 
 ---
 
@@ -5313,7 +5388,7 @@ Rules Codex and developers must never violate:
 65. Quick Capture is distinct from Robin, always previews proposals, and never writes derived state directly.
 66. AI cannot fabricate signature or Payment truth or bypass normal application services.
 67. Consequential corrections preserve history through reversal, void, replacement, or compensation.
-68. Generated Job Brief and customer journey views remain derived, non-authoritative projections.
+68. Customer journey views remain derived, non-authoritative projections; voice capture and Generated Job Brief are post-MVP.
 
 The MVP does not need a public mobile API for every feature immediately. However, workflows must not be buried inside Server Actions so deeply that they cannot later be exposed through authenticated API endpoints.
 
@@ -5327,14 +5402,14 @@ These decisions may be finalized during the relevant build phase without blockin
 - Exact retention periods for analytics snapshots and operational logs
 - Exact role-to-capability matrix
 - Whether selected dashboards use Supabase Realtime or normal refresh
-- Exact provider for voice-call attribution
+- Exact provider for Search voice-call attribution metadata only; this does not authorize Robin call-content recording, listening, ingestion, or transcription
 - Exact advanced file-scanning service
 - Whether Work Package templates receive an admin editing UI in MVP
 - Exact OpenAI model selection and model fallback policy
 - Exact client-facing notification preference options
 - Exact integrated `PaymentProvider`, if online payment processing is later approved; no provider is required for core Invoice/Payment
 - Exact `AddressLookupProvider`, if address assistance/geocoding is later approved; manual ServiceLocation entry remains default
-- Exact `TranscriptionProvider` before Feature 21 voice Quick Capture; text Quick Capture is provider-independent
+- Exact `TranscriptionProvider` is a post-MVP Robin 2.0 / field-intelligence decision and must not be selected during the current MVP
 - Exact connected-mailbox provider/OAuth behavior; Postmark outbound with BTLS-managed From and client Reply-To remains the MVP default
 - Exact server library for commercial PDF/artifact generation, if Feature 16 requires one
 - Exact customer document-grant expiry, claim, and revocation policies within the scoped-access architecture

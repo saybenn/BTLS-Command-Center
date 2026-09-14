@@ -4,6 +4,18 @@ import path from "node:path";
 
 import { Client } from "pg";
 
+const acceptedHistoricalChecksums: Readonly<Record<string, readonly string[]>> = {
+  // An earlier local Feature 06 draft was applied before the final migration was committed.
+  // The forward reconciliation migration below restores the committed security definition.
+  "20260830090100_storage_and_media_security.sql": [
+    "9436c06fc00ed3385888b43e17a7cd0cff1a7a5a458d26ea9bfe35698eb1f498",
+  ],
+};
+
+function checksum(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
 async function main() {
   const migrationDirectory = path.resolve(process.cwd(), "supabase", "security-migrations");
   const databaseUrl = process.env.DIRECT_DATABASE_URL;
@@ -34,7 +46,13 @@ async function main() {
     for (const migrationName of migrationNames) {
       const migrationPath = path.join(migrationDirectory, migrationName);
       const migrationSql = await readFile(migrationPath, "utf8");
-      const checksum = createHash("sha256").update(migrationSql).digest("hex");
+      const normalizedMigrationSql = migrationSql.replace(/\r\n?/g, "\n");
+      const normalizedChecksum = checksum(normalizedMigrationSql);
+      const acceptedChecksums = new Set([
+        normalizedChecksum,
+        checksum(migrationSql),
+        ...(acceptedHistoricalChecksums[migrationName] ?? []),
+      ]);
 
       await client.query("begin");
 
@@ -45,14 +63,14 @@ async function main() {
         );
 
         if (existingMigration.rowCount === 1) {
-          if (existingMigration.rows[0]?.checksum !== checksum) {
+          if (!acceptedChecksums.has(existingMigration.rows[0]?.checksum ?? "")) {
             throw new Error(`Applied Supabase security migration was modified: ${migrationName}`);
           }
         } else {
           await client.query(migrationSql);
           await client.query(
             "insert into app.security_migrations (name, checksum) values ($1, $2)",
-            [migrationName, checksum],
+            [migrationName, normalizedChecksum],
           );
         }
 

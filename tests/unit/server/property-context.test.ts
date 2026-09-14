@@ -183,6 +183,8 @@ describe("Feature 05 Slice 2 server-scoped property context", () => {
             "platform.media.view",
             "platform.media.manage",
             "platform.media.sensitive.view",
+            "platform.operations.view",
+            "platform.operations.retry",
           ],
         },
       },

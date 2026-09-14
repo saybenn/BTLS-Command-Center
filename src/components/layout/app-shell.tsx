@@ -8,16 +8,26 @@ import type { AppShellDisplay } from "./app-shell.types";
 export type AppShellProps = {
   children: ReactNode;
   display: AppShellDisplay;
+  notificationControl?: ReactNode;
   propertySwitcher?: ReactNode;
 };
 
-export function AppShell({ children, display, propertySwitcher }: Readonly<AppShellProps>) {
+export function AppShell({
+  children,
+  display,
+  notificationControl,
+  propertySwitcher,
+}: Readonly<AppShellProps>) {
   return (
     <div className="min-h-screen bg-background text-text-primary">
       <div className="flex min-h-screen">
         <ApplicationSidebar display={display} />
         <div className="min-w-0 flex-1">
-          <TopNavigation display={display} propertySwitcher={propertySwitcher} />
+          <TopNavigation
+            display={display}
+            notificationControl={notificationControl}
+            propertySwitcher={propertySwitcher}
+          />
           <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-7">{children}</main>
         </div>
       </div>

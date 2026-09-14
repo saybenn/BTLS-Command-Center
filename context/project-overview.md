@@ -105,6 +105,8 @@ next actions, operational exceptions, basic time tracking, and Quick Capture. Ro
 controlled consumer of the approved application services, not a separate owner of that
 business truth.
 
+Robin 1.0 is the Revenue Response Sidekick: its initial responsibility is immediate, bounded handling of new Revenue opportunities through approved communication, knowledge, qualification, next actions, scheduling, and human handoff. It becomes operational through Features 12–14, reaches its milestone after Feature 14, and expands onto later Revenue services in Feature 23. Feature 21 is a deferred post-MVP reservation and is not an MVP gate.
+
 ### Group 3 — Search Operations Studio
 
 6. Search Operations / Fulfillment
@@ -121,7 +123,7 @@ Work Management is shared by Website Intelligence, Content Intelligence, and Sea
 
 Web Growth Studio is the primary commercial MVP.
 
-Revenue Operations launches as a clearly labeled, field-capable responsive web beta. The web version supports call/text, Estimate presentation and acceptance, schedule visibility, Start Work and Work Complete, photos and notes, authorized Payment recording, clock in/out, and Quick Capture from a phone browser.
+Revenue Operations launches as a clearly labeled, field-capable responsive web beta. The web version supports SMS communication, Estimate presentation and acceptance, schedule visibility, Start Work and Work Complete, photos and notes, authorized Payment recording, clock in/out, and text Quick Capture from a phone browser.
 
 A dedicated native mobile application remains post-MVP. Its scope will be designed only after real field usage validates needs such as offline work, background behavior, and deeper device integration. The responsive web application remains the administrative and desktop workspace.
 
@@ -469,7 +471,7 @@ Navigation is capability-aware, but server authorization remains mandatory.
 5. The administrator invites users or assigns existing users.
 6. The administrator configures feature access.
 7. Google and communication integrations may be connected.
-8. Robin starts in Off or test mode.
+8. Robin starts Off by default. Authorized onboarding may enable Shadow Mode to evaluate real eligible events without customer-facing or business mutation side effects before Approval Required or Automatic behavior is trusted.
 9. The property appears in authorized property directories and switchers.
 10. No new codebase or deployment is created.
 
@@ -554,28 +556,34 @@ Navigation is capability-aware, but server authorization remains mandatory.
 
 ## Flow 8 — Quick Capture
 
-1. An authorized user enters natural text or voice.
-2. Voice is transcribed through a future provider boundary when required.
-3. Structured extraction produces typed source-mutation proposals.
-4. Runtime, authorization, and business-context validation run.
-5. The proposal window always shows confidence, before/after values, new records, missing information, and derived effects.
-6. The human confirms selected proposals.
-7. Normal application services execute and persist audit/activity/events.
-8. Quick Capture never directly writes derived state and is distinct from Robin.
+1. An authorized user enters natural text.
+2. Structured extraction produces typed source-mutation proposals.
+3. Runtime, authorization, duplicate, and business-context validation run.
+4. The proposal window always shows confidence, before/after values, new records, missing information, and derived effects.
+5. The human confirms selected proposals.
+6. Normal application services execute and persist audit/activity/events.
+7. Quick Capture never directly writes derived state and remains distinct from Robin.
+8. Voice capture and Generated Job Brief are post-MVP.
 
 ---
 
-## Flow 9 — Robin-Assisted Response
+## Flow 9 — Robin 1.0 Revenue Response
 
-1. An eligible Revenue event or due action triggers a durable Robin job.
-2. The system loads property configuration, Customer context, Business Knowledge Pack, implemented workflow, business hours, and enabled tools.
-3. Robin creates a typed proposed action.
-4. Runtime validation, property authorization, capability, operating-mode, consent, duplicate, and business-hour checks run.
-5. Approval Required mode waits for human review; Automatic mode may execute only an already-approved implemented tool.
-6. Normal application services own every mutation or provider action.
-7. Message, RevenueActivity, RobinRun, RobinAction, and audit evidence are recorded.
-8. Unsafe, failed, or uncertain actions create a human handoff.
-9. Robin cannot fabricate signature or Payment truth or own Conversation/Message.
+1. A supported website inquiry creates or resolves the Customer, Contact, and one Lead.
+2. The durable `lead.created` event dispatches eligible Robin processing.
+3. Robin loads property configuration, Customer/Contact/Lead context, Business Knowledge Pack, workflow policy, business hours, enabled capabilities, and communication consent.
+4. Shadow Mode records what Robin would do while suppressing side effects; otherwise the configured Off / Approval Required / Automatic authority applies.
+5. Robin creates a concise Lead summary and identifies configured missing information.
+6. Where authorized, Robin sends the approved new-Lead acknowledgment through the normal Customer/Contact SMS service.
+7. Robin may answer questions supported by approved Business Knowledge Pack facts and request only information needed by the configured workflow.
+8. Robin may perform approved qualification and allowed Lead/NextRequiredAction mutations through owning application services.
+9. Once Appointment services exist, Robin may offer and create only configured valid Appointment options.
+10. Unsupported, unsafe, failed, materially uncertain, or provider-blocked work creates a contextual human handoff.
+11. Staff visibility includes what happened, what Robin already did, why Robin stopped or what it is waiting for, and a route into the owning Customer/Lead/Conversation.
+12. Message, RevenueActivity, RobinRun, RobinAction, Notification, and audit evidence remain traceable and idempotent.
+13. A human may take over at any time.
+
+Every proposed Robin tool action is untrusted input: runtime validation, authorized property scope, capability, authority mode, consent/opt-out, business hours, context, and idempotency checks remain mandatory. Approval Required waits for human approval; Automatic uses only enabled, implemented tools. Robin owns no Revenue aggregate and never directly accesses Prisma, SQL, provider credentials, or unrestricted provider APIs. It cannot fabricate signature, acceptance, Payment, or other source truth.
 
 ---
 
@@ -783,8 +791,7 @@ The Prisma schema is the executable source of truth. This section defines produc
 
 Shared `PropertyService` remains the offered-service identity, and shared `MediaAsset`
 remains file-byte truth. Revenue owns only its contextual relationships to those shared
-records. Generated Job Brief, Estimate intelligence, customer journey presentation, and
-Invoice payment/overdue state are derived rather than separate authoritative records.
+records. Estimate intelligence, customer journey presentation, and Invoice payment/overdue state are derived rather than separate authoritative records. Voice capture and Generated Job Brief are post-MVP.
 ## ContentAsset
 
 - Lives in PostgreSQL.
@@ -995,31 +1002,27 @@ Durable actionable Search conditions use the existing shared `Finding` system. S
 - Immutable Estimate revisions, agreement snapshots, delivery, scoped presentation, and acceptance
 - Authorized Job, optional field visits/tasks/assets/files, ChangeOrder, and basic ServiceIssue
 - Immutable issued Invoice, factual Payment, derived balance/partial/paid/overdue state
-- Safe text and voice Quick Capture proposal review
-- Generated Job Brief and Customer journey presentation as derived assistance
+- Safe text Quick Capture proposal review
+- Customer journey presentation as derived assistance
 - Basic ReviewRequest lifecycle
 - Revenue and attribution reporting through collected Payment where evidence exists
 - Property and cross-property operational attention for authorized BTLS users
 
 ## Robin
 
-- New-lead acknowledgment
-- Staff notification
-- Lead summary
-- Missing-information detection
-- Approved qualification
-- Approved field updates
-- Client-specific workflows
-- Approved scheduling
-- Follow-up
-- Re-engagement
-- Human escalation
-- Business Knowledge Pack
-- Off, Approval Required, and Automatic modes
-- Capability toggles
-- Complete action logging
-- Duplicate prevention
-- Outcome reporting
+- New-Lead `lead.created` activation and immediate approved acknowledgment
+- Two-way SMS through normal Customer/Contact Conversations and Twilio-backed services
+- Lead summary and missing-information detection
+- Bounded approved Business Knowledge Pack and knowledge-backed customer Q&A
+- Approved qualification and explicitly allowed Lead-field/stage updates
+- Client-specific workflows and `NextRequiredAction` creation/update
+- Bounded follow-up and re-engagement
+- Approved Appointment scheduling after Feature 14's owning services exist
+- Context-rich staff notifications; lightweight contextual human handoff and Take Over
+- Off / Approval Required / Automatic authority modes
+- Shadow Mode evaluation overlay with zero customer-facing/business mutation effects
+- Property capability toggles, business-hour behavior, consent/opt-out enforcement, and human override
+- Complete action logging, duplicate prevention/idempotency, failure visibility, and outcome reporting
 
 ## Search Operations
 
@@ -1074,6 +1077,15 @@ Durable actionable Search conditions use the existing shared `Finding` system. S
 ---
 
 # Features Out of Scope
+
+- Robin call listening/recording/transcription or ordinary phone-call content ingestion
+- Connected inbox/mailbox intelligence
+- Voice Quick Capture and Generated Job Brief — post-MVP
+- Generalized Business Knowledge Ocean, Business Graph, and company ontology/vocabulary learning
+- Operational Registers and generalized Commitment Engine / Commitment Intelligence
+- Generalized Handoff Packages
+- Offline Robin field runtime and role-specific Robin 2.0 companions
+- Cross-system/cross-studio Robin orchestration
 
 - Campaign management — remains outside the MVP so the platform stays focused on the approved studios.
 - General Funnel Mapper — content effectiveness is handled by Content Intelligence.
@@ -1398,7 +1410,9 @@ A client employee who:
 - Robin respects Off, Approval Required, and Automatic modes.
 - Every Robin action is property-scoped, validated, and recorded.
 - Duplicate acknowledgments and follow-ups are prevented.
-- Unsafe or failed actions create a human handoff.
+- Unsafe, unsupported, failed, or materially uncertain actions create a contextual human handoff rather than invented answers or business actions.
+- Shadow Mode preserves inspectable RobinRun/RobinAction proposed/suppressed evidence with zero customer-facing sends and zero durable business mutations.
+- The Feature 14 acknowledgment → summary / missing information → bounded Q&A / qualification → Appointment scheduling or handoff → NextRequiredAction → staff/history path passes; Feature 23 is not required.
 - Two-way SMS reaches the correct property conversation.
 - Opt-out state prevents unauthorized automated SMS.
 

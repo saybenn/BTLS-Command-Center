@@ -643,7 +643,7 @@ Rules:
 
 ## 14. Sentry
 
-**Packages:** Relevant Sentry Next.js package
+**Package:** `@sentry/nextjs`
 
 Sentry captures application errors, important traces, releases, and production diagnostics.
 
@@ -656,12 +656,16 @@ Rules:
 - Capture provider failures with safe metadata.
 - Associate releases with deployments.
 - Sentry does not replace structured logs or durable audit events.
+- Keep the SDK disabled when no DSN is configured. The shared `beforeSend` scrubber removes
+  request, user, breadcrumb, extra, and non-allowlisted context before transmission.
+- Source-map upload runs only when release credentials are configured; runtime error capture does
+  not depend on source-map upload being available.
 
 ---
 
 ## 15. Pino-Compatible Structured Logger
 
-**Package:** Selected Pino package and approved transport
+**Package:** `pino`
 
 Use structured logging for server, webhook, integration, and job operations.
 
@@ -683,6 +687,8 @@ Rules:
 - Redact secrets and sensitive fields centrally.
 - Do not use `console.log` in production application paths.
 - Audit events remain separate durable records.
+- Job logs use allowlisted operational identifiers and outcome/category fields. Do not log event
+  payloads, notification/message bodies, recipients, filenames, or storage object paths.
 
 ---
 
@@ -700,8 +706,7 @@ Feature modules, Quick Capture, and Robin tools do not instantiate provider clie
 
 Use schema-constrained structured output or tool calling for:
 
-- Quick Capture extraction from operator text or transcribed audio
-- Generated Job Brief drafts
+- Quick Capture extraction from operator text
 - Suggested next actions
 - Contextual AttentionFlag summaries backed by stored source facts
 - Plain-language Finding explanations
@@ -725,7 +730,7 @@ Rules:
 ### Typed proposal pattern
 
 ```text
-Human Quick Capture text or validated transcript
+Human Quick Capture text
 → model produces typed proposals with source references
 → Zod validation
 → property, capability, duplicate, conflict, and business-context checks
@@ -737,8 +742,7 @@ Human Quick Capture text or validated transcript
 
 Quick Capture is not a free-form database mutation channel and never uses Robin automatic
 mode. A separately governed Robin action may execute only through its own approved
-operating-mode checks. Generated Job Brief content remains derived and non-authoritative,
-and AttentionFlag explanations must point back to stored source facts.
+operating-mode checks. AttentionFlag explanations must point back to stored source facts. Voice Quick Capture and Generated Job Brief are post-MVP.
 
 ### Robin tool pattern
 
@@ -746,11 +750,15 @@ and AttentionFlag explanations must point back to stored source facts.
 Model proposes typed tool action
 → Zod validation
 → property and capability check
-→ automation-mode check
-→ duplicate/consent/business-hours check
-→ normal application service
+→ Robin configuration / authority-mode check
+→ Shadow Mode check
+→ duplicate / consent / business-hours / context checks
+→ normal application service OR suppressed Shadow result
 → persisted result and audit trail
+→ human handoff on unsupported, failed, or materially uncertain state
 ```
+
+Shadow Mode is an evaluation overlay, not a fourth authority mode; Off / Approval Required / Automatic remain the authority modes. Shadow Mode must not invoke mutating application-service operations or customer-facing provider sends. Proposed/suppressed results remain inspectable in RobinRun/RobinAction history.
 
 Robin consumes Revenue Operations services. It does not own Customer, Contact, Lead, Estimate, Appointment, Job, Invoice, Payment, Conversation, Message, or derived attention state.
 
@@ -760,7 +768,7 @@ Robin consumes Revenue Operations services. It does not own Customer, Contact, L
 
 **Package:** `postmark`
 
-Postmark is the BTLS outbound email provider for MVP behind the BTLS-owned `EmailProvider` adapter.
+Postmark is the BTLS outbound email provider for MVP behind the BTLS-owned `TransactionalEmailProvider` adapter.
 
 ### MVP scope
 
@@ -777,7 +785,8 @@ Deferred:
 - Inbound email synchronization
 - Full mailbox behavior
 - Reply ingestion into the Command Center
-- Connected Gmail or Yahoo mailbox sending
+- Connected business-mailbox sending
+- Gmail / Google Workspace or Microsoft / Outlook mailbox OAuth and synchronization
 
 ### Sending identity
 
@@ -793,10 +802,10 @@ For MVP, Gmail and Yahoo addresses may be used as reply-to addresses on BTLS-man
 
 ### Sending pattern
 
-All sends go through the BTLS email adapter.
+All transactional/system sends go through the BTLS `TransactionalEmailProvider` adapter.
 
 ```ts
-export interface EmailProvider {
+export interface TransactionalEmailProvider {
   sendTransactionalEmail(
     input: TransactionalEmailInput,
   ): Promise<EmailDeliveryResult>;
@@ -826,6 +835,12 @@ Rules:
 - Keep system identity, envelope sender, visible From identity, and Reply-To behavior explicit.
 - Treat bounce and delivery webhooks as idempotent provider events.
 - Outbound-only MVP means customer replies are not imported into BTLS.
+
+### Durable provider evidence
+
+`ProviderDispatch` records transport execution, idempotency, and provider correlation. Only an existing `ACCEPTED` dispatch may satisfy a duplicate request. A fresh `PENDING` duplicate remains in progress. An expired `PENDING` dispatch becomes `UNCERTAIN`, and `UNCERTAIN`, `REJECTED`, or `FAILED` duplicates return controlled non-success results. Postmark and Twilio calls are never repeated automatically when the prior outcome may be unknown.
+
+`WebhookReceipt` uses `processingStartedAt` as an expiring claim and fencing token. Active claims cannot be duplicated. An expired claim may be recovered atomically, and only the worker holding the exact current timestamp may complete or fail the receipt.
 
 ### Webhooks
 
@@ -957,9 +972,11 @@ Rules:
 
 ## Deferred Revenue Provider Interfaces
 
+Robin has no provider boundary for ordinary phone-call recording, listening, ingestion, or transcription. Do not add such a provider or dependency as part of Robin 1.0. Search call-attribution infrastructure remains a separate metadata/analytics concern.
+
 These BTLS-owned boundaries may be introduced only when the owning feature needs them:
 
-- `TranscriptionProvider` — provider-independent transcription for Feature 21 voice Quick Capture; no vendor is selected.
+- `TranscriptionProvider` — post-MVP Robin 2.0 / field-intelligence boundary. No provider is selected or required for the current MVP; do not add a transcription dependency during current Command Center development.
 - `PaymentProvider` — optional future online payment execution normalized into BTLS Invoice/Payment truth; core manual/external Payment never requires a processor ID.
 - `AddressLookupProvider` — optional future address assistance; manual ServiceLocation entry remains the default.
 - Connected-mailbox sending/synchronization remains deferred and is not part of Postmark outbound behavior.
@@ -1561,7 +1578,7 @@ The expected library/provider set is:
 Do not add MVP dependencies for:
 
 - Inbound email synchronization or connected-mailbox sending
-- A concrete `TranscriptionProvider` until Feature 21 selects an approved implementation
+- A concrete `TranscriptionProvider`; voice Quick Capture and transcription are post-MVP, and Feature 21 is a deferred reservation
 - A concrete `PaymentProvider`; manual and external payment recording is sufficient for MVP
 - An `AddressLookupProvider` until an approved feature requires it
 - External document-generation or electronic-signature SaaS; Feature 16 must first use BTLS-owned document and acceptance boundaries

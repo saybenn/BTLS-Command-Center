@@ -49,6 +49,29 @@ describe("parseServerEnvironment", () => {
       directDatabase: "unconfigured",
       supabaseBrowser: "unconfigured",
       supabaseServiceRole: "unconfigured",
+      inngest: "unconfigured",
+      sentry: "unconfigured",
+    });
+  });
+
+  it("reports job and monitoring configuration without returning secret values", () => {
+    const result = parseInfrastructureEnvironment({
+      INNGEST_EVENT_KEY: "event-key-secret",
+      INNGEST_SIGNING_KEY: "signing-key-secret",
+      SENTRY_DSN: "https://public@example.ingest.sentry.io/1",
+    });
+
+    expect(result).toMatchObject({
+      inngest: "configured",
+      sentry: "configured",
+    });
+    expect(JSON.stringify(result)).not.toContain("secret");
+    expect(JSON.stringify(result)).not.toContain("sentry.io");
+  });
+
+  it("reports incomplete Inngest configuration when one hosted key is missing", () => {
+    expect(parseInfrastructureEnvironment({ INNGEST_EVENT_KEY: "event-key" })).toMatchObject({
+      inngest: "incomplete",
     });
   });
 
