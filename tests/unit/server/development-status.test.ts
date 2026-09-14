@@ -12,6 +12,8 @@ const configuredInfrastructure = {
   directDatabase: "configured" as const,
   supabaseBrowser: "configured" as const,
   supabaseServiceRole: "configured" as const,
+  inngest: "configured" as const,
+  sentry: "configured" as const,
 };
 
 describe("development status", () => {

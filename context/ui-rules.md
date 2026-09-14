@@ -913,7 +913,7 @@ reverse/correct Payment remain explicit consequential actions.
 
 Always show:
 
-- source text or transcript;
+- source text;
 - confidence;
 - source phrase where useful;
 - before/current value;
@@ -979,6 +979,9 @@ Use:
 - clear mode badge
 - clear approval state
 - visible action history
+- clear Shadow Mode indicator
+- clear handoff/takeover state
+- concise source/trigger where relevant
 
 ### Rules
 
@@ -989,6 +992,10 @@ Use:
 - Display human handoff clearly.
 - Failed actions must include a practical next step.
 - Automatic mode must be visible.
+- Shadow Mode must be visibly distinguishable from Approval Required and Automatic and clearly state that no customer-facing/business mutation action is being executed.
+- Contextual Robin notifications communicate useful workflow state, such as `Awaiting customer`, `Scheduled`, or `Robin needs you`, rather than merely “Robin activity.”
+- A user taking over a Robin situation must be clearly visible.
+- Robin uncertainty/failure must show a practical next human action.
 - Property-specific capability settings must be understandable.
 - Do not hide risky behavior behind friendly copy.
 - Avoid animated robot decoration in operational interfaces.
@@ -997,15 +1004,33 @@ Use:
 
 Show:
 
+- Source/trigger
 - Proposed action
-- Customer context
+- Customer/Lead/Conversation context
 - Message or field change
 - Reason
-- Relevant policy or workflow
+- Relevant Knowledge Pack/workflow/policy where useful
+- What Robin has already done
+- Expected business effect
 - Approve
 - Edit
 - Reject
-- Hand off
+- Hand Off
+
+### Handoff cards
+
+A Robin 1.0 Handoff Card shows:
+
+- Customer and Lead/Conversation context
+- Reason Robin stopped
+- What Robin already did
+- Relevant recent context
+- Recommended next action
+- Intended recipient/queue where configured
+- Take Over
+- Open Conversation or equivalent owning-record action
+
+Do not design this as a generalized project-management task card. Use existing semantic status and intelligence tokens; these are future implementation requirements, not pre-registered components.
 
 ---
 

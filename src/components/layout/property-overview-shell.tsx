@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import { PropertySwitcher } from "@/components/properties/property-switcher";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getNotificationBellSummary } from "@/server/notifications/notifications";
 import type {
   AuthorizedPropertyContext,
   AuthorizedPropertySummary,
@@ -18,7 +20,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function PropertyOverviewShell({
+export async function PropertyOverviewShell({
   activeNavigation = "overview",
   context,
   properties,
@@ -29,6 +31,12 @@ export function PropertyOverviewShell({
   context: AuthorizedPropertyContext;
   properties: AuthorizedPropertySummary[];
 }>) {
+  let unreadCount: number | null = null;
+  try {
+    unreadCount = (await getNotificationBellSummary(context)).unreadCount;
+  } catch {
+    /* The bell exposes unavailable state; notification failure must not block the workspace. */
+  }
   const canReadProperties = context.capabilities.platform.includes("platform.property.read");
   const canManageUsers =
     context.capabilities.platform.includes("platform.user.manage") ||
@@ -55,6 +63,15 @@ export function PropertyOverviewShell({
         ? {
             label: "Administration",
             items: [
+              ...(["BTLS_ADMIN", "BTLS_OPERATOR"].includes(context.user.platformRole ?? "")
+                ? [
+                    {
+                      href: `/admin/operations?propertyId=${context.property.id}`,
+                      icon: "audit-log" as const,
+                      label: "Operations",
+                    },
+                  ]
+                : []),
               ...(canReadProperties
                 ? [{ href: "/admin/properties", icon: "properties" as const, label: "Properties" }]
                 : []),
@@ -89,6 +106,9 @@ export function PropertyOverviewShell({
   return (
     <AppShell
       display={display}
+      notificationControl={
+        <NotificationBell propertyId={context.property.id} unreadCount={unreadCount} />
+      }
       propertySwitcher={
         <PropertySwitcher currentPropertyId={context.property.id} properties={properties} />
       }

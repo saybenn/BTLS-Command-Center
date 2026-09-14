@@ -383,7 +383,7 @@ Last updated: 2026-07-30
 ### Development Status Summary
 
 Files: `src/components/feedback/development-status-summary.tsx`, `src/app/development-status/loading.tsx`, `src/app/development-status/error.tsx`
-Last updated: 2026-08-02
+Last updated: 2026-09-10
 
 | Property | Class |
 |---|---|
@@ -397,26 +397,8 @@ Last updated: 2026-08-02
 | Shadow | `shadow-xs` |
 | Accent usage | Semantic Badge variants communicate configuration and connection state; the panel remains neutral |
 
-**Pattern notes:** Use this only on guarded non-production diagnostic pages. Display configuration state and generic reachability results, never URLs, keys, connection strings, provider identifiers, or raw failure messages. Loading uses the approved labelled skeleton; failed page rendering uses the approved generic ErrorState with a safe retry action.
+**Pattern notes:** Use this only on guarded non-production diagnostic pages. Display configuration state and generic reachability results, never URLs, keys, connection strings, provider identifiers, or raw failure messages. Inngest and Sentry follow the same status-row and semantic Badge pattern as database configuration. Loading uses the approved labelled skeleton; failed page rendering uses the approved generic ErrorState with a safe retry action.
 
-### Development Status Summary
-
-Files: `src/components/feedback/development-status-summary.tsx`, `src/app/development-status/loading.tsx`, `src/app/development-status/error.tsx`
-Last updated: 2026-08-02
-
-| Property | Class |
-|---|---|
-| Background | `bg-surface` |
-| Border | `border border-border`; list rows use `border-t border-border` |
-| Border radius | `rounded-xl` |
-| Text — primary | `text-text-primary text-base font-semibold` for the heading; row labels use `text-sm font-medium` |
-| Text — secondary | `text-text-secondary text-sm leading-6` |
-| Spacing | Panel `p-6`; rows `py-4`; status content begins at `mt-6` |
-| Hover state | None; the generic error recovery action uses the shared secondary Button |
-| Shadow | `shadow-xs` |
-| Accent usage | Semantic Badge variants communicate configuration and connection state; the panel remains neutral |
-
-**Pattern notes:** Use this only on guarded non-production diagnostic pages. Display configuration state and generic reachability results, never URLs, keys, connection strings, provider identifiers, or raw failure messages. Loading uses the approved labelled skeleton; failed page rendering uses the approved generic ErrorState with a safe retry action.
 ### Authentication Surface
 
 Files: `src/components/auth/auth-page-layout.tsx`, `src/components/auth/auth-form.tsx`
@@ -528,3 +510,47 @@ Last updated: 2026-09-01
 | Accent usage | Progress fill uses `bg-accent`; selection uses focus border and semantic selected surface; errors/recovery use shared Alert variants |
 
 **Pattern notes:** Media controls remain one-column and full-width on mobile, then return actions to intrinsic width at `sm`. Use browser-standard `capture="environment"` only as a progressive camera hint for image inputs. Preview URLs must already be authorized by the consuming workflow; never render Storage paths, upload tokens, or private delivery URLs in the card. Recovery returns an explicit `READY` or `RESELECT_FILE` outcome so the UI never implies a missing file was restored.
+
+
+### Notification Center and Header Bell
+
+Files: `src/components/notifications/notification-bell.tsx`, `src/components/notifications/notification-center.tsx`
+Last updated: 2026-09-11
+
+| Property | Class |
+|---|---|
+| Background | Notice list `bg-surface`; empty state uses shared `bg-surface`; bell remains transparent until hover |
+| Border | List `border border-border` with `divide-y divide-border`; page header `border-b border-border` |
+| Border radius | List and empty state `rounded-xl`; bell and pagination controls `rounded-md`; unread count `rounded-full` |
+| Text — primary | Notice title `text-text-primary font-medium`; page title `text-text-primary text-2xl font-semibold sm:text-3xl` |
+| Text — secondary | Notice body `text-text-secondary text-sm leading-6`; dates and passive state `text-text-muted text-xs` |
+| Spacing | Center `space-y-6`; notice rows `p-4 sm:p-5 gap-4`; responsive actions stack below content on narrow screens |
+| Hover state | Bell, subject, pagination, and read actions use semantic surface/accent hover plus the shared focus ring |
+| Shadow | Notice list `shadow-xs`; bell and pagination controls none |
+| Accent usage | Unread indicator and count use `text-accent` / `bg-accent text-accent-foreground`; unread total uses semantic warning Badge |
+
+**Pattern notes:** The bell is a labelled property-scoped link with an accessible unread count. The center keeps each read action as a real keyboard-reachable Button and uses a polite live region for its result. Subject navigation must be resolved from typed subject identity on the server; never store or render an arbitrary notification URL. On mobile, notice content and actions stack; pagination remains labelled links with the shared secondary-action treatment.
+
+Notification follow-up imprint (2026-09-09): mutation results use a visible polite live region with `text-sm text-text-secondary`; unavailable destinations use `text-xs text-text-muted`. Long notice text wraps with `break-words`; existing semantic surfaces, borders, radii, accent, and focus rings are retained. "Mark all as read" explicitly covers the recipient's notices across pages. Unknown bell counts say "count unavailable," never zero. Server-derived links pass through the recipient-scoped open route; timestamps use a deterministic date to avoid hydration drift. No Robin UI pattern is introduced.
+
+Closeout imprint audit (2026-09-11): production screenshots confirm the registered center and bell pattern at desktop and mobile widths; the 768px overflow assertion also passes. Unsupported destinations retain the muted fallback, read actions remain keyboard reachable, and no new reusable visual pattern was introduced.
+
+
+### Operations Failure List and Retry Details
+
+Files: `src/components/operations/operations-view.tsx`, `src/components/operations/retry-operation-form.tsx`
+Last updated: 2026-09-10
+
+| Property | Class or pattern |
+|---|---|
+| Background | `bg-surface` within the default BTLS internal page theme |
+| Border/radius | `border border-border rounded-xl`; list rows `divide-y divide-border` |
+| Primary text | `text-text-primary`; section headings `text-lg font-semibold` |
+| Secondary text | `text-sm text-text-secondary`; timestamps/correlation `text-xs text-text-muted` |
+| Spacing | Sections `space-y-6`; detail surfaces `p-6`; list rows `p-4` |
+| Status | Shared Badge: danger for failed, success for succeeded, info for running, warning for queued |
+| Actions | Shared Button, Input, Select and Textarea; existing semantic focus ring for links |
+| Feedback | Visible polite live status; request errors use `text-danger-foreground`; pending/submitted controls disabled |
+| Shadow | `shadow-xs` on primary surfaces |
+
+Pattern notes: Filters use a GET form; lists and attempt history retain pagination. The retry form renders only server-provided eligibility, requires an audit reason, and calls the reusable application service through a thin action. Saved/queued delivery is distinct from completed execution. Raw provider errors, payloads, credentials, and business truth never appear in this operational view. Cross-property pages retain BTLS styling. Notification links to operations resolve through current recipient/property authorization plus operations authorization. Desktop, tablet-width, and mobile states are included in the browser verification for this slice.

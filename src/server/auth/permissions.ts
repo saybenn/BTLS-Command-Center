@@ -9,6 +9,8 @@ export const platformCapabilities = [
   "platform.media.view",
   "platform.media.manage",
   "platform.media.sensitive.view",
+  "platform.operations.view",
+  "platform.operations.retry",
 ] as const;
 export type PlatformCapability = (typeof platformCapabilities)[number];
 
@@ -28,6 +30,8 @@ const platformRoleCapabilities: Record<PlatformRole, readonly PlatformCapability
     "platform.media.view",
     "platform.media.manage",
     "platform.media.sensitive.view",
+    "platform.operations.view",
+    "platform.operations.retry",
   ],
   BTLS_OPERATOR: ["platform.property.read", "platform.media.view", "platform.media.manage"],
 };

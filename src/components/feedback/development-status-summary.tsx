@@ -54,6 +54,8 @@ export function DevelopmentStatusSummary({ status }: Readonly<{ status: Developm
   const migrationDatabase = configurationBadge(status.configuration.migrationDatabase);
   const supabaseBrowser = configurationBadge(status.configuration.supabaseBrowser);
   const supabaseServiceRole = configurationBadge(status.configuration.supabaseServiceRole);
+  const inngest = configurationBadge(status.configuration.inngest);
+  const sentry = configurationBadge(status.configuration.sentry);
   const databaseReachability = databaseBadge(status.databaseReachability);
 
   return (
@@ -92,6 +94,16 @@ export function DevelopmentStatusSummary({ status }: Readonly<{ status: Developm
           description="Server-only Supabase credential used by approved administration workflows."
           label="Supabase service role"
           status={supabaseServiceRole}
+        />
+        <StatusRow
+          description="Server-only event delivery and signing keys for durable background work."
+          label="Inngest"
+          status={inngest}
+        />
+        <StatusRow
+          description="Error monitoring is enabled without displaying its DSN or release credentials."
+          label="Sentry"
+          status={sentry}
         />
         <StatusRow
           description="A safe server-side query verifies the restricted application connection."

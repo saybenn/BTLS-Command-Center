@@ -12,6 +12,10 @@ beforeAll(() => {
   );
 });
 
+vi.mock("@/server/notifications/notifications", () => ({
+  getNotificationBellSummary: vi.fn().mockResolvedValue({ unreadCount: 0 }),
+}));
+
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 import { PropertyOverviewShell } from "@/components/layout/property-overview-shell";
@@ -31,11 +35,11 @@ const properties = [
 ];
 
 describe("PropertyOverviewShell", () => {
-  it("renders the authorized overview, responsive shell, switcher, and only capability-allowed navigation", () => {
+  it("renders the authorized overview, responsive shell, switcher, and only capability-allowed navigation", async () => {
     render(
       <ThemeProvider>
-        <PropertyOverviewShell
-          context={{
+        {await PropertyOverviewShell({
+          context: {
             account: properties[0].account,
             capabilities: {
               platform: [
@@ -55,9 +59,9 @@ describe("PropertyOverviewShell", () => {
               displayName: "BTLS Admin",
               platformRole: "BTLS_ADMIN",
             },
-          }}
-          properties={properties}
-        />
+          },
+          properties,
+        })}
       </ThemeProvider>,
     );
 

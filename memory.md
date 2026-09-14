@@ -1,40 +1,67 @@
-# Memory — Phase 2, Feature 05 closeout
+# Memory — Feature 07 closeout
 
-Last updated: 2026-08-20
+Last updated: 2026-09-13
 
 ## What was built
 
-- Feature 05 is implemented, uncommitted: explicit client PropertyAccess grants, platform capability authorization/RLS parity, authorized property context, administrative directory/onboarding, property routing/switching, member administration, and pending invitation activation.
-- Added the Feature 05 property pages and reusable directory, switcher, membership, and invitation UI. Context, UI registry, architecture, and progress records reflect the binding authorization decisions.
-- Added browser coverage for explicit client property grants, multi-property selection/switching, and URL-manipulation denial across desktop and mobile.
+- Feature 07 is complete across slices 07.1–07.11: durable internal events/outbox/jobs/attempts, generic contextual
+  notifications and bell, tenant-safe operations/retry UI, Postmark transactional email and Twilio SMS adapters,
+  ProviderDispatch/WebhookReceipt evidence, scheduled Feature 06 media cleanup, Pino logging, and Sentry setup.
+- Slice 07.9 hardened job-execution leases, interrupted-attempt recovery, maximum attempts, and late-worker fencing.
+- Slice 07.10 hardened provider dispatch interruption states, webhook processing leases/fencing, authenticated browser
+  waits, and the global error test harness.
+- Slice 07.11 adds deterministic PostgreSQL proof that two stale ProviderDispatch workers produce one
+  pending-to-uncertain compare-and-set winner, one safe lost race, and no duplicate provider send.
 
 ## Decisions made
 
-- Client users need both an active AccountMembership and explicit active PropertyAccess; platform capabilities are the only cross-property path.
-- AccountMembership.role is the account baseline; PropertyAccess.roleOverride is optional and property-specific.
-- platform.property.read grants cross-property read/navigation, platform.property.manage controls property onboarding, and platform.user.manage controls platform-wide access administration.
-- Client Owners may manage only client users and property grants fully inside the owner’s own explicit access scope.
-- Pending invitations retain no tokens or credentials; verified identity activation is idempotent and occurs after Supabase verification, outside the database transaction.
+- `TransactionalEmailProvider` is the only Feature 07 email boundary and uses Postmark for outbound system mail.
+  `ConnectedMailboxProvider` remains future documentation only.
+- `ProviderDispatch` is transport execution/idempotency/correlation evidence. Only `ACCEPTED` duplicates resolve
+  successfully. Fresh `PENDING` work remains in progress; expired pending work becomes `UNCERTAIN`. Unknown
+  outcomes are never resent automatically.
+- `WebhookReceipt.processingStartedAt` is an expiring claim and fencing token. Recovery replaces an expired claim
+  atomically, and only the current token may finalize processing.
+- Provider evidence and sending identity tables remain server-write-only with authorized tenant-scoped reads.
+- Feature 06 retains all media lifecycle and cleanup behavior.
 
 ## Problems solved
 
-- Local Supabase integration files now run serially with a bounded 30-second setup hook timeout to avoid false Auth-provider timeouts.
-- Browser fixtures using PostgREST explicitly supply Prisma-managed UUID and updated-at values.
-- Prisma is now lazily initialized at its shared boundary so dynamic routes do not require database configuration during Next build module analysis.
+- Unresolved provider dispatches cannot be reported as successful or automatically resent.
+- PostgreSQL now directly proves the stale ProviderDispatch transition under a deterministic two-worker collision:
+  one conditional update succeeds, one loses and reloads the winning state, both remain controlled uncertainty, and
+  the provider is not called again.
+- Webhook processing recovers after an abandoned worker, while a late old worker is denied.
+- Notification and operations E2E authentication uses a positive bounded navigation wait.
+- The global error test no longer mounts an `html` root inside a Testing Library container.
+- The attached PropertySwitcher timeout did not reproduce in five isolated runs; no product code or broad timeout
+  was changed.
+- The canonical email boundary is consistently named `TransactionalEmailProvider`.
 
 ## Current state
 
-- Feature 05 review found no unresolved critical or high findings.
-- Before the lazy-Prisma hardening, the canonical Playwright suite passed 28 desktop/mobile tests; typecheck, lint, unit/database checks, formatting, and diff checks passed.
-- The lazy-Prisma change passed TypeScript. Rerun the complete final verification matrix before treating Feature 05’s final build verification as reconfirmed.
-- Work remains uncommitted. Preserve unrelated working-tree changes and untracked content.
+- Branch: `feature/07-events-jobs-notifications-and-op-records`.
+- Features 01–07 are complete. Feature 08 and future Revenue/Robin work are not started.
+- All Feature 07 work remains uncommitted and must be preserved.
+- Final gates pass: 63 files / 269 unit and component tests; 15 files / 40 PostgreSQL and RLS tests; lint;
+  TypeScript; Prisma validation; production build; and whitespace verification.
+- The two consecutive 6/6 desktop/mobile production notification/operations browser runs from Slice 07.10 remain
+  valid; Slice 07.11 changed integration tests and documentation only.
+- Final Slice 07.11 review passes all three layers with no unresolved finding.
+- Slice 07.11 required no production code, schema migration, dependency, provider, event, job, authorization, or UI
+  change. The existing Feature 07 imprint remains current.
+- Local Supabase has all current Feature 07 Prisma and security migrations applied.
+- Live Postmark/Twilio sends and hosted Inngest/Sentry delivery remain deployment checks; no secrets are stored here.
 
 ## Next session starts with
 
-1. Run /remember restore, then use /architect for Feature 06 — Storage and Media.
-2. As part of Feature 06 preparation, rerun Feature 05 final verification: pnpm typecheck, pnpm lint, pnpm test, pnpm test:database, pnpm build, and pnpm test:e2e.
-3. Do not start Feature 07. Feature 06 owns shared file/image management, Supabase Storage paths, signed URLs, public/private access, and recovery of failed uploads.
+1. Run `/remember restore` and inspect `git status`; preserve the full uncommitted Feature 07 worktree.
+2. Do not start Feature 08 until explicitly directed and its required planning workflow is complete.
+3. If asked to commit or open a PR, review the complete Feature 07 diff and keep the forward-only migration history
+   intact.
 
 ## Open questions
 
-- No Feature 05 product decision remains open. The only carryover is reconfirming the full verification matrix after the lazy-Prisma build hardening.
+- No Feature 07 product or architecture question remains open.
+- Hosted credentials and real provider/event delivery should be verified during environment deployment without
+  committing secret values.

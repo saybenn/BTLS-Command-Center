@@ -1,7 +1,7 @@
 # BTLS Build Plan
 
 > **Repository location:** `context/build-plan.md`  
-> **Project state:** Active implementation; Features 01–05 complete
+> **Project state:** Active implementation; Features 01–07 complete; Feature 08 not started
 > **Companion files:** `context/project-overview.md`, `context/architecture.md`, `context/code-standards.md`, `context/library-docs.md`  
 > **MVP:** Website Intelligence, Smart Blog Studio, Content Intelligence, Revenue Operations / Command Center, Robin, Search Operations Studio, and shared Work Management
 
@@ -50,6 +50,8 @@ Foundation work is allowed when later features genuinely depend on it, but avoid
 - External integrations must be isolated behind BTLS-owned adapters.
 - Background jobs must be durable, retryable, and property-scoped.
 - Robin must act only through approved application tools.
+- Current-MVP Quick Capture is text-only. Future audio compatibility mentioned in the completed Feature 06 storage specification is a post-MVP consumer possibility, not a current capture workflow or transcription dependency; Feature 06 behavior and its completed exit gate remain unchanged.
+- Robin 1.0 becomes operational through Features 12–14. Feature 23 expands Robin onto later Revenue services; it does not activate Robin for the first time. Feature 21 is a deferred post-MVP roadmap slot and is not an MVP implementation dependency.
 - Search Operations reuses shared normalized web data, Findings, Work Management, Content, and Revenue Operations truth rather than duplicating them.
 - Search provider calls must be isolated behind BTLS-owned adapters and bounded by program usage/cost policy.
 - Search website actions are never unguarded; `AUTO_GUARDED` requires approved capability and policy.
@@ -307,8 +309,7 @@ Exit gate:
 
 ## 07 Events, Jobs, Notifications, and Operational Records
 
-Create feature-neutral asynchronous and provider infrastructure that later Revenue,
-Robin, Growth, and Search workflows can extend.
+Create feature-neutral asynchronous, notification, observability, and communication-provider infrastructure that later Revenue, Robin, Growth, and Search workflows can extend.
 
 UI:
 
@@ -322,45 +323,71 @@ Logic:
 - Additive typed/versioned internal-event registry
 - Zod-validated property-scoped job payloads
 - Explicit idempotency, retry-safe execution, correlation IDs, and repeated-failure records
-- Property/user-scoped Notification records and subject links that are not Lead-only
+- Generic `Notification` contract: property, recipient user, origin/source, validated subject link, concise title/body, read state, practical destination/action route, and correlation context; subject links are not Lead-only. No Robin-specific infrastructure or `HandoffPackage` model belongs in Feature 07.
 - Provider-neutral `WebhookReceipt`
-- Shared important `JobExecution`/failure visibility
-- `EmailProvider` with normalized `SendingIdentity`, display name, Reply-To, recipients, and business idempotency inputs
-- Postmark adapter returning normalized provider IDs
-- Twilio adapter foundation
+- Shared important `JobExecution` / failure visibility
+- `TransactionalEmailProvider` with normalized sending identity, display name, Reply-To, recipients, provider correlation, and business idempotency inputs
+- Postmark adapter implementing `TransactionalEmailProvider` and returning normalized provider IDs
+- Shared `SendingIdentity` contract for approved transactional sending modes
+- `SmsProvider` foundation with Twilio adapter
 - Structured logging and Sentry setup
 
-Keep generic provider receipts separate from later business records such as Message,
-EstimateDelivery, and InvoiceDelivery. `BTLS_MANAGED` is the MVP-safe email identity
-mode; custom-domain onboarding and connected mailbox OAuth are not Feature 07 work.
-Webhook infrastructure may later receive Postmark, Twilio, or payment-provider callbacks
-without implementing their owning business behavior.
+Feature 07 establishes **transactional/system email infrastructure**, not connected-mailbox behavior.
 
-Representative event contracts may include source-domain names such as
-`lead.created`, `estimate.revision_issued`, `payment.recorded`, or
-`quick_capture.applied`, but Feature 07 implements only the registry and test events—not
-future Revenue handlers or records.
+For MVP transactional email:
+
+```text
+TransactionalEmailProvider
+└── Postmark
+```
+
+`ConnectedMailboxProvider` is a future boundary for connected business mailboxes such as
+Gmail / Google Workspace and Outlook / Microsoft 365. Feature 07 does not select or
+implement a connected-mailbox provider, mailbox OAuth, mailbox synchronization, inbound
+email, or connected-mailbox sending.
+
+Keep provider execution evidence separate from future owning business records such as
+`Message`, `EstimateDelivery`, `InvoiceDelivery`, and `ReviewRequest`. Feature 07 may
+provide correlation and idempotency evidence, but never becomes their delivery truth.
+
+Representative registry events may use future source-domain names such as
+`lead.created`, `estimate.revision_issued`, or `payment.recorded`; Feature 07 implements
+only shared contracts and proof handlers, not future domain behavior.
 
 Explicitly out of scope:
 
-- Customer/Conversation/Message
-- Estimate or Invoice delivery records
-- signed document generation
-- scheduling rules
-- BusinessException evaluation
-- Quick Capture
-- ReviewRequest
-- payment behavior or provider selection
+- Customer, Conversation, Message, EstimateDelivery, InvoiceDelivery, ReviewRequest, and payment behavior
+- Connected-mailbox, custom-domain verification, Gmail/Microsoft OAuth, inbound email, and mailbox synchronization
+- Revenue scheduling rules, BusinessException evaluation, Quick Capture, and Robin workflows
+- Changes to MediaAsset lifecycle, cleanup eligibility, finalization, deletion, or Storage ownership
 
 Exit gate:
 
-- A test event completes a durable property-scoped job
+- A test event completes a durable property-scoped job and creates exactly one intended notification
 - Duplicate events and provider receipts do not duplicate effects
-- Failed jobs are visible and retryable with correlation context
-- Notifications are property- and user-scoped and can link to future subject routes
-- Email and SMS providers remain isolated behind normalized BTLS interfaces
+- Failed jobs are visible and safely retryable with correlation context
+- Active execution collisions remain pending until lease expiry; interrupted attempts finalize, maximum attempts remain bounded, and late workers cannot overwrite a replacement attempt
+- Notifications enforce property/user scope and validated subject links
+- Tests prove subject-linked notifications carry enough source, destination, and correlation context to route an authorized user into the owning workflow without embedding Revenue or Robin business rules in shared infrastructure
+- Transactional email and SMS providers remain isolated behind normalized BTLS interfaces
+- Scheduled media cleanup invokes the existing Feature 06 service without changing media behavior
 - No Revenue business rule is embedded in shared infrastructure
 
+Approved Feature 07 follow-up slices (preserve completed slice history):
+
+| Slice | Bounded additions and acceptance |
+|---|---|
+| 07.1 | Explicit source versus notice-type semantics; required correlation for new notices; strict subject/source validation; derived destinations only. Retain event v1 and add contextual proof v2. |
+| 07.2 | Add only nullable source/correlation columns for legacy compatibility through a new migration. Preserve uniqueness/indexes/read-state RLS; deny browser-created notices and enforce explicit Operator property grants. Verify recipient/property denial and read persistence against PostgreSQL. |
+| 07.3 | Event v2 carries source, recipient, correlation, and a property-overview subject into a durable contextual proof job. Lost dispatch acknowledgements and retries after effect creation produce one intended notification; conflicting idempotency context fails visibly. |
+| 07.4 | Resolve the typed destination through a recipient-scoped open route with fresh authorization. Retain bell, stable pagination, reload/read actions, keyboard and responsive states. Display unavailable destinations/counts and visible mutation errors safely. |
+| 07.5 | Internal failure/status filtering, paginated attempt details, safe correlation visibility, and audited Admin-only manual retry. Retry reuses the existing execution and idempotency key; atomic claim/audit/outbox rejects duplicate or stale requests. Operators retain explicit property scope. Only implemented allowlisted handlers are retryable; unsupported/permanent work stays denied. Durable retry dispatch recovery does not start scheduled media cleanup. |
+| 07.8 | Verify event -> job -> contextual notice -> authorized implemented destination; malformed input, duplicate prevention, correlation, current access, persistence, and cross-user/property denial. Database and authenticated browser gates remain explicit until actually run. |
+| 07.9 | Harden interrupted execution recovery after final review: defer active claims through Inngest, atomically finalize expired attempts, fence late workers with the original claim timestamp, preserve maximum-attempt bounds, persist only controlled failure text, and revalidate the complete Feature 07 exit gate. |
+| 07.10 | Harden provider interruption and verification reliability: only accepted duplicate dispatches resolve successfully; fresh pending work stays in progress; expired pending work becomes uncertain without automatic resend; webhook processing uses expiring, timestamp-fenced claims; production browser sign-in waits for a positive bounded navigation; and the complete Feature 07 exit gate is revalidated. |
+| 07.11 | Prove the stale ProviderDispatch compare-and-set transition against PostgreSQL under a deterministic two-worker race: exactly one pending-to-uncertain update wins, the lost-race worker reloads the winning state, neither duplicate invokes the provider, and the complete Feature 07 exit gate is revalidated. |
+
+The Notification-contract follow-up did not start or expand 07.5-07.7. Slices 07.9 through 07.11 are limited to final-review remediation of shared execution, retry, provider-evidence, webhook-processing, and verification behavior; they do not add media, Revenue, Robin, or Feature 08 scope.
 ---
 # Phase 4 — Revenue Operations Foundation
 
@@ -467,13 +494,15 @@ Logic:
 - Turnstile, honeypot, rate limiting, Zod validation, and idempotency
 - Safe Customer and Contact matching/creation
 - one Lead opportunity plus attribution and RevenueActivity
-- `lead.created` event and employee notification dispatch
+- `lead.created` event and deterministic employee notification dispatch
+- Feature 10 provides baseline employee awareness that a Lead exists. Later Robin notifications/handoffs communicate Robin workflow state. These mechanisms must avoid noisy duplicate notifications for the same business condition. Lead ingestion never depends on Robin configuration.
 - WordPress-compatible documented request path
 
 Tests:
 
 - BTLS form, direct request, and WordPress-compatible webhook create the correct Customer/Contact/Lead
 - ambiguous matching does not silently merge records
+- Baseline notification retries do not duplicate awareness; when Robin is enabled in Feature 13, integration tests also prove baseline and Robin notifications avoid noise for the same business condition
 - spam, duplicate, arbitrary-tenant, and cross-property cases are denied
 
 Exit gate:
@@ -528,44 +557,105 @@ Exit gate:
 ---
 # Phase 5 — Revenue Operations and Robin Core
 
-## 12 Robin Configuration and Knowledge
+## 12 Robin Configuration, Knowledge, and Shadow Mode
 
-Create Robin’s approved knowledge and operating controls after Customer communication exists.
+Create Robin 1.0's property-specific knowledge and operating control plane.
 
 Dependencies: Features 08–11.
 
-UI: Robin settings, Off/Approval Required/Automatic modes, capability toggles, business
-hours, escalation rules, Business Knowledge Pack editor, approved services/locations,
-workflow steps, and no-side-effect test mode.
+UI:
 
-Logic/data: versioned `BusinessKnowledgePack`, `RobinConfiguration`, property-scoped tool
-registry, configuration validation, capability enforcement, and audit events. Tools may
-reference only domain services implemented through Feature 11.
+- Robin settings; Off / Approval Required / Automatic authority modes; Shadow Mode
+- Independent capability toggles, business hours, and escalation rules
+- Business Knowledge Pack editor: approved services, service areas/locations, FAQs/customer-facing facts, qualification/workflow steps, and scheduling rules relevant to Robin
+- No-side-effect testing/inspection with loading, empty, error, disabled, and success states
 
-Tests/exit gate: invalid configuration cannot run; configuration changes are versioned
-and audited; tools toggle independently; test mode creates no customer-facing effect;
-property isolation passes.
+Logic/data:
+
+- Versioned `BusinessKnowledgePack`, `RobinConfiguration`, property-scoped tool registry, configuration validation, capability enforcement, and audit events
+- The 1.0 Knowledge Pack contains bounded, property-approved business identity, services, service areas, hours, FAQs/customer-facing facts, qualification information, supported workflow steps, scheduling policy, and escalation policy. It is not a Knowledge Ocean.
+- Tools reference only implemented owning domain services; no future tool is executable merely because configuration anticipates it.
+
+### Shadow Mode
+
+Shadow Mode is an evaluation overlay, not a fourth authority mode. Authority remains Off / Approval Required / Automatic.
+
+```text
+real/test eligible event
+→ normal Robin context loading
+→ normal reasoning
+→ normal validation and proposed tool selection
+→ record what Robin would have done in RobinRun/RobinAction evidence
+→ suppress customer-facing and durable business mutation side effects
+```
+
+Feature 12 proves the no-side-effect configuration/evaluation path; Feature 13 supplies live core response execution. Shadow Mode never invokes mutating application services or provider sends. Evaluation evidence is allowed; business mutations are not.
+
+### Capability controls
+
+Independently anticipate new-Lead acknowledgment, knowledge-backed Q&A, missing-information collection, qualification, explicitly approved Lead-field updates, NextRequiredAction, bounded follow-up/re-engagement, human handoff, and Appointment scheduling once Feature 14 exists.
+
+Tests/exit gate:
+
+- Invalid configuration cannot run
+- Configuration changes are versioned and audited
+- Capabilities toggle independently
+- Shadow Mode processes a real/test eligible scenario, preserves inspectable proposed/suppressed evidence, and produces zero customer-facing/business mutation effects
+- Property isolation passes; unimplemented tools cannot execute
 
 ---
 
-## 13 Robin Agent Runs and Approval Workflow
+## 13 Robin Core Response, Runs, Approval, and Handoff
 
-Build Robin’s controlled reasoning, typed-tool, approval, and human-handoff foundation.
+Activate the non-scheduling Robin 1.0 Revenue Response Sidekick workflow.
 
-Dependencies: Features 09 and 11–12.
+Dependencies: Features 09 and 11–12. Feature 10 is present through Feature 11; test the live `lead.created` path.
 
-UI: run history, proposed-action review, approve/edit/reject, handoff queue, failure
-detail, and related Customer/Lead/Conversation context.
+UI:
 
-Logic/data: OpenAI adapter, structured output, `RobinRun`, `RobinAction`, typed tool
-arguments, property authorization, mode/consent/duplicate checks, prompt/model/config
-versions, and application-service execution. Initial tools are limited to implemented
-Customer/Lead/communication/next-action services; unfinished Estimate/Job/Invoice tools
-do not exist yet.
+- Robin run history, proposed-action review, Approve / Edit / Reject, failure detail, and Shadow Mode results
+- Handoff queue and Take Over; Customer/Lead/Conversation context, what Robin already did, why it stopped, and recommended human next action
+- Loading, empty, error, disabled, and success states
 
-Tests/exit gate: AI cannot mutate directly; Approval Required blocks execution; every
-tool is validated/property-scoped; failures create visible handoff; Robin cannot own
-Conversation/Message or fabricate signature/Payment truth.
+Logic/data:
+
+- OpenAI adapter, structured output, `RobinRun`, `RobinAction`, typed tool arguments, runtime validation, property authorization, mode, consent, duplicate, and business-hour checks
+- Prompt/model/configuration/Knowledge Pack versions and normal application-service execution
+- React to eligible `lead.created`; load Customer/Contact/Lead/Conversation context; create a concise Lead summary; detect configured missing information
+- Send approved new-Lead acknowledgment through normal Twilio-backed Customer/Contact SMS services
+- Answer only Business Knowledge Pack-supported questions; request configured missing information through bounded SMS; perform approved qualification
+- Update only explicitly allowed Lead fields/stage through owning services; create/update `NextRequiredAction`
+- Perform bounded configured follow-up/re-engagement, create contextual employee notifications, and hand off unsafe, unsupported, failed, or materially uncertain cases
+- No Appointment tool exists yet. No Estimate/Job/Invoice/Payment tool exists yet. Robin owns no Revenue aggregate and cannot fabricate signature, acceptance, Payment, or derived source truth.
+
+### Lightweight handoff
+
+Use `RobinRun` / `RobinAction`, handoff-required/result state, durable reason/context, optional configured target user, property/user Notification, and links to Customer/Lead/Conversation. Do not create the generalized `HandoffPackage` domain.
+
+Handoff must explain why Robin stopped, what it already did, which Customer/Lead/Conversation is involved, what the human should probably do next, and who took over when applicable. Take Over makes human control explicit.
+
+Unsupported or materially uncertain interpretation reduces Robin's authority. Robin must hand off rather than invent an answer or unsupported business action.
+
+Tests/exit gate:
+
+```text
+public Lead
+→ lead.created
+→ Robin
+→ acknowledgment
+→ summary
+→ missing-information / bounded Knowledge Pack conversation
+→ qualification or human handoff
+→ NextRequiredAction
+→ employee visibility
+→ traceable action history
+```
+
+- Approval Required blocks execution until approved; Automatic executes only enabled tools
+- Shadow Mode records proposals with no external/business mutation effects
+- Duplicate acknowledgment/follow-up and noisy baseline/Robin notifications are prevented
+- Consent/opt-out, business hours, unsupported Q&A handoff, provider failures, property isolation, typed validation, and no unfinished tool access pass
+- Message, RevenueActivity, RobinRun, RobinAction, Notification, and audit history remain correlated
 
 ---
 
@@ -591,6 +681,39 @@ property isolation, and responsive field use.
 
 Exit gate: Appointments and clock state work end to end without JobVisit, payroll, pay
 rates, PTO, overtime engine, geofencing, or HR scope.
+
+### Robin scheduling slice
+
+After the normal Appointment service exists, expose only required operations through approved typed Robin tools. This slice also depends on Features 12–13.
+
+Robin may determine whether the configured workflow permits scheduling, request normalized allowed availability, offer valid configured Appointment options, accept the customer's selection, create the Appointment through its owning service, confirm through the normal communication service, update relevant NextRequiredAction/context, and notify appropriate staff. Unavailable or ambiguous scheduling/provider state requires handoff.
+
+Robin must not make Cronofy the source of Appointment truth, invent available times, promise a time before BTLS Appointment creation succeeds, or schedule unsupported Appointment types/workflow steps.
+
+Tests/exit gate: Approval Required, Automatic, Shadow Mode with zero business/send effects, Cronofy/provider outage, duplicate scheduling, selected-slot loss before creation, permission/property isolation, and correlated scheduling/communication history.
+
+---
+
+# Robin 1.0 Milestone — Revenue Response Sidekick
+
+Robin 1.0 is functionally available only when the following end-to-end path passes at Feature 14 completion:
+
+```text
+Website form
+→ Customer / Contact / Lead
+→ lead.created
+→ Robin eligibility
+→ immediate approved acknowledgment
+→ Lead summary
+→ missing-information collection
+→ bounded Knowledge Pack Q&A / qualification
+→ approved Appointment scheduling OR contextual human handoff
+→ NextRequiredAction
+→ staff visibility
+→ complete action and communication history
+```
+
+Feature 23 is not required for the Robin 1.0 milestone.
 
 ---
 
@@ -731,23 +854,14 @@ cross-tenant denial. No proposal executes before human confirmation.
 
 ---
 
-## 21 Voice Quick Capture and Generated Job Brief
+## 21 Voice Quick Capture and Generated Job Brief — Deferred / Post-MVP
 
-Extend confirmed Quick Capture to voice and add a cited, derived field-work summary.
+This numbered slot is intentionally retained to preserve roadmap numbering and existing cross-references. Voice Quick Capture, transcription-provider integration, Generated Job Brief, advanced natural field capture, and related field-intelligence work are deferred beyond the current Command Center MVP. Do not implement this feature during the current MVP and do not select or install a `TranscriptionProvider`.
 
-Dependencies: Features 06–07, 17, and 20; a provider decision for TranscriptionProvider.
-
-UI: responsive-web audio/file capture, transcription/review state, provider failure and
-retry, temporary-audio status, and Generated Job Brief with source links and
-non-authoritative label.
-
-Logic: provider-independent `TranscriptionProvider`, temporary shared MediaAsset cleanup,
-transcript-to-existing proposal flow, Generated Job Brief from trusted Customer/Estimate/
-Job/Invoice sources, and no new Job source of truth.
-
-Tests/exit gate: transcription failure/partial result, cleanup eligibility, confirmation
-still required, evidence/source fidelity, stale data, authorization, and property isolation.
-No native-mobile dependency or authoritative AI summary is introduced.
+- Feature 21 is not an implementation gate.
+- Feature 22 does not depend on Feature 21.
+- Feature 23 does not depend on Feature 21.
+- Text Quick Capture remains the complete current-MVP capture path.
 
 ---
 
@@ -756,7 +870,7 @@ No native-mobile dependency or authoritative AI summary is introduced.
 Add basic post-work review requests and deterministic lifecycle follow-on jobs without
 turning them into operational gates.
 
-Dependencies: Features 07, 11, and 17–19.
+Dependencies: Features 07, 11, and 17–19. Feature 21 is explicitly not a dependency. ReviewRequest remains Revenue-owned truth.
 
 UI: review timing/defaults, scheduled/sent/delivered/failed state, customer communication
 history, retry/cancel where safe, and lifecycle automation visibility.
@@ -771,24 +885,21 @@ completed Job can produce one controlled request.
 
 ---
 
-## 23 Robin Automations
+## 23 Expanded Robin Revenue Automations
 
-Activate controlled automation only after the broader Revenue application services exist.
+Expand the already-operational Robin 1.0 onto Revenue services implemented after the Feature 14 milestone.
 
-Dependencies: Features 12–22; only implemented domain services may become tools.
+Dependencies: Features 12–20 and 22. Feature 21 is explicitly not a dependency. Only implemented owning domain services may become Robin tools.
 
-UI: automation outcomes, awaiting-human queue, upcoming actions, failures/handoffs, and
-mode/capability visibility.
+UI: automation outcomes, awaiting-human queue, upcoming actions, failures/handoffs, mode/capability/Shadow Mode visibility, and loading, empty, error, disabled, and success states.
 
-Logic: new-inquiry acknowledgment, employee notification, qualification and missing
-information, approved field/source updates, NextRequiredAction follow-up, re-engagement,
-approved Appointment scheduling, and approved Estimate/Job/Invoice/Payment-adjacent tools
-only where explicitly safe. Every action follows typed validation, property capability,
-mode, consent, duplicate, business-hour, application-service, and audit requirements.
+Scope: explicitly approved Estimate follow-up, post-Appointment follow-up, later Revenue lifecycle follow-up, Job-adjacent assistance, Invoice-adjacent assistance, review-request coordination, broader outcome reporting, and other bounded tools whose owning service exists. ReviewRequest remains Revenue-owned.
 
-Tests/exit gate: complete mode/capability matrix, duplicate protection, consent, calendar
-and provider outage handoff, derived-state/financial/signature denial, no unfinished tool,
-and traceability to Customer/Conversation/owning record. No unrestricted autonomy exists.
+Every action preserves property capability, authority mode, Shadow Mode where applicable, consent, duplicate prevention, business hours, human handoff, typed validation, normal application-service execution, and audit/history.
+
+Do not introduce unrestricted autonomy, generalized Commitment Engine, Business Knowledge Ocean, general Business Graph, custom Operational Registers, mailbox intelligence, call-content ingestion, offline field runtime, or Robin 2.0 role-specific companions.
+
+Tests/exit gate: expansion onto later services passes without regressing the Feature 14 Robin 1.0 path. Verify the complete mode/capability matrix including Shadow Mode, duplicate protection, consent, calendar/provider outage handoff, derived-state/financial/signature denial, no unfinished tools, and traceability to Customer/Conversation/owning records.
 
 ---
 # Phase 6 — Smart Blog Studio
@@ -3790,6 +3901,29 @@ Do not break this phase into implementation tasks yet.
 
 ---
 
+# Post-MVP — Robin 2.0 / Operational Companion
+
+Robin 2.0 is a future product direction and is not an active numbered implementation phase.
+
+Deferred concepts include:
+
+- Business Knowledge Ocean
+- Generalized Business Graph
+- Commitment Intelligence and generalized Commitment Engine
+- Company ontology/vocabulary learning
+- Operational Registers
+- Advanced natural field reporting and entity/job resolution
+- Generalized Handoff Packages
+- Designated inbound mailbox intelligence
+- Role-specific Field/Office/Sales/Manager/Owner Robin
+- Offline field runtime
+- Cross-system orchestration
+- Cross-studio Robin attention/intelligence
+
+Do not prebuild these concepts during Robin 1.0 or break them into implementation features yet.
+
+---
+
 # Phase Summary
 
 | Phase | Name | Features |
@@ -3808,6 +3942,8 @@ Do not break this phase into implementation tasks yet.
 | 12 | Command Center Completion | 2 |
 | 13 | Production Hardening and Launch | 3 |
 | **Total** |  | **56** |
+
+Feature 21 is a reserved deferred roadmap slot; the 56-number sequence is intentionally preserved even though Feature 21 is not an active MVP implementation gate.
 
 Post-MVP: Revenue Operations Mobile Application — deferred; no implementation tasks are defined.
 

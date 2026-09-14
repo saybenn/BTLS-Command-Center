@@ -15,6 +15,8 @@ export interface DevelopmentStatus {
     migrationDatabase: InfrastructureConfigurationState;
     supabaseBrowser: InfrastructureConfigurationState;
     supabaseServiceRole: InfrastructureConfigurationState;
+    inngest: InfrastructureConfigurationState;
+    sentry: InfrastructureConfigurationState;
   };
   databaseReachability: DatabaseReachability;
 }
@@ -43,6 +45,8 @@ export async function getDevelopmentStatus({
     migrationDatabase: infrastructure.directDatabase,
     supabaseBrowser: infrastructure.supabaseBrowser,
     supabaseServiceRole: infrastructure.supabaseServiceRole,
+    inngest: infrastructure.inngest,
+    sentry: infrastructure.sentry,
   };
 
   if (configuration.applicationDatabase !== "configured") {

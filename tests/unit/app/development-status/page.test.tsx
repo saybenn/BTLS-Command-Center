@@ -30,6 +30,8 @@ describe("development status area", () => {
         migrationDatabase: "configured",
         supabaseBrowser: "configured",
         supabaseServiceRole: "configured",
+        inngest: "configured",
+        sentry: "configured",
       },
       databaseReachability: "healthy",
     });
@@ -47,6 +49,8 @@ describe("development status area", () => {
     expect(screen.getByText(/illustrative data only/i)).toBeVisible();
     expect(screen.getByLabelText("Database and environment status")).toBeVisible();
     expect(screen.getByText("Reachable")).toBeVisible();
+    expect(screen.getByText("Inngest")).toBeVisible();
+    expect(screen.getByText("Sentry")).toBeVisible();
     expect(
       screen.queryByText(/postgresql:|service_role|publishable key value/i),
     ).not.toBeInTheDocument();

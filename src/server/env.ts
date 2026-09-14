@@ -33,6 +33,10 @@ const infrastructureEnvironmentSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: optionalEnvironmentValue,
   DATABASE_URL: optionalPostgresUrl,
   DIRECT_DATABASE_URL: optionalPostgresUrl,
+  INNGEST_EVENT_KEY: optionalEnvironmentValue,
+  INNGEST_SIGNING_KEY: optionalEnvironmentValue,
+  NEXT_PUBLIC_SENTRY_DSN: optionalUrl,
+  SENTRY_DSN: optionalUrl,
 });
 
 export type InfrastructureConfigurationState = "configured" | "incomplete" | "unconfigured";
@@ -42,6 +46,8 @@ export interface InfrastructureEnvironment {
   directDatabase: InfrastructureConfigurationState;
   supabaseBrowser: InfrastructureConfigurationState;
   supabaseServiceRole: InfrastructureConfigurationState;
+  inngest: InfrastructureConfigurationState;
+  sentry: InfrastructureConfigurationState;
 }
 
 export interface SupabaseBrowserEnvironment {
@@ -132,6 +138,8 @@ export function parseInfrastructureEnvironment(
       values.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
       values.SUPABASE_SERVICE_ROLE_KEY,
     ]),
+    inngest: getConfigurationState([values.INNGEST_EVENT_KEY, values.INNGEST_SIGNING_KEY]),
+    sentry: getConfigurationState([values.SENTRY_DSN ?? values.NEXT_PUBLIC_SENTRY_DSN]),
   };
 }
 

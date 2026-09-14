@@ -106,7 +106,9 @@ model AppUser {
   auditEvents        AuditEvent[]               @relation("AuditEventActor")
   sentInvitations    PendingAccountInvitation[] @relation("PendingInvitationInviter")
 
-  createdMediaAssets MediaAsset[] @relation("MediaAssetCreator")
+  createdMediaAssets     MediaAsset[]   @relation("MediaAssetCreator")
+  notifications          Notification[] @relation("NotificationRecipient")
+  initiatedJobExecutions JobExecution[] @relation("JobExecutionInitiator")
 
   @@map("app_users")
 }
@@ -143,7 +145,13 @@ model ClientProperty {
   auditEvents      AuditEvent[]
   pendingAccesses  PendingPropertyAccess[]
 
-  mediaAssets MediaAsset[]
+  mediaAssets        MediaAsset[]
+  eventOutboxEntries EventOutbox[]
+  jobExecutions      JobExecution[]
+  notifications      Notification[]
+  webhookReceipts    WebhookReceipt[]
+  sendingIdentities  SendingIdentity[]
+  providerDispatches ProviderDispatch[]
 
   @@unique([id, accountId])
   @@index([accountId, status])
@@ -331,4 +339,244 @@ model AuditEvent {
   @@index([accountId, occurredAt])
   @@index([propertyId, occurredAt])
   @@map("audit_events")
+}
+
+enum EventOutboxStatus {
+  PENDING
+  DISPATCHED
+  FAILED
+}
+
+enum JobExecutionOrigin {
+  USER
+  SYSTEM
+  WEBHOOK
+}
+
+enum JobExecutionStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  RETRY_SCHEDULED
+}
+
+enum JobExecutionAttemptStatus {
+  STARTED
+  SUCCEEDED
+  FAILED
+}
+
+enum WebhookProvider {
+  POSTMARK
+  TWILIO
+}
+
+enum WebhookReceiptStatus {
+  RECEIVED
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
+enum SendingIdentityMode {
+  BTLS_MANAGED
+  CUSTOM_DOMAIN
+  CONNECTED_MAILBOX
+}
+
+enum SendingIdentityStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum ProviderDispatchChannel {
+  TRANSACTIONAL_EMAIL
+  SMS
+}
+
+enum ProviderDispatchStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  UNCERTAIN
+  FAILED
+}
+
+/// A committed internal event that awaits dispatch. The originating business record remains the source of truth.
+model EventOutbox {
+  id               String            @id @default(uuid()) @db.Uuid
+  propertyId       String            @map("property_id") @db.Uuid
+  eventId          String            @unique @map("event_id") @db.Uuid
+  eventName        String            @map("event_name")
+  eventVersion     Int               @map("event_version")
+  correlationId    String            @map("correlation_id") @db.Uuid
+  deduplicationKey String            @map("deduplication_key")
+  payload          Json
+  status           EventOutboxStatus @default(PENDING)
+  dispatchedAt     DateTime?         @map("dispatched_at") @db.Timestamptz(6)
+  failureCategory  String?           @map("failure_category")
+  failureAt        DateTime?         @map("failure_at") @db.Timestamptz(6)
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  property ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+
+  @@unique([propertyId, eventName, deduplicationKey])
+  @@index([status, createdAt])
+  @@index([propertyId, createdAt])
+  @@map("event_outbox")
+}
+
+/// Operational execution visibility only. It does not replace any owning business record.
+model JobExecution {
+  id               String             @id @default(uuid()) @db.Uuid
+  propertyId       String             @map("property_id") @db.Uuid
+  initiatedById    String?            @map("initiated_by_id") @db.Uuid
+  jobType          String             @map("job_type")
+  jobVersion       Int                @map("job_version")
+  origin           JobExecutionOrigin
+  status           JobExecutionStatus @default(QUEUED)
+  correlationId    String             @map("correlation_id") @db.Uuid
+  idempotencyKey   String             @map("idempotency_key")
+  safePayload      Json               @map("safe_payload")
+  retryRequestedAt DateTime?          @map("retry_requested_at") @db.Timestamptz(6)
+  startedAt        DateTime?          @map("started_at") @db.Timestamptz(6)
+  finishedAt       DateTime?          @map("finished_at") @db.Timestamptz(6)
+  failureCategory  String?            @map("failure_category")
+  failureMessage   String?            @map("failure_message")
+  failedAt         DateTime?          @map("failed_at") @db.Timestamptz(6)
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  property    ClientProperty        @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  initiatedBy AppUser?              @relation("JobExecutionInitiator", fields: [initiatedById], references: [id], onDelete: SetNull)
+  attempts    JobExecutionAttempt[]
+  dispatches  ProviderDispatch[]
+
+  @@unique([propertyId, jobType, idempotencyKey])
+  @@index([propertyId, status, createdAt])
+  @@index([status, failedAt])
+  @@index([correlationId])
+  @@map("job_executions")
+}
+
+model JobExecutionAttempt {
+  id              String                    @id @default(uuid()) @db.Uuid
+  jobExecutionId  String                    @map("job_execution_id") @db.Uuid
+  attemptNumber   Int                       @map("attempt_number")
+  status          JobExecutionAttemptStatus @default(STARTED)
+  providerRunId   String?                   @map("provider_run_id")
+  startedAt       DateTime                  @default(now()) @map("started_at") @db.Timestamptz(6)
+  finishedAt      DateTime?                 @map("finished_at") @db.Timestamptz(6)
+  failureCategory String?                   @map("failure_category")
+  failureMessage  String?                   @map("failure_message")
+
+  jobExecution JobExecution @relation(fields: [jobExecutionId], references: [id], onDelete: Cascade)
+
+  @@unique([jobExecutionId, attemptNumber])
+  @@index([status, startedAt])
+  @@map("job_execution_attempts")
+}
+
+/// Persistent in-app notice. Its typed subject link is validated by the application service.
+model Notification {
+  id               String    @id @default(uuid()) @db.Uuid
+  propertyId       String    @map("property_id") @db.Uuid
+  recipientUserId  String    @map("recipient_user_id") @db.Uuid
+  source           String?
+  correlationId    String?   @map("correlation_id") @db.Uuid
+  type             String
+  title            String
+  body             String
+  subjectType      String?   @map("subject_type")
+  subjectId        String?   @map("subject_id") @db.Uuid
+  deduplicationKey String    @map("deduplication_key")
+  readAt           DateTime? @map("read_at") @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  property  ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  recipient AppUser        @relation("NotificationRecipient", fields: [recipientUserId], references: [id], onDelete: Restrict)
+
+  @@unique([propertyId, recipientUserId, deduplicationKey])
+  @@index([propertyId, recipientUserId, readAt, createdAt])
+  @@map("notifications")
+}
+
+/// Provider callback receipt and duplicate-processing evidence. It never becomes business delivery truth.
+model WebhookReceipt {
+  id                  String               @id @default(uuid()) @db.Uuid
+  propertyId          String?              @map("property_id") @db.Uuid
+  provider            WebhookProvider
+  providerAccountKey  String               @map("provider_account_key")
+  externalEventId     String               @map("external_event_id")
+  eventType           String               @map("event_type")
+  correlationId       String?              @map("correlation_id") @db.Uuid
+  occurredAt          DateTime?            @map("occurred_at") @db.Timestamptz(6)
+  status              WebhookReceiptStatus @default(RECEIVED)
+  processingStartedAt DateTime?            @map("processing_started_at") @db.Timestamptz(6)
+  processedAt         DateTime?            @map("processed_at") @db.Timestamptz(6)
+  failureCategory     String?              @map("failure_category")
+  failureAt           DateTime?            @map("failure_at") @db.Timestamptz(6)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  property ClientProperty? @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, providerAccountKey, externalEventId])
+  @@index([propertyId, createdAt])
+  @@index([status, createdAt])
+  @@map("webhook_receipts")
+}
+
+/// Shared transactional sender configuration. Feature 07 supports BTLS_MANAGED behavior only.
+model SendingIdentity {
+  id             String                @id @default(uuid()) @db.Uuid
+  propertyId     String                @map("property_id") @db.Uuid
+  mode           SendingIdentityMode   @default(BTLS_MANAGED)
+  status         SendingIdentityStatus @default(ACTIVE)
+  displayName    String                @map("display_name")
+  fromAddress    String                @map("from_address")
+  replyToAddress String?               @map("reply_to_address")
+  createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  property   ClientProperty     @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  dispatches ProviderDispatch[]
+
+  @@index([propertyId, status])
+  @@map("sending_identities")
+}
+
+/// Outbound transport acceptance, idempotency, and correlation evidence only. Owning domains create delivery truth.
+model ProviderDispatch {
+  id                    String                  @id @default(uuid()) @db.Uuid
+  propertyId            String                  @map("property_id") @db.Uuid
+  jobExecutionId        String?                 @map("job_execution_id") @db.Uuid
+  sendingIdentityId     String?                 @map("sending_identity_id") @db.Uuid
+  channel               ProviderDispatchChannel
+  providerName          String                  @map("provider_name")
+  operationType         String                  @map("operation_type")
+  idempotencyKey        String                  @map("idempotency_key")
+  correlationId         String                  @map("correlation_id") @db.Uuid
+  providerCorrelationId String?                 @map("provider_correlation_id")
+  providerMessageId     String?                 @map("provider_message_id")
+  status                ProviderDispatchStatus  @default(PENDING)
+  requestFingerprint    String                  @map("request_fingerprint")
+  acceptedAt            DateTime?               @map("accepted_at") @db.Timestamptz(6)
+  completedAt           DateTime?               @map("completed_at") @db.Timestamptz(6)
+  failureCategory       String?                 @map("failure_category")
+  failureAt             DateTime?               @map("failure_at") @db.Timestamptz(6)
+  createdAt             DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  property        ClientProperty   @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  jobExecution    JobExecution?    @relation(fields: [jobExecutionId], references: [id], onDelete: SetNull)
+  sendingIdentity SendingIdentity? @relation(fields: [sendingIdentityId], references: [id], onDelete: SetNull)
+
+  @@unique([propertyId, channel, operationType, idempotencyKey])
+  @@index([propertyId, status, createdAt])
+  @@index([providerName, providerMessageId])
+  @@index([correlationId])
+  @@map("provider_dispatches")
 }

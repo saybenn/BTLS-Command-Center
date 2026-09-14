@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-08-26 — Revenue Operations canonical reconciliation |
-| Current phase | Phase 2 complete |
-| Current feature | Feature 05 — Property Access and Admin Property Directory complete |
-| Overall status | Revenue Operations canonical context reconciled; Feature 05 exit gate passed; no active implementation feature |
-| MVP progress | Features 01–05 complete |
-| Next implementation target | Feature 06 — Storage and Media (not started) |
+| Last updated | 2026-09-13 — Feature 07 Slice 07.11 verified and complete |
+| Current phase | Phase 3 — Shared Infrastructure complete |
+| Current feature | None — Feature 07 complete; Feature 08 not started |
+| Overall status | Features 01–07 complete; Feature 08 and later Revenue/Robin features not started |
+| MVP progress | Features 01–07 complete |
+| Next implementation target | Feature 08 — Customer, Workforce, and Revenue Settings Foundation (not started; requires its approved start workflow) |
 
 ---
 
@@ -68,7 +68,37 @@ Feature 02 provides semantic dark/light tokens, local theme preference, accessib
 - [x] Slice 5 — Development status and feature verification
 - [x] Feature 03 exit gate passed
 
+## Phase 3 — Feature 07: Events, Jobs, Notifications, and Operational Records
+
+- [x] Slice 07.1 — Documentation and contracts
+- [x] Slice 07.2 — Persistence and security
+- [x] Slice 07.3 — Durable event/job proof
+- [x] Slice 07.4 — Notification center
+- [x] Slice 07.5 — Operations and retry UI
+- [x] Slice 07.6 — Communication providers and receipts
+- [x] Slice 07.7 — Scheduled media cleanup and observability
+- [x] Slice 07.8 — Verification and closeout
+- [x] Slice 07.9 — Durable recovery hardening and final review remediation
+- [x] Slice 07.10 — Provider interruption safety, webhook claim recovery, and verification reliability
+- [x] Slice 07.11 — PostgreSQL ProviderDispatch compare-and-set proof and final review
+- [x] Feature 07 exit gate passed
+
+Feature 07 provides versioned internal events, durable job/outbox/attempt evidence, generic contextual notifications,
+tenant-safe operations and Admin retry controls, Postmark/Twilio provider boundaries with infrastructure-only
+dispatch and receipt evidence, interruption-safe provider outcomes, recoverable timestamp-fenced webhook processing,
+scheduled delegation to Feature 06 media cleanup, and data-minimized Pino/Sentry observability.
+
 ## Product and Architecture Context
+
+- [x] Robin 1.0 established as the Revenue Response Sidekick
+- [x] Robin 1.0 completion milestone established after Feature 14
+- [x] Shadow Mode established as a no-side-effect evaluation overlay
+- [x] Robin call-content listening/recording/transcription prohibited
+- [x] Connected-mailbox intelligence remains deferred
+- [x] Voice Quick Capture and Generated Job Brief deferred beyond current MVP
+- [x] Robin 2.0 Operational Companion substrate explicitly deferred
+
+These completed entries record context decisions, not implemented Robin product features.
 
 - [x] MVP product boundary established
 - [x] Three product studios / six primary MVP components established
@@ -123,7 +153,7 @@ Feature 02 provides semantic dark/light tokens, local theme preference, accessib
 
 # In Progress
 
-No active implementation feature.
+No numbered feature is currently in progress.
 
 ---
 
@@ -131,9 +161,8 @@ No active implementation feature.
 
 ## Immediate
 
-1. [ ] Run `/architect` for Feature 06 — Storage and Media
-2. [ ] Confirm the Feature 06 plan before implementation
-3. [ ] Do not implement Feature 06 until its plan is approved
+1. [ ] Run the required start workflow before Feature 08
+2. [ ] Keep Feature 08 and future Revenue/Robin implementation not started until explicitly directed
 
 ---
 
@@ -152,8 +181,8 @@ No active implementation feature.
 
 ## Phase 3 — Shared Infrastructure
 
-- [ ] 06 Storage and Media
-- [ ] 07 Events, Jobs, Notifications, and Operational Records
+- [x] 06 Storage and Media
+- [x] 07 Events, Jobs, Notifications, and Operational Records
 
 ## Phase 4 — Revenue Operations Foundation
 
@@ -164,18 +193,19 @@ No active implementation feature.
 
 ## Phase 5 — Revenue Operations and Robin Core
 
-- [ ] 12 Robin Configuration and Knowledge
-- [ ] 13 Robin Agent Runs and Approval Workflow
+- [ ] 12 Robin Configuration, Knowledge, and Shadow Mode
+- [ ] 13 Robin Core Response, Runs, Approval, and Handoff
 - [ ] 14 Appointment Scheduling and Time Tracking Foundation
+  - Robin 1.0 milestone after Feature 14
 - [ ] 15 Pricebook and Estimate Drafting
 - [ ] 16 Estimate Delivery, Public Presentation, and Acceptance
 - [ ] 17 Job and Field Operations
 - [ ] 18 Invoice and Payment Operations
 - [ ] 19 Revenue Exceptions and Operations Views
 - [ ] 20 Quick Capture — Text and Proposal Review
-- [ ] 21 Voice Quick Capture and Generated Job Brief
+- [~] 21 Voice Quick Capture and Generated Job Brief — Deferred / Post-MVP
 - [ ] 22 Review Requests and Lifecycle Automation
-- [ ] 23 Robin Automations
+- [ ] 23 Expanded Robin Revenue Automations
 
 ## Phase 6 — Smart Blog Studio
 
@@ -270,6 +300,17 @@ Known Issues are defects, inconsistencies, or risks that need attention.
 
 Record only decisions that future sessions might otherwise reopen.
 
+- **2026-09-07** — Robin 1.0 is the Revenue Response Sidekick focused on bounded Revenue response.
+- **2026-09-07** — Robin 1.0 becomes operational through Features 12–14 and reaches its milestone after Feature 14; Feature 13 activates core non-scheduling response and Feature 14 adds approved scheduling.
+- **2026-09-07** — Feature 23 expands later Revenue automation rather than activating Robin for the first time; only implemented owning services become tools.
+- **2026-09-07** — Shadow Mode is a no-side-effect evaluation overlay separate from Off / Approval Required / Automatic authority; RobinRun/RobinAction records proposals while business mutations and customer sends are suppressed.
+- **2026-09-07** — Feature 21 is retained as a numbered but deferred post-MVP roadmap slot and is not an MVP gate or dependency for Features 22 or 23.
+- **2026-09-07** — Current-MVP Quick Capture is text-only, always previews proposals, requires human confirmation, and remains separate from Robin authority modes.
+- **2026-09-07** — Robin does not listen to, record, ingest, or transcribe ordinary phone calls. Human-reported outcomes and separate Search call-attribution metadata do not authorize Robin call-content processing.
+- **2026-09-07** — Connected-mailbox/inbound email intelligence remains post-MVP; current TransactionalEmailProvider / Postmark, Twilio, and Cronofy boundaries remain intact.
+- **2026-09-07** — Robin 2.0 Business Knowledge Ocean, generalized Business Graph, ontology, Operational Registers, generalized commitments/handoffs, advanced natural field reporting/entity resolution, offline field runtime, role companions, and cross-system/cross-studio orchestration remain deferred.
+- **2026-09-07** — Generic Feature 07 Notification must carry property, recipient, origin/source, validated subject, concise title/body, read state, practical destination/action route, and correlation context. Owning workflows provide business meaning; no Robin-specific shared infrastructure or HandoffPackage model is introduced.
+
 - **2026-08-26** — Revenue Operations canonical reconciliation supersedes the old Lead-centric planned architecture before Feature 08 implementation; no Revenue feature is implemented or complete.
 - **2026-08-26** — The canonical roadmap contains 13 phases and 56 numbered features: Search Operations is 36–51, Command Center Completion is 52–53, and Production Hardening is 54–56.
 - **2026-08-26** — Payment processing, address/geocoding, voice transcription, and connected-mailbox providers remain deferred; core manual/external Payment and text Quick Capture paths do not require them.
@@ -309,6 +350,284 @@ Record only decisions that future sessions might otherwise reopen.
 - **2026-08-20 (superseded 2026-08-26)** — The Search Operations reconciliation previously expanded the roadmap to 48 features; the current 56-feature roadmap above now controls.
 
 # Session Notes
+
+## 2026-09-13 — Feature 07 Slice 07.11: PostgreSQL ProviderDispatch race proof
+
+### Review finding resolved
+
+- Added a real Prisma/PostgreSQL lifecycle test for the stale ProviderDispatch compare-and-set transition. It creates
+  an authentic accepted SMS dispatch and fingerprint, converts the fixture to pending, and verifies that a fresh
+  duplicate remains in progress without changing the row or calling the provider again.
+- A deterministic read barrier makes two workers load the same expired pending generation before either may update
+  it. PostgreSQL records exactly one successful pending-to-uncertain update and one lost compare-and-set race.
+  Both callers return controlled `PROVIDER_DISPATCH_INTERRUPTED` uncertainty, the provider is not called again,
+  and one durable uncertain row retains its property, correlation, idempotency, operation, channel, and fingerprint.
+- The existing provider-dispatch service behaved as designed. No production implementation, schema, migration,
+  provider, dependency, event, job, authorization rule, or UI code changed.
+
+### Verification and boundaries
+
+- Full local PostgreSQL/RLS suite: 15 files / 40 tests passed.
+- Full unit/component suite: 63 files / 269 tests passed.
+- Repository lint, TypeScript, Prisma validation, production build, and `git diff --check` passed.
+- The existing two consecutive 6/6 production notification/operations browser runs remain applicable because
+  Slice 07.11 changes database integration coverage and documentation only.
+- Final `/review`: plan alignment, system integrity, and production readiness passed with no unresolved critical,
+  important, or minor finding.
+- No reusable UI pattern changed, so the existing Feature 07 imprint remains current.
+- Features 01–07 remain complete. Feature 08 and future Revenue/Robin functionality remain not started.
+## 2026-09-13 — Feature 07 Slice 07.10: Provider interruption and verification hardening
+
+### Review findings resolved
+
+- Provider dispatches now expose one explicit successful result: `ACCEPTED`. Fresh `PENDING` duplicates return a
+  controlled in-progress failure with a retry deadline. Expired pending rows atomically become `UNCERTAIN`, and
+  uncertain, rejected, and failed duplicates remain non-success outcomes. None of these paths repeats a Postmark or
+  Twilio call when the earlier provider outcome may be unknown.
+- Webhook receipts now use `processingStartedAt` as an expiring lease and fencing token. Simultaneous claims yield
+  one worker, expired claims recover atomically, and an abandoned worker cannot complete or fail work after a
+  replacement claim.
+- Notification and operations browser tests share a positive 20-second sign-in navigation wait started before form
+  submission. The global error test renders a complete static document, removing the invalid nested `html` test
+  markup and warning.
+- The canonical project instructions now use `TransactionalEmailProvider`; no competing `EmailProvider` name
+  remains. The build-plan project marker and Slice 07.10 contract now agree with Feature 07 completion.
+
+### Verification and boundaries
+
+- Provider focused unit suite: 10/10 passed, covering accepted, pending, uncertain, rejected, failed, conflicting,
+  cross-property, and no-resend cases.
+- PropertySwitcher passed five consecutive isolated runs (10/10 assertions); its component and timeout remain
+  unchanged because the attached overlapping-run timeout did not reproduce.
+- Full unit/component suite: 63 files / 269 tests passed with no global document warning.
+- Full local PostgreSQL/RLS suite: 15 files / 39 tests passed, including simultaneous webhook claims, expired
+  recovery, and old-worker fencing.
+- Repository lint, TypeScript, Prisma validation, production build, and `git diff --check` passed.
+- Two consecutive production-server notification/operations Playwright runs each passed 6/6 across desktop and
+  mobile Chromium.
+- Final `/review`: plan alignment, system integrity, and production readiness passed with no unresolved critical,
+  important, or minor finding.
+- No schema, migration, dependency, event, job, or reusable UI pattern changed. The existing Feature 07 UI imprint
+  remains current.
+- Features 01–07 remain complete. Feature 08 and all future Revenue/Robin work remain not started. ProviderDispatch
+  and WebhookReceipt remain infrastructure evidence only; Feature 06 media ownership and behavior are unchanged.
+
+## 2026-09-12 — Feature 07 Slice 07.9: Durable recovery hardening
+
+### Review findings resolved
+
+- Active `RUNNING` collisions now return their lease deadline, and the Inngest adapter raises `RetryAfterError`
+  instead of acknowledging the delivery as successful.
+- Claim, completion, failure, and interrupted-attempt transitions use Prisma transactions. The exact claim
+  `startedAt` value fences late workers so a recovered execution cannot be overwritten.
+- Expired `STARTED` attempts become `FAILED / INTERRUPTED_EXECUTION` with a finish time. Recovery checks the
+  existing attempt count before invoking another handler and never exceeds the configured maximum.
+- Job and attempt records now persist controlled failure messages rather than arbitrary exception text. Existing
+  safe categories, correlation identifiers, structured logs, and sanitized Sentry context retain diagnostic value.
+- Admin manual retry accepts interrupted failures only for the existing validated, idempotent handler allowlist.
+  Operator property isolation and all existing retry restrictions remain unchanged.
+- The roadmap marker now agrees with the tracker header and completed Feature 07 exit gate.
+
+### Verification and boundaries
+
+- Focused job/media/operations unit suite: 21/21 passed.
+- Full unit/component suite: 63 files / 266 tests passed.
+- Full local PostgreSQL/RLS suite: 15 files / 39 tests passed, including real concurrent recovery and late-worker
+  fencing with no abandoned `STARTED` attempts.
+- Repository lint, TypeScript, Prisma validation, scoped Prettier, production build, and whitespace checks passed.
+- Production-server notification/operations Playwright: 6/6 passed across desktop and mobile Chromium.
+- `/review` repeated after Slice 07.9: plan alignment, system integrity, and production readiness passed with no unresolved critical, important, or minor finding.
+- No schema or migration was required. No UI pattern changed, so the existing Feature 07 imprint remains current.
+- Features 01–06 remain complete. Feature 08 and all Revenue/Robin work remain not started. No Feature 06 media
+  lifecycle, cleanup policy, provider boundary, or unrelated uncommitted change was overwritten.
+
+
+## 2026-09-11 — Feature 07 Slices 07.6 and 07.8: Providers, verification, and closeout
+
+### Completed implementation
+
+- Completed the previously open communication-provider slice with the official `postmark@5.1.0` and
+  `twilio@6.1.1` SDKs. The Postmark adapter maps the normalized `TransactionalEmailProvider` contract to the
+  transactional stream and returns Postmark message IDs. The Twilio adapter maps the property-scoped
+  `SmsProvider` contract through a Messaging Service and returns normalized Twilio message IDs.
+- Added a durable ProviderDispatch service. It resolves an active property-owned `BTLS_MANAGED` identity,
+  validates an optional JobExecution against the same property, fingerprints the complete request, persists
+  provider correlation/acceptance evidence, rejects conflicting idempotency reuse, and never resends an accepted or
+  uncertain duplicate. It remains infrastructure execution evidence only.
+- Added provider-neutral WebhookReceipt recording and atomic claim/complete/fail transitions. Duplicate provider
+  event keys reuse one receipt only when their normalized context matches. Failure records accept safe categories,
+  never raw provider text.
+- Removed the empty connected-mailbox code placeholder. ConnectedMailboxProvider remains a documented future
+  boundary only; no mailbox provider, OAuth, sync, inbound email, or mailbox sending was implemented.
+- Added server-only provider environment placeholders without values. Provider SDK failures are normalized and do
+  not retain raw SDK exception causes.
+
+### Persistence, migration, and security closeout
+
+- Applied the existing Feature 07 Prisma and security migrations to local Supabase. The historical Feature 06
+  checksum mismatch was not erased, reset, or resolved by editing its applied migration.
+- Updated the security migration runner to hash normalized LF content while accepting raw platform bytes, and
+  explicitly recorded the one observed historical draft checksum. Added
+  `20260911120000_reconcile_storage_media_security.sql` as a forward-only reconciliation of the committed Feature
+  06 definition.
+- After deployment exposed the old capability function ordering, added the forward-only
+  `20260911122000_restore_feature_07_platform_capabilities.sql`; no applied migration was rewritten.
+- Review found direct browser grants on provider evidence tables. Added
+  `20260911121000_provider_infrastructure_server_writes.sql` to reserve WebhookReceipt, SendingIdentity, and
+  ProviderDispatch writes for trusted server services while retaining scoped reads. PostgreSQL tests prove browser
+  forgery is denied.
+
+### Verification, responsive review, and JSM closeout
+
+- `pnpm test`: 63 files / 263 tests passed.
+- `pnpm test:database`: 14 files / 37 PostgreSQL integration and RLS tests passed after real local deployment.
+- `pnpm lint`, `pnpm typecheck`, `pnpm db:validate`, final scoped Prettier, and `git diff --check` passed.
+- `pnpm build` passed with the Inngest route, notification routes, operations routes, and Sentry build hook.
+- Production-server Playwright: the full Feature 07 selection passed 10/10 across desktop and mobile Chromium.
+  The corrected notification-only rerun passed 2/2. Real authentication/database coverage proves unread reload
+  persistence, keyboard read action, safe typed destination opening, unsupported-destination fallback, cross-user
+  denial, operations retry/denial, and zero horizontal overflow at desktop/mobile plus the 768px check. Captured
+  browser evidence recorded zero page and console errors.
+- `/imprint`: desktop/mobile notification screenshots and the registered operations/development patterns were
+  audited. The registry remains accurate; only the closeout verification note/date changed.
+- `/review`: fixed provider-table browser writes, cross-property JobExecution linkage, provider-error data
+  minimization, safe failure categories, migration ordering, and an incorrect screenshot capture point. Final plan
+  alignment, system integrity, and production readiness pass with no unresolved critical, high, or meaningful
+  finding.
+
+### Feature 07 exit gate
+
+- PASS — a versioned test event completes one durable property-scoped job and creates exactly one intended,
+  contextual notification.
+- PASS — duplicate events, jobs, dispatches, and provider receipts do not duplicate intended effects; interrupted
+  and uncertain execution remains visible.
+- PASS — failed work is tenant-scoped, correlated, inspectable, and safely retryable only through the audited Admin
+  allowlist.
+- PASS — active execution collisions defer until lease expiry; abandoned attempts finalize atomically, maximum attempts remain bounded, and late workers cannot overwrite recovered execution.
+- PASS — notifications enforce current property/recipient authorization, persistence, validated subjects, and
+  server-derived destinations.
+- PASS — Postmark and Twilio remain behind normalized BTLS interfaces; ProviderDispatch/WebhookReceipt remain
+  infrastructure evidence.
+- PASS — scheduled media cleanup calls the existing Feature 06 service without changing media ownership or policy.
+- PASS — no Revenue or Robin business record, rule, handler, connected mailbox, or later-feature workflow was
+  introduced.
+
+Feature 07 is complete. Feature 08 remains not started. Existing Feature 01–06 completion and all prior session
+history are preserved.
+
+## 2026-09-10 — Feature 07 Slice 07.7: Scheduled media cleanup and observability
+
+### Implemented and retained boundaries
+
+- Added one bounded Inngest coordinator at `TZ=UTC 17 3 * * *` with five-minute jitter, global concurrency `1`, three workflow retries, and a 25-candidate maximum. Each candidate creates or reuses a property-scoped `storage.media_cleanup` JobExecution with a deterministic per-day business idempotency key and correlation context.
+- The job adapter reloads the exact property/asset, uses Feature 06's exported eligibility evaluator for changed state, and delegates actual claims, lease timing, storage deletion, tombstones, and retry state to `executeMediaCleanupCandidate`. It does not redefine or move MediaAsset lifecycle policy.
+- Provider deletion failures and active claim races remain retryable and visible through JobExecutionAttempt. The now-implemented cleanup handler was added to the existing Admin-only manual-retry allowlist; ordinary Operator property scoping and retry denial remain unchanged.
+- Added Pino structured logging with central redaction for credentials, payloads, bodies, recipients, filenames, and object paths. Added Sentry's documented Next.js initialization for server, edge, client, request errors, release/source-map configuration, and a strict operational capture boundary that emits only safe identifiers/categories. Automatic Sentry events remove request, user, breadcrumb, extra, and non-allowlisted context before transmission.
+- Extended the existing guarded development-status panel with value-free Inngest and Sentry configuration states. `/imprint` refreshed the existing Development Status Summary entry and removed its exact duplicate; no new visual pattern was introduced.
+- Selected dependencies: `@sentry/nextjs@10.74.0` and `pino@10.3.1`; the known `@sentry/cli` install script is explicitly allowed by the repository pnpm policy. No schema or migration changed in this slice.
+
+### Verification and review
+
+- Unit/component: `pnpm test` — 62 files / 255 tests passed. Focused 07.7 group — 7 files / 43 tests passed.
+- PostgreSQL: focused scheduled-cleanup integration — 2/2 passed, proving one durable job under duplicate scheduling, Feature 06 deletion/tombstone delegation, and persisted provider-failure visibility in MediaAsset, JobExecution, and JobExecutionAttempt.
+- Browser: development-status desktop/mobile projects — 4/4 passed and explicitly found the Inngest/Sentry rows.
+- Static/release: `pnpm typecheck`, scoped ESLint, scoped Prettier, `git diff --check`, and `pnpm build` passed. The Sentry v11 deprecation warning found on the first build was fixed by using `@sentry/nextjs/config`; the final build was clean.
+- Repository-wide `pnpm lint` still has the one pre-existing Slice 07.6 `ConnectedMailboxProvider` empty-interface placeholder error. The full database suite reaches PostgreSQL but still has the three known Feature 07 policy failures because security migrations remain unapplied behind the historical storage-security checksum mismatch. The focused 07.7 database test is passing; no migration was rewritten or bypassed.
+- `/review`: plan alignment PASS; system integrity PASS; production readiness PASS for Slice 07.7 with the explicit live-environment qualification below. No critical, high, or important finding remains.
+
+### Exit gate and next work
+
+- Slice 07.7 acceptance is satisfied. Live hosted Inngest cron delivery and Sentry event receipt remain deployment checks because those credentials/services are not configured locally; configuration state is now visible without exposing values.
+- Feature 07 remains IN PROGRESS. Slice 07.6 Communication providers and receipts is still not started, and Slice 07.8 final verification/closeout remains open. Feature 08, Revenue, Robin, and connected-mailbox work were not started.
+
+## 2026-09-10 — Feature 07 Slice 07.5: Operations and retry UI
+
+### Implemented and retained boundaries
+
+- Added `/admin/operations` and `/admin/operations/[jobExecutionId]`: property/status/correlation filters, paginated execution/attempt history, failure summaries, correlation IDs, retry eligibility, and visible dispatch progress/failure. Loading, empty, error, denied, disabled, queued, and success states are present.
+- BTLS Admin can view active properties across tenants. Ordinary Operators require explicit active property membership. Clients and disabled/unauthenticated users cannot access operations. All list/detail/attempt queries enforce server scope; hidden navigation is not authorization.
+- Admin-only retry validates the last failed attempt and allowlisted replay contract, then atomically claims the execution, writes `job_execution.retry_requested` audit evidence, and persists an EventOutbox request. Concurrent, duplicate, stale, cross-property, active, permanent, malformed, and unsupported retry requests are denied. Original effect idempotency/correlation and attempt history remain intact.
+- Manual retries initially allow only the implemented `infrastructure.contextual_proof` handler and grant one further execution attempt. No legacy no-op, media cleanup, provider, or future domain handler is implicitly approved for retry.
+- Added version-1 `operations.job.retry_requested` internal event and a bounded one-minute outbox dispatch pump for committed retry recovery. Dispatch reloads the durable row, validates its context, reuses the existing JobExecution, and uses Inngest `step.sendEvent` for subsequent worker delivery. Unsupported permanent outbox rows no longer occupy every automatic dispatch batch.
+- Generic job notification links now resolve through the operations service and still enforce the recipient notice's property. Raw payloads, provider error text, and credentials are omitted from UI DTOs. ProviderDispatch remains infrastructure evidence only.
+- Features 01–06 remain complete. Feature 08 and future Revenue/Robin work are not started. No Feature 06 lifecycle/cleanup logic, provider implementation, dependency, or previously applied migration file was changed. Existing uncommitted context/code/package changes were preserved; no commit or branch change occurred.
+
+### Files and database impact
+
+- New service: `src/server/operations/operations.ts`.
+- New UI/routes: `src/components/operations/{operations-view,retry-operation-form}.tsx`; operations list/detail pages, actions, loading and error boundaries under `src/app/admin/operations/`.
+- Updated: event registry/outbox, Feature 07 job workflows/Inngest functions, notification resolver, property shell navigation, notification test fixture and durable-job regression tests.
+- New tests: `tests/unit/server/feature-07-operations.test.ts`, `tests/unit/components/operations.test.tsx`, `tests/integration/operations-retry.test.ts`, `tests/integration/operations-rls.test.ts`, `tests/e2e/operations.spec.ts`.
+- New security migration: `supabase/security-migrations/20260910120100_operations_retry_security.sql`. It revokes direct browser/application-role execution/outbox/attempt writes and adds restrictive active-property read policies. No schema columns, Prisma migration, or dependency was added in 07.5.
+- Ledger inspection corrected earlier uncertainty: `20260907120000_events_jobs_notifications_operational_records` was already applied on September 7; today's `db:local:deploy` applied `20260909120000_notification_context` before stopping at the pre-existing `20260830090100_storage_and_media_security.sql` checksum mismatch.
+- Feature 07 security migrations (September 7, 9, and 10) remain UNAPPLIED in the ledger. The policy tests executed their pending SQL inside a rollback-only transaction, without altering the ledger or bypassing deployment checks. This proves transactional policy behavior, not deployment completion.
+
+### Final verification and review
+
+- `pnpm test`: 60 files / 243 tests passed.
+- Focused operations/durable/notification/UI suite: 19 tests passed.
+- Local database suites: 8 tests passed (4 real application-service/persistence/retry/link tests; 4 transactional policy-validation tests). Real concurrent requests produced one audit/outbox request; execution created one persistent notice; outbox failure rolled back the retry claim and audit. Operator property denial and cross-property notification-link denial were verified against PostgreSQL.
+- Production-build Playwright: 4 passed across desktop Chromium and mobile Chromium, including keyboard retry, persistence after reload, denial, and tablet-width overflow checks. Desktop/mobile screenshots reviewed; all four runs recorded zero page errors and zero console errors.
+- `pnpm typecheck`, `pnpm build`, `pnpm db:validate`, scoped ESLint/Prettier, and `git diff --check` passed. Initial test-only SQL cast and sign-in selector errors were diagnosed and corrected; final results above supersede those attempts.
+- `pnpm lint` still fails only on the preserved empty `ConnectedMailboxProvider` placeholder in `src/server/integrations/email/transactional-email-provider.ts:56`. No lint rule was disabled and provider work was not expanded.
+- `/review`: plan alignment and slice system integrity passed after correcting dispatch starvation, retry delivery visibility, and preserving exact retry bounds. Slice UI/application behavior is verified. Production readiness remains gated by security deployment, the existing global lint blocker, and live Inngest scheduling/delivery verification in 07.8.
+- `/imprint`: added the Operations Failure List and Retry Details entry to `context/ui-registry.md`. Updated current notification/job-link architecture wording and the 07.5 acceptance row in the build plan; preserved prior session entries.
+
+### Exit gate and next work
+
+- Slice 07.5 implementation/behavior acceptance is satisfied with the verification qualifications above. Feature 07 is NOT complete and is not declared production-ready.
+- Next approved slice is 07.6 Communication providers and receipts; it was not started here. 07.7 and 07.8 remain outstanding. Retain the original security checksum evidence for a deliberate resolution; never rewrite an applied migration or reset the shared database to hide it.
+
+## 2026-09-09 — Feature 07 generic Notification contract follow-up
+
+### Scope and retained state
+
+- Repository/tracker state superseded the stale Feature 06 memory bookmark. Features 01–06 remain complete; Feature 07 stays in progress; numbering 01–56 and completed 07.1–07.4 history are preserved. Feature 08 and future Robin features remain not started.
+- Preserved the existing uncommitted context reconciliation, dependency/lockfile/build-policy edits, operations permissions, provider foundations, and Feature 06 media implementation. No reset, commit, branch change, dependency update, or prior migration rewrite occurred.
+- Retained Notification property/recipient ownership, uniqueness/indexes, read-state storage, bell, pagination, and read actions. External delivery remains separate.
+
+### Gaps addressed by approved slice
+
+- 07.1: Strict source and subject registries; source identifies the producer while type identifies the notice kind. New notices require correlation. Unknown fields (including arbitrary URLs), unsupported types/sources, and malformed IDs fail validation. Event v1 remains supported; contextual proof v2 is additive.
+- 07.2: Added nullable source/correlation columns solely for legacy compatibility, with a paired-context constraint. New service calls require both and validate active recipient access. An additive restrictive RLS policy requires explicit active Operator property grants, retains recipient isolation for Admin, and revokes browser/application-role notification INSERT. Trusted server owning services emit notices. Existing SELECT/read_at UPDATE policies and indexes remain.
+- 07.3: Contextual event/job produces a real persistent notice with inherited source/correlation and a stable event-based deduplication key. Tests cover lost dispatch acknowledgement, retry after the notification effect, terminal duplicate execution, conflicting event context, unknown versions, and backlog-safe dispatch of the requested event. Stored job payload must match its execution property/correlation/idempotency context.
+- 07.4: Typed destinations use a recipient-scoped open route with fresh access checks. Proof navigates to the implemented property overview; media destinations invoke existing Feature 06 access/library services. Unsupported/unavailable links fail safely. Job detail navigation stays unavailable pending 07.5. Fixed pagination refresh/order stability, all-page read wording, visible action errors, refreshed count double-decrement, deterministic dates, wrapping, and unavailable bell count fallback.
+- 07.8: Added contextual end-to-end service proof, production authorization-path tests, UI regressions, and an unexecuted local PostgreSQL/RLS integration suite.
+
+### Files and migrations
+
+- Source: `src/server/notifications/{notification-contracts,notifications}.ts`, `src/server/events/{internal-event-registry,event-outbox}.ts`, `src/server/jobs/{job-contracts,job-execution,feature-07-job-workflows}.ts`.
+- UI/routes: `src/components/notifications/{notification-center,notification-bell}.tsx`, `src/components/layout/property-overview-shell.tsx`, `src/app/[propertyId]/notifications/page.tsx`, new `src/app/[propertyId]/notifications/[notificationId]/open/page.tsx`.
+- Persistence: `prisma/schema.prisma`; new `prisma/migrations/20260909120000_notification_context/migration.sql`; new `supabase/security-migrations/20260909120100_notification_context_security.sql`. These new migrations have NOT been applied locally during this session.
+- Tests: existing Feature 07 contracts, notifications, durable-jobs, notification-center tests and property-overview-shell test; new `tests/fixtures/feature-07-notifications.ts`, `tests/unit/server/feature-07-notification-authorization.test.ts`, `tests/integration/notification-context.test.ts`.
+- Documentation: bounded additions in architecture/build-plan; updated existing notification UI imprint; tracker and appended memory bookmark. Other concurrent context changes retained.
+
+### Verification and review
+
+- Full unit suite: 57 files / 229 tests passed before final authorization/backlog additions; final focused suite: 7 files / 26 tests passed, including the new cases. No tests disabled.
+- Final TypeScript, Prisma schema validation/client generation, scoped lint, scoped Prettier, and whitespace checks passed. Production build and the final repeat both passed, including the new notification-open route.
+- Repository-wide lint is blocked by the pre-existing empty `ConnectedMailboxProvider` interface at `src/server/integrations/email/transactional-email-provider.ts:56`. The provider placeholder was deliberately preserved within this bounded follow-up; no rule was disabled.
+- `pnpm db:local:deploy` failed before connection because Docker Desktop's Linux engine pipe is unavailable. PostgreSQL migration application, RLS integration, reload persistence against a real database, and authenticated desktop/tablet/mobile browser checks remain pending. The earlier security-migration checksum mismatch remains historical unresolved evidence, not something repaired or bypassed here.
+- Review fixed recipient/Operator scope, unsupported links, source/correlation validation, duplicate context collisions, requested-event dispatch, pagination refresh, read wording/counts, and visible failure states. Plan alignment and bounded system-integrity review passed; production readiness remains gated by the above verification plus unfinished approved slices.
+- No future Robin/Revenue records, handlers, handoff infrastructure, or provider workflows were implemented. TransactionalEmailProvider/Postmark, Twilio, Cronofy, and Feature 06 media lifecycle/cleanup boundaries remain unchanged.
+
+### Exit gate and remaining work
+
+- This follow-up has implementation plus unit/static evidence; it does not close Feature 07's exit gate.
+- Remaining: 07.5 operations/retry UI; 07.6 communication providers/receipts (including its existing lint blocker); 07.7 scheduled existing media cleanup/observability; 07.8 database, authenticated browser, live provider/job, and final closeout gates.
+- No later slice or feature was started in this session.
+
+## 2026-09-07 — Robin 1.0 context reconciliation
+
+- Context only: aligned the roadmap, architecture, overview, UI rules, provider guidance, and code/testing standards for Robin 1.0. No application code, Prisma schema, migrations, dependencies, or implemented UI changed in this reconciliation.
+- Features 01–06 remain complete and Feature 07 remains in progress. Preserve the current Feature 07 slice progress, local verification caveats, and all existing implementation/session history. Future Robin features remain unimplemented; Feature 21 is explicitly deferred. Numbering 01–56 is preserved.
+- The interrupted attempt had already updated build-plan.md and architecture.md; resumed work retained those changes and completed the other five context files.
+- The repository advanced beyond the earlier snapshot: Feature 07 Slice 07.2 is recorded complete pending local migration verification, and Slice 07.3 is active. Existing Inngest dependency/lockfile/build-policy changes are separate work and remain untouched. The memory file is an older Feature 06 closeout record; the current tracker controls implementation progress.
+- Feature 07 follow-through: its in-progress Notification contract must satisfy the newly approved source, destination, and correlation requirements before the feature exit gate passes. Existing code is preserved; this note does not claim those additions have been implemented or reset completed slices.
+- UI tokens and implemented UI registry remain unchanged; no hypothetical Robin components are registered. Historical tracker entries retain the implementation bookmark that was true on their date.
+- Verification: required context-wide terminology search and broader voice/audio scan completed; stale Robin activation, Feature 23 dependency range, test-mode, and current Quick Capture transcript wording are absent. Retained matches describe explicit deferrals/prohibitions, ordinary human or Search metadata behavior, Shadow Mode/handoff requirements, or preserved future storage compatibility.
+- Documentation review passed plan alignment and system-integrity checks: numbering 01–56, completed Features 01–06 specifications, Features 15–20, canonical Search sections, Appointment/TimeEntry foundation, provider sections, current implementation status/slices, and historical session notes are preserved. Scoped `git diff --check` passed. No product test/build was run or product feature declared complete for this documentation-only task.
+- Concurrent Feature 07 work also changed the job-contract file during the audit; this reconciliation did not edit implementation files or dependency configuration.
 
 ## 2026-07-30 — Phase 1, Feature 01 completion
 
