@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { navigateDocument } from "@/components/navigation/draft-navigation";
 
 import {
   Select,
@@ -13,9 +14,11 @@ import type { AuthorizedPropertySummary } from "@/server/properties/property-con
 
 export function PropertySwitcher({
   currentPropertyId,
+  documentNavigation = false,
   properties,
 }: Readonly<{
   currentPropertyId: string;
+  documentNavigation?: boolean;
   properties: AuthorizedPropertySummary[];
 }>) {
   const router = useRouter();
@@ -26,7 +29,12 @@ export function PropertySwitcher({
 
   return (
     <Select
-      onValueChange={(propertyId) => router.push(`/${propertyId}/overview`)}
+      onValueChange={(propertyId) => {
+        if (propertyId === currentPropertyId) return;
+        const href = `/${propertyId}/overview`;
+        if (documentNavigation) navigateDocument(href);
+        else router.push(href);
+      }}
       value={currentPropertyId}
     >
       <SelectTrigger aria-label="Switch property" className="max-w-64">

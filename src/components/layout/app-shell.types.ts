@@ -28,6 +28,7 @@ export type NavigationItemDisplay = {
   icon: NavigationIcon;
   isActive?: boolean;
   isDisabled?: boolean;
+  navigationMode?: "document";
 };
 
 export type NavigationGroupDisplay = {

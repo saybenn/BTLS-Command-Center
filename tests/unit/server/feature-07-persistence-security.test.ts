@@ -93,11 +93,13 @@ describe("Feature 07 persistence and security contracts", () => {
   });
 
   it("reserves provider infrastructure writes for trusted server services", () => {
-    expect(providerSecurityMigration).toContain(
+    expect(providerSecurityMigration.replace(/\r\n/g, "\n")).toContain(
       "public.webhook_receipts,\n  public.sending_identities,\n  public.provider_dispatches",
     );
-    expect(providerSecurityMigration).toContain("from authenticated, btls_app");
-    expect(providerSecurityMigration).toContain(
+    expect(providerSecurityMigration.replace(/\r\n/g, "\n")).toContain(
+      "from authenticated, btls_app",
+    );
+    expect(providerSecurityMigration.replace(/\r\n/g, "\n")).toContain(
       'drop policy if exists "provider_dispatches_insert_property_authorized"',
     );
   });

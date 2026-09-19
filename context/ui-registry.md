@@ -322,7 +322,7 @@ Last updated: 2026-07-30
 ### Table Shell
 
 File: `src/components/tables/table-shell.tsx`
-Last updated: 2026-07-30
+Last updated: 2026-09-14
 
 | Property | Class |
 |---|---|
@@ -330,7 +330,7 @@ Last updated: 2026-07-30
 | Border | Container `border border-border`; body dividers `divide-y divide-border`; footer `border-t border-border` |
 | Border radius | Container `rounded-xl` |
 | Text — primary | Cells `text-text-primary text-sm` |
-| Text — secondary | Headers `text-text-secondary text-xs font-semibold uppercase tracking-wide` |
+| Text — secondary | Headers `text-text-muted text-xs font-medium` (sentence case) |
 | Spacing | Header and cells `px-4 py-3` |
 | Hover state | Data rows `hover:bg-surface-hover` |
 | Shadow | none |
@@ -554,3 +554,25 @@ Last updated: 2026-09-10
 | Shadow | `shadow-xs` on primary surfaces |
 
 Pattern notes: Filters use a GET form; lists and attempt history retain pagination. The retry form renders only server-provided eligibility, requires an audit reason, and calls the reusable application service through a thin action. Saved/queued delivery is distinct from completed execution. Raw provider errors, payloads, credentials, and business truth never appear in this operational view. Cross-property pages retain BTLS styling. Notification links to operations resolve through current recipient/property authorization plus operations authorization. Desktop, tablet-width, and mobile states are included in the browser verification for this slice.
+
+### Revenue Foundation Directory and Forms
+
+Files: `src/features/revenue-operations/components/foundation-directory.tsx`, `foundation-form.tsx`, `foundation-pages.tsx`
+Last updated: 2026-09-14
+
+| Property | Class |
+|---|---|
+| Background | Shared Card and list items `bg-surface`; controls `bg-surface-interactive` |
+| Border | `border border-border` |
+| Border radius | Panels `rounded-xl`; controls and links `rounded-md` |
+| Text — primary | `text-text-primary`; form titles `text-base font-semibold` |
+| Text — secondary | `text-sm text-text-secondary`; counts/hints `text-text-muted` |
+| Spacing | Shared Card `p-6`; filter/list panels `p-4`; forms `space-y-4`; related details `mt-4` |
+| Hover state | Navigation `hover:bg-surface-hover`; table rows use TableShell |
+| Focus | `focus-visible:ring-2 focus-visible:ring-focus-ring` and shared control focus |
+| Shadow | Shared Card `shadow-xs`; directory panels none |
+| Accent usage | `text-accent` on explicit links and edit controls; shared primary Button |
+
+**Pattern notes:** Use the shared sentence-case TableShell with one server-filtered page and a labelled mobile list. Keep search, pagination, and status controls accessible. Preserve the mounted search input, focus, caret, and newer typing while server results update; synchronize external URL/history changes without keying the component by query parameters. One navigation confirmation covers all dirty Revenue forms: cancellation preserves every draft, and accepted discard resets retained forms and abandoned errors/duplicate-review state atomically. Feature 08 explicitly opts into document navigation for entry, route/section changes, related-record pages that replace editable forms, offered-service editor identity changes (new/existing or between services), and departures. Service editor boundaries are established even when clean; query/pagination updates and directory-row reselection that retain editor identity stay client-side and preserve the mounted form. Directory links use the existing draft-preserving marker; a changed working-form boundary still takes precedence and invokes the shared guard. The shared guard covers links and PropertySwitcher; native beforeunload exists only while dirty and is removed synchronously after Discard. Browser cache restoration reloads persisted data. This is a Feature 08 reliability measure, not a global navigation standard. Directory query/status/page share one desired state and one writer; query/filter replace and pagination push remain client-side, preserve working drafts, and cancel obsolete debounces. Counts and async feedback use status announcements. Customer detail sections expose optional information progressively; related edit forms are disclosure panels. New-record and edit forms keep separate identities. Shared Field associates labels, required indicators, and server errors, including searchable relation selectors. Relation searches return at most 20 eligible options and preserve the selected value. Buttons disable while saving; errors retain entries; duplicate review requires a specific human action. A creation retry reuses its request ID. Successful saves load the committed server view with normal document navigation and a short success notice. The saved URL flag is presentation-only; it is never business state. Failed saves retain the current form and its entries. Revenue forms remain feature-owned; this entry does not make them a second shared form framework.
+
+The shared TableShell correction follows ui-rules.md and ui-tokens.md: 12px, medium weight, muted, sentence case. Existing showcase and property-administration consumers retain their semantic table structure. No Feature 08 override, raw palette, brand token, or new design-system primitive was introduced.

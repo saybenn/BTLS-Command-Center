@@ -60,7 +60,7 @@ export function TableShellHead({
   return (
     <th
       className={cn(
-        "whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary",
+        "whitespace-nowrap px-4 py-3 text-xs font-medium text-text-muted",
         tableCellAlignment[alignment],
         className,
       )}

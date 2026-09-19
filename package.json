@@ -31,6 +31,7 @@
     "db:reset": "tsx scripts/reset-local-database.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@radix-ui/react-dialog": "^1.1.23",
@@ -39,10 +40,12 @@
     "@sentry/nextjs": "^10.74.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.111.0",
+    "@tanstack/react-table": "^9.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
     "inngest": "^4.20.0",
+    "libphonenumber-js": "^1.13.13",
     "lucide-react": "^1.27.0",
     "next": "16.2.12",
     "pg": "^8.22.0",
@@ -50,6 +53,7 @@
     "postmark": "5.1.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-hook-form": "^7.88.0",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.6.0",
     "twilio": "6.1.1",

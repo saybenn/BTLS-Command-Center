@@ -22,6 +22,8 @@ import type {
   NavigationItemDisplay,
 } from "@/components/layout/app-shell.types";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { navigateDocument } from "./draft-navigation";
 
 const iconByName: Record<NavigationIcon, LucideIcon> = {
   "audit-log": ClipboardCheck,
@@ -54,8 +56,18 @@ function NavigationItem({
 }>) {
   const Icon = iconByName[item.icon];
 
+  const Element = item.navigationMode === "document" && !item.isDisabled ? Link : "button";
   return (
-    <button
+    <Element
+      href={item.href}
+      {...(Element === Link
+        ? {
+            onNavigate: (event: { preventDefault: () => void }) => {
+              event.preventDefault();
+              if (navigateDocument(item.href)) onItemSelect?.(item);
+            },
+          }
+        : {})}
       aria-current={item.isActive ? "page" : undefined}
       aria-disabled={item.isDisabled || undefined}
       className={cn(
@@ -65,7 +77,7 @@ function NavigationItem({
           : "text-text-secondary hover:bg-surface-hover hover:text-text-primary",
       )}
       disabled={item.isDisabled}
-      onClick={() => onItemSelect?.(item)}
+      onClick={item.navigationMode === "document" ? undefined : () => onItemSelect?.(item)}
       type="button"
     >
       {item.isActive ? (
@@ -76,7 +88,7 @@ function NavigationItem({
       ) : null}
       <Icon aria-hidden="true" className="size-4 shrink-0" />
       <span>{item.label}</span>
-    </button>
+    </Element>
   );
 }
 
