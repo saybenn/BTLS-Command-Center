@@ -184,6 +184,28 @@ Middleware must not:
 
 ---
 
+### Feature 08 navigation reliability exception (Slices 08.9–08.10)
+
+Next 16.2.12 Link `onNavigate` is used for the explicit Feature 08 entry link; the shared
+navigation guard handles app-controlled exits. Feature 08 alone uses document boundaries
+for route/section changes and related-record pagination that replaces editable forms.
+Slice 08.10 also treats offered-service edit identity changes as document boundaries, even
+when clean. Search/pagination and directory-row reselection preserving that identity remain client-side; arbitrary query
+changes are not a general departure rule.
+Browser Back/Forward and true exits use dirty-only `beforeunload`; accepted app Discard
+removes that handler synchronously. `pagehide` confirms actual departure and `pageshow`
+with `persisted` reloads committed data after browser-cache restoration.
+
+Directory query/status/page use one coordinated local intent and Next router writer.
+Typing is debounced, filters/clear cancel pending work, pagination preserves push history,
+and Back/Forward cancels pending work and restores all controls. These same-working-route
+updates remain client-side. No global router/history patch or global document-navigation
+policy is introduced. Future features need separate architectural justification.
+
+References: [Next Link](https://nextjs.org/docs/app/api-reference/components/link),
+[beforeunload](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event),
+[pageshow](https://developer.mozilla.org/en-US/docs/Web/API/Window/pageshow_event).
+
 ## 3. React
 
 **Package:** `react`
@@ -1612,3 +1634,9 @@ Before adding or using a library, a developer should be able to answer:
 - Can the rest of the application depend on a BTLS-owned interface instead of the provider directly?
 
 If those answers are unclear, implementation should pause before introducing the dependency.
+
+### Feature 08 installed form, directory and phone pattern — 2026-09-14
+- react-hook-form 7.88.0 and @hookform/resolvers 5.9.1: focused interactive forms, client field feedback, authoritative server Zod schemas.
+- @tanstack/react-table 9.2.4: useTable, tableFeatures({}), createColumnHelper and table.FlexRender from public entry points. Server queries own pagination/filtering; table receives one page. Do not use v8 useReactTable examples for this installed version.
+- libphonenumber-js 1.13.13: parsePhoneNumberFromString from libphonenumber-js/max with extract:false, isValid(), canonical number and formatInternational(). Require explicit + country code; do not guess country or parse international phones using custom regex. Phone extensions are unsupported in this foundation. Store canonical phoneE164 separately from phoneDisplay.
+- Phone presence/validity does not establish identity or messaging consent. Matching remains property-scoped and explicitly reviewed.

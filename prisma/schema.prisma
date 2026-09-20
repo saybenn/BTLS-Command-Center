@@ -102,6 +102,7 @@ model AppUser {
   createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  employeeProfiles   EmployeeProfile[]
   accountMemberships AccountMembership[]
   auditEvents        AuditEvent[]               @relation("AuditEventActor")
   sentInvitations    PendingAccountInvitation[] @relation("PendingInvitationInviter")
@@ -150,6 +151,15 @@ model ClientProperty {
   jobExecutions      JobExecution[]
   notifications      Notification[]
   webhookReceipts    WebhookReceipt[]
+  customers          Customer[]
+  contacts           Contact[]
+  serviceLocations   ServiceLocation[]
+  serviceAssets      ServiceAsset[]
+  tags               Tag[]
+  customerTags       CustomerTag[]
+  employeeProfiles   EmployeeProfile[]
+  revenueSettings    RevenueOperationsSettings?
+  propertyServices   PropertyService[]
   sendingIdentities  SendingIdentity[]
   providerDispatches ProviderDispatch[]
 
@@ -541,9 +551,11 @@ model SendingIdentity {
   createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  property   ClientProperty     @relation(fields: [propertyId], references: [id], onDelete: Restrict)
-  dispatches ProviderDispatch[]
+  property        ClientProperty              @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  dispatches      ProviderDispatch[]
+  revenueSettings RevenueOperationsSettings[]
 
+  @@unique([id, propertyId])
   @@index([propertyId, status])
   @@map("sending_identities")
 }
@@ -579,4 +591,191 @@ model ProviderDispatch {
   @@index([providerName, providerMessageId])
   @@index([correlationId])
   @@map("provider_dispatches")
+}
+
+enum CustomerRelationshipState {
+  PROSPECT
+  CURRENT
+  INACTIVE
+}
+
+model PropertyService {
+  id              String            @id @default(uuid()) @db.Uuid
+  propertyId      String            @map("property_id") @db.Uuid
+  name            String
+  normalizedName  String            @map("normalized_name")
+  slug            String
+  parentServiceId String?           @map("parent_service_id") @db.Uuid
+  isActive        Boolean           @default(true) @map("is_active")
+  revision        Int               @default(1)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property        ClientProperty    @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  parent          PropertyService?  @relation("ServiceHierarchy", fields: [parentServiceId, propertyId], references: [id, propertyId], onDelete: Restrict)
+  children        PropertyService[] @relation("ServiceHierarchy")
+
+  @@unique([id, propertyId])
+  @@unique([propertyId, normalizedName])
+  @@unique([propertyId, slug])
+  @@index([propertyId, isActive, name, id])
+  @@map("property_services")
+}
+
+model Customer {
+  id                String                    @id @default(uuid()) @db.Uuid
+  propertyId        String                    @map("property_id") @db.Uuid
+  displayName       String                    @map("display_name")
+  normalizedName    String                    @map("normalized_name")
+  relationshipState CustomerRelationshipState @default(PROSPECT) @map("relationship_state")
+  revision          Int                       @default(1)
+  createRequestId   String                    @map("create_request_id") @db.Uuid
+  createActorId     String                    @map("create_actor_id") @db.Uuid
+  createFingerprint String                    @map("create_fingerprint")
+  createdAt         DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime                  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property          ClientProperty            @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  contacts          Contact[]
+  locations         ServiceLocation[]
+  assets            ServiceAsset[]
+  tags              CustomerTag[]
+
+  @@unique([id, propertyId])
+  @@unique([propertyId, createActorId, createRequestId])
+  @@index([propertyId, relationshipState, displayName, id])
+  @@index([propertyId, normalizedName])
+  @@map("customers")
+}
+
+model Contact {
+  id              String         @id @default(uuid()) @db.Uuid
+  propertyId      String         @map("property_id") @db.Uuid
+  customerId      String         @map("customer_id") @db.Uuid
+  personName      String         @map("person_name")
+  email           String?
+  normalizedEmail String?        @map("normalized_email")
+  phoneE164       String?        @map("phone_e164")
+  phoneDisplay    String?        @map("phone_display")
+  isPrimary       Boolean        @default(false) @map("is_primary")
+  isActive        Boolean        @default(true) @map("is_active")
+  revision        Int            @default(1)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property        ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  customer        Customer       @relation(fields: [customerId, propertyId], references: [id, propertyId], onDelete: Restrict)
+
+  @@unique([id, propertyId, customerId])
+  @@index([propertyId, customerId, isActive])
+  @@index([propertyId, normalizedEmail])
+  @@index([propertyId, phoneE164])
+  @@map("contacts")
+}
+
+model ServiceLocation {
+  id           String         @id @default(uuid()) @db.Uuid
+  propertyId   String         @map("property_id") @db.Uuid
+  customerId   String         @map("customer_id") @db.Uuid
+  name         String
+  addressLine1 String         @map("address_line_1")
+  addressLine2 String?        @map("address_line_2")
+  locality     String
+  region       String?
+  postalCode   String?        @map("postal_code")
+  countryCode  String         @map("country_code") @db.VarChar(2)
+  isDefault    Boolean        @default(false) @map("is_default")
+  isActive     Boolean        @default(true) @map("is_active")
+  revision     Int            @default(1)
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property     ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  customer     Customer       @relation(fields: [customerId, propertyId], references: [id, propertyId], onDelete: Restrict)
+  assets       ServiceAsset[]
+
+  @@unique([id, propertyId, customerId])
+  @@index([propertyId, customerId, isActive])
+  @@map("service_locations")
+}
+
+model ServiceAsset {
+  id                String           @id @default(uuid()) @db.Uuid
+  propertyId        String           @map("property_id") @db.Uuid
+  customerId        String           @map("customer_id") @db.Uuid
+  serviceLocationId String?          @map("service_location_id") @db.Uuid
+  name              String
+  manufacturer      String?
+  modelName         String?          @map("model_name")
+  serialNumber      String?          @map("serial_number")
+  isActive          Boolean          @default(true) @map("is_active")
+  revision          Int              @default(1)
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property          ClientProperty   @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  customer          Customer         @relation(fields: [customerId, propertyId], references: [id, propertyId], onDelete: Restrict)
+  location          ServiceLocation? @relation(fields: [serviceLocationId, propertyId, customerId], references: [id, propertyId, customerId], onDelete: Restrict)
+
+  @@unique([id, propertyId])
+  @@index([propertyId, customerId, isActive])
+  @@map("service_assets")
+}
+
+model Tag {
+  id             String         @id @default(uuid()) @db.Uuid
+  propertyId     String         @map("property_id") @db.Uuid
+  name           String
+  normalizedName String         @map("normalized_name")
+  isActive       Boolean        @default(true) @map("is_active")
+  revision       Int            @default(1)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property       ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  assignments    CustomerTag[]
+
+  @@unique([id, propertyId])
+  @@unique([propertyId, normalizedName])
+  @@map("tags")
+}
+
+model CustomerTag {
+  propertyId String         @map("property_id") @db.Uuid
+  customerId String         @map("customer_id") @db.Uuid
+  tagId      String         @map("tag_id") @db.Uuid
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  property   ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  customer   Customer       @relation(fields: [customerId, propertyId], references: [id, propertyId], onDelete: Restrict)
+  tag        Tag            @relation(fields: [tagId, propertyId], references: [id, propertyId], onDelete: Restrict)
+
+  @@id([propertyId, customerId, tagId])
+  @@index([propertyId, tagId])
+  @@map("customer_tags")
+}
+
+model EmployeeProfile {
+  id          String         @id @default(uuid()) @db.Uuid
+  propertyId  String         @map("property_id") @db.Uuid
+  appUserId   String?        @map("app_user_id") @db.Uuid
+  displayName String         @map("display_name")
+  jobTitle    String?        @map("job_title")
+  isActive    Boolean        @default(true) @map("is_active")
+  revision    Int            @default(1)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property    ClientProperty @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  user        AppUser?       @relation(fields: [appUserId], references: [id], onDelete: Restrict)
+
+  @@unique([id, propertyId])
+  @@unique([propertyId, appUserId])
+  @@index([propertyId, isActive, displayName, id])
+  @@map("employee_profiles")
+}
+
+model RevenueOperationsSettings {
+  propertyId               String           @id @map("property_id") @db.Uuid
+  defaultSendingIdentityId String?          @map("default_sending_identity_id") @db.Uuid
+  reviewRequestDelayDays   Int?             @map("review_request_delay_days")
+  revision                 Int              @default(1)
+  createdAt                DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property                 ClientProperty   @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  sendingIdentity          SendingIdentity? @relation(fields: [defaultSendingIdentityId, propertyId], references: [id, propertyId], onDelete: Restrict)
+
+  @@map("revenue_operations_settings")
 }

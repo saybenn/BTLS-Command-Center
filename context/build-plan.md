@@ -1,7 +1,7 @@
 # BTLS Build Plan
 
 > **Repository location:** `context/build-plan.md`  
-> **Project state:** Active implementation; Features 01–07 complete; Feature 08 not started
+> **Project state:** Active implementation; Features 01–08 complete; Feature 09 not started
 > **Companion files:** `context/project-overview.md`, `context/architecture.md`, `context/code-standards.md`, `context/library-docs.md`  
 > **MVP:** Website Intelligence, Smart Blog Studio, Content Intelligence, Revenue Operations / Command Center, Robin, Search Operations Studio, and shared Work Management
 

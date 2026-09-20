@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-09-13 — Feature 07 Slice 07.11 verified and complete |
-| Current phase | Phase 3 — Shared Infrastructure complete |
-| Current feature | None — Feature 07 complete; Feature 08 not started |
-| Overall status | Features 01–07 complete; Feature 08 and later Revenue/Robin features not started |
-| MVP progress | Features 01–07 complete |
-| Next implementation target | Feature 08 — Customer, Workforce, and Revenue Settings Foundation (not started; requires its approved start workflow) |
+| Last updated | 2026-09-14 — Feature 08 Slice 08.10 verified and complete |
+| Current phase | Phase 4 — Revenue Operations Foundation |
+| Current feature | Feature 08 — complete through Slice 08.10; exit gate passed |
+| Overall status | Features 01–08 complete; Feature 09 and later features not started |
+| MVP progress | Features 01–08 complete |
+| Next implementation target | Feature 09 — Lead Operations and Action Workspace (not started; requires its own architect approval) |
 
 ---
 
@@ -88,6 +88,27 @@ tenant-safe operations and Admin retry controls, Postmark/Twilio provider bounda
 dispatch and receipt evidence, interruption-safe provider outcomes, recoverable timestamp-fenced webhook processing,
 scheduled delegation to Feature 06 media cleanup, and data-minimized Pino/Sentry observability.
 
+## Phase 4 — Feature 08: Customer, Workforce, and Revenue Settings Foundation
+
+- [x] Slices 08.1–08.10 implemented and verified.
+- [x] Slice 08.8: browser SELECT/mutation denial on all nine tables, existing restricted server role, atomic discard, stable search focus/history.
+- [x] Customer/person Contact UI/services, explicit relationship state, safe duplicate review, and phone normalization.
+- [x] Optional service locations/assets and explicit property Tag assignments.
+- [x] EmployeeProfile administration separate from AppUser.
+- [x] Revenue defaults and eligible shared SendingIdentity selection.
+- [x] Minimal canonical shared PropertyService, approved capability bundles, additive migrations and RLS.
+- [x] Shared sentence-case table headers, responsive UI imprint, and three-layer review.
+- [x] Slice 08.9: Feature 08 document boundaries, shared draft guard, coordinated directory state, and regression review.
+- [x] Slice 08.10: offered-service editor history protection and same-editor directory preservation; full gate and review passed.
+- [x] Feature 08 exit gate passed.
+
+Verification: 288 unit/component tests, 58 PostgreSQL tests (including all 18 Feature 08 regressions),
+and all 60 desktop/mobile production browser tests passed. Typecheck, lint, production build,
+Prisma validation, applied security-migration integrity, source formatting and whitespace checks passed.
+Dark/light desktop, mobile, and tablet screenshots were inspected. No unresolved critical/high finding.
+Changes are uncommitted; migrations are applied locally only. No production deployment or provider send.
+See [Feature 08 completion report](feature-08-completion.md) for the full inventory and evidence.
+
 ## Product and Architecture Context
 
 - [x] Robin 1.0 established as the Revenue Response Sidekick
@@ -153,7 +174,7 @@ These completed entries record context decisions, not implemented Robin product 
 
 # In Progress
 
-No numbered feature is currently in progress.
+No feature is in progress. Feature 08 is complete through Slice 08.10. Offered-service history and same-editor directory preservation passed regression coverage and the full verification/review gate; no unresolved review finding remains. See [completion report](feature-08-completion.md). Feature 09 remains not started.
 
 ---
 
@@ -161,8 +182,8 @@ No numbered feature is currently in progress.
 
 ## Immediate
 
-1. [ ] Run the required start workflow before Feature 08
-2. [ ] Keep Feature 08 and future Revenue/Robin implementation not started until explicitly directed
+1. [ ] Preserve completed, uncommitted Feature 08 changes; commit or open a PR when requested.
+2. [ ] Run restore/architect and obtain approval before starting Feature 09.
 
 ---
 
@@ -186,7 +207,7 @@ No numbered feature is currently in progress.
 
 ## Phase 4 — Revenue Operations Foundation
 
-- [ ] 08 Customer, Workforce, and Revenue Settings Foundation
+- [x] 08 Customer, Workforce, and Revenue Settings Foundation
 - [ ] 09 Lead Operations and Action Workspace
 - [ ] 10 Public Lead Ingestion
 - [ ] 11 Customer Conversations and Communication
@@ -1466,3 +1487,20 @@ The tracker should remain a working status document, not a duplicate of `build-p
 ### Next session
 
 1. Feature 06 is complete. Do not start Feature 07 without explicit direction.
+
+## 2026-09-19 — Follow-up to pasted unit-test failure
+
+The supplied default pnpm test run had 287 passes and one Operations error-path failure.
+The error message could render before React's asynchronous transition finished clearing pending;
+the test asserted the retry button was enabled synchronously. The test now waits for the complete
+failed-request state and additionally checks that the reason remains editable and preserved.
+Retry application behavior is unchanged. NavigationList now attaches Next Link's onNavigate prop
+only to Link elements, removing the unsupported-event-handler warnings on native buttons.
+
+Changed: tests/unit/components/operations.test.tsx and
+src/components/navigation/navigation-list.tsx. No schema, migration, dependency or authorization
+changes. No worker setting, test timeout or business assertion was weakened.
+Verification: default pnpm test passed all 288 tests in 69 files with no onNavigate warnings.
+The earlier full database/build/browser gate is historical evidence; it was not rerun for this
+narrow follow-up. Feature 09 remains not started and all changes remain uncommitted.
+Typecheck, lint and whitespace checks also passed. Targeted review found no unresolved issue: retry behavior and Feature 08 navigation guard behavior are preserved.

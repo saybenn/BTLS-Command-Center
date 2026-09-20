@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { DevelopmentStatusSummary } from "@/components/feedback/development-status-summary";
 import { getDevelopmentStatus } from "@/server/development-status";
 
@@ -23,12 +24,12 @@ export default async function DevelopmentStatusPage() {
           Review approved primitives, feedback states, data display, theme controls, and the
           responsive application shell.
         </p>
-        <a
+        <Link
           className="mt-4 inline-flex rounded-md text-sm font-medium text-accent underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           href="/development-status/ui-foundation"
         >
           Open UI Foundation showcase
-        </a>
+        </Link>
       </section>
     </main>
   );

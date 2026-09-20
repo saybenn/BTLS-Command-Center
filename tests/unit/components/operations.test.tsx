@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { RetryOperationForm } from "@/components/operations/retry-operation-form";
@@ -31,8 +31,14 @@ describe("operations UI", () => {
       "Provider recovered",
     );
     await user.click(screen.getByRole("button", { name: "Request safe retry" }));
-    expect(await screen.findByRole("status")).toHaveTextContent("Could not request a retry");
-    expect(screen.getByRole("button", { name: "Request safe retry" })).toBeEnabled();
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toHaveTextContent("Could not request a retry");
+      expect(screen.getByRole("button", { name: "Request safe retry" })).toBeEnabled();
+      expect(screen.getByRole("textbox", { name: "Reason for retry" })).toBeEnabled();
+    });
+    expect(screen.getByRole("textbox", { name: "Reason for retry" })).toHaveValue(
+      "Provider recovered",
+    );
   });
   it("renders an accessible empty filtered list", () => {
     render(

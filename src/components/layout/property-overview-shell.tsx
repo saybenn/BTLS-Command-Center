@@ -22,11 +22,13 @@ function initials(name: string) {
 
 export async function PropertyOverviewShell({
   activeNavigation = "overview",
+  foundationDocumentNavigation = false,
   context,
   properties,
   children,
 }: Readonly<{
-  activeNavigation?: "media" | "overview";
+  activeNavigation?: "media" | "overview" | "revenue";
+  foundationDocumentNavigation?: boolean;
   children?: ReactNode;
   context: AuthorizedPropertyContext;
   properties: AuthorizedPropertySummary[];
@@ -57,6 +59,18 @@ export async function PropertyOverviewShell({
         isActive: activeNavigation === "overview",
         label: "Overview",
       },
+      ...(context.capabilities.property.includes("customer.view") ||
+      context.capabilities.platform.includes("platform.customer.view")
+        ? [
+            {
+              href: `/${context.property.id}/revenue-operations/customers`,
+              icon: "overview" as const,
+              isActive: activeNavigation === "revenue",
+              label: "Revenue Operations",
+              navigationMode: "document" as const,
+            },
+          ]
+        : []),
     ],
     administrativeNavigation:
       canReadProperties || canManageUsers || canViewMedia
@@ -105,12 +119,35 @@ export async function PropertyOverviewShell({
 
   return (
     <AppShell
-      display={display}
+      display={
+        foundationDocumentNavigation
+          ? {
+              ...display,
+              primaryNavigation: display.primaryNavigation.map((item) => ({
+                ...item,
+                navigationMode: "document" as const,
+              })),
+              administrativeNavigation: display.administrativeNavigation
+                ? {
+                    ...display.administrativeNavigation,
+                    items: display.administrativeNavigation.items.map((item) => ({
+                      ...item,
+                      navigationMode: "document" as const,
+                    })),
+                  }
+                : undefined,
+            }
+          : display
+      }
       notificationControl={
         <NotificationBell propertyId={context.property.id} unreadCount={unreadCount} />
       }
       propertySwitcher={
-        <PropertySwitcher currentPropertyId={context.property.id} properties={properties} />
+        <PropertySwitcher
+          documentNavigation={foundationDocumentNavigation}
+          currentPropertyId={context.property.id}
+          properties={properties}
+        />
       }
     >
       {children ?? (
