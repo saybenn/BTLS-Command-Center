@@ -157,7 +157,7 @@ type ClientPropertyId = string;
 interface LeadSummary {
   id: LeadId;
   propertyId: ClientPropertyId;
-  status: LeadStatus;
+  stage: LeadStage;
   customerName: string;
 }
 ```
@@ -169,7 +169,7 @@ Do not pass large anonymous object shapes through multiple layers.
 Use a shared enum or `as const` union for stable lifecycle values.
 
 ```ts
-export const LEAD_STATUSES = [
+export const LEAD_STAGES = [
   "NEW",
   "CONTACTED",
   "QUALIFIED",
@@ -177,7 +177,7 @@ export const LEAD_STATUSES = [
   "LOST",
 ] as const;
 
-export type LeadStatus = (typeof LEAD_STATUSES)[number];
+export type LeadStage = (typeof LEAD_STAGES)[number];
 ```
 
 Database-owned lifecycle values must remain synchronized with Prisma.
@@ -207,8 +207,8 @@ Do not use non-null assertions unless the invariant has already been proven.
 Use exhaustive checks for lifecycle and permission logic.
 
 ```ts
-function getLeadStatusLabel(status: LeadStatus): string {
-  switch (status) {
+function getLeadStageLabel(stage: LeadStage): string {
+  switch (stage) {
     case "NEW":
       return "New";
     case "CONTACTED":
@@ -220,7 +220,7 @@ function getLeadStatusLabel(status: LeadStatus): string {
     case "LOST":
       return "Lost";
     default:
-      return assertNever(status);
+      return assertNever(stage);
   }
 }
 

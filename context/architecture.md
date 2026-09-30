@@ -745,17 +745,17 @@ async function updateLead({
       },
     });
 
-    assertLeadTransitionAllowed(lead.status, input.status);
+    assertLeadTransitionAllowed(lead.stage, input.stage);
 
     const updated = await tx.lead.update({
       where: { id: lead.id },
-      data: { status: input.status },
+      data: { stage: input.stage },
     });
 
     await recordAuditEvent(tx, {
       actorId: context.userId,
       propertyId: context.propertyId,
-      action: "lead.status_changed",
+      action: "lead.stage_changed",
       subjectId: lead.id,
     });
 
@@ -790,7 +790,7 @@ The Prisma schema is the executable source of truth. This section defines the in
 | `ClientAccount` | Customer organization or account | Properties, memberships |
 | `ClientProperty` | One business website/operating property | Owns feature data |
 | `AccountMembership` | User access to a client account | User, account, role |
-| `PropertyAccess` | Optional property-specific access or restrictions | User/membership, property |
+| `PropertyAccess` | Explicit grant required for normal client property entry; only `roleOverride` is optional. Documented platform-capability exceptions remain separate | User/membership, property |
 | `FeatureFlag` | Controlled capability rollout | Global, account, or property scope |
 
 ### Shared infrastructure
@@ -801,7 +801,7 @@ The Prisma schema is the executable source of truth. This section defines the in
 | `SendingIdentity` | Shared verified sender identity and mode, separate from provider credentials and Revenue defaults | Property/integration configuration |
 | `MediaAsset` | Shared ownership and metadata for stored files | Property, uploader, owning-feature relationships |
 | `AuditEvent` | Append-only history of sensitive actions | Actor, property, subject |
-| `Notification` | Generic in-app notification: origin/source, validated subject link, concise title/body, read/delivery state, practical destination/action route, and correlation context | Recipient user, property |
+| `Notification` | Generic in-app notification: origin/source, validated subject link, concise title/body, in-app read acknowledgement (`readAt`), practical destination/action route, and correlation context | Recipient user, property |
 | `WebhookReceipt` | Idempotency and processing history | Provider, external event ID |
 | `JobExecution` | Optional application record for important background work | Property, job type, status |
 
@@ -954,7 +954,7 @@ BusinessLocation/ServiceArea behavior and internal Search feature order.
 | `WorkPackageTemplate` | Predetermined prescription for a Finding | Versioned reference data |
 | `WorkTicket` | Assignable work generated from a confirmed Finding | Finding, property, assignee |
 | `WorkTicketTask` | Practical checklist item | Ticket |
-| `Intervention` | Durable record of what actually changed | Ticket, affected subject |
+| `Intervention` | Durable record of what actually changed, with explicit durable provenance | WorkTicket or approved governed system provenance (see §21), affected subject |
 | `MeasurementReview` | Before-and-after result | Finding, intervention, periods |
 
 ### Reference-data versioning
@@ -1370,7 +1370,7 @@ External systems are treated as delayed and unreliable. Adapters must handle tim
 
 Persist subject identity, never a destination URL. The resolver derives routes only to implemented workflows and checks recipient/property access again when a notice is opened. Media destinations reuse Feature 06 access and generic-library boundaries; unavailable, deleted, unsupported, or unauthorized subjects yield no destination. Job-detail navigation resolves to the internal operations surface only for BTLS Admin or an Operator with explicit active property access; client recipients receive an unavailable destination. New service inputs reject unknown fields, unsupported source/subject types, and malformed identifiers.
 
-Notifications are created by trusted server-side owning services, not browser database inserts. Reads and read-state mutations remain recipient-specific, including for administrators. BTLS Admin may access its notices across active properties; ordinary BTLS Operators require explicit active property access. External delivery is separate from the in-app read state.
+Notifications are created by trusted server-side owning services, not browser database inserts. Reads and read-state mutations remain recipient-specific, including for administrators. BTLS Admin may access its notices across active properties; ordinary BTLS Operators require explicit active property access. `Notification.readAt` records in-app read acknowledgement only; it does not establish provider acceptance, external delivery, workflow completion, or issue resolution.
 
 Internal events decouple completed business facts from follow-on work.
 
@@ -2741,11 +2741,13 @@ interface SearchKeyword {
 }
 ```
 
-Unique identity should normally include:
+Canonical identity is exactly:
 
 ```text
 propertyId + normalizedQuery + languageCode
 ```
+
+Locale/geographic market does not participate in SearchKeyword identity. Geographic/provider market context belongs to SearchTarget and dated measurement/evidence records. Market-specific observations must never be treated as interchangeable. Do not add a market/locale identity dimension. Exact evidence fields remain an owning Search feature detail (approved D1 in `context/shared/ubiquitous-language.md`).
 
 #### 10.2 Search intent
 
@@ -2788,7 +2790,7 @@ interface KeywordMetricSnapshot {
 
 `providerMetrics` is permitted only for non-canonical provider metadata.
 
-The normalized columns are the values BTLS actually queries.
+The normalized columns are the values BTLS actually queries. This conceptual sketch does not yet specify the required market context; preserve it under D1 when the owning Search feature defines columns, DTOs, provider normalization, and indexes.
 
 #### 10.4 Keyword clusters
 
@@ -4690,7 +4692,7 @@ Examples requiring direct property scope:
 Global/versioned reference data may include:
 
 - approved audit rule definitions;
-- WorkPackage templates;
+- WorkPackageTemplate versions;
 - global fulfillment policy templates;
 - global automation operation definitions.
 
@@ -5098,7 +5100,7 @@ Work Management owns the common execution loop used by Website Intelligence, Con
 - An Intervention records what actually changed.
 - A Measurement Review records what happened afterward.
 
-### Required linkage
+### Normal Finding-driven human-work linkage
 
 ```text
 ClientProperty
@@ -5108,6 +5110,8 @@ ClientProperty
 → Intervention
 → MeasurementReview
 ```
+
+Every Intervention MUST have explicit, durable provenance; a WorkTicket is not universally required. Approved alternative provenance is explicitly governed `FleetRemediationTarget → Intervention` or approved `AUTO_GUARDED OptimizationAction → Intervention`. Do not manufacture empty Findings or WorkTickets merely to satisfy provenance. Work Management owns Intervention history regardless of provenance. No additional ticketless provenance path is authorized by D2; exact persistence design remains an owning Work Management/Search feature detail.
 
 A ticket may not claim success. Success is determined only through the later measurement review.
 
@@ -5477,11 +5481,12 @@ Before beginning any task, Codex must read:
 
 1. `context/project-overview.md`
 2. `context/architecture.md`
-3. `context/build-plan.md`
-4. `context/code-standards.md`
-5. Relevant UI and feature context files
-6. For Search Operations work, the canonical Search Operations sections in this `architecture.md` and `build-plan.md`
-7. `context/progress-tracker.md`
+3. `context/shared/ubiquitous-language.md` for canonical terminology
+4. `context/build-plan.md`
+5. `context/code-standards.md`
+6. Relevant UI and feature context files
+7. For Search Operations work, the canonical Search Operations sections in this `architecture.md` and `build-plan.md`
+8. `context/progress-tracker.md`
 
 When the repository differs from this target architecture:
 

@@ -457,7 +457,7 @@ Logic/data:
 - `RevenueActivity`, `RevenueNote`, `NextRequiredAction`, and contextual `AttentionFlag`
 - source/landing-page attribution, ownership, assignment, transition rules, and audit/events
 - at most one primary open NextRequiredAction per supported subject
-- no Estimate, Appointment, Job, Invoice, Payment, stale, overdue, or follow-up-due value in Lead status
+- no Estimate, Appointment, Job, Invoice, Payment, stale, overdue, or follow-up-due value in Lead Stage
 
 Authorization:
 
@@ -2901,7 +2901,7 @@ Search scope may trigger future measurement scheduling.
 ### Tests
 
 - Finding-to-ticket linkage;
-- WorkPackage version preservation;
+- WorkPackageTemplate version preservation;
 - SearchInterventionScope;
 - ticket completion without success claim;
 - property isolation.

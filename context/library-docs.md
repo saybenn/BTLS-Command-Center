@@ -385,12 +385,12 @@ return prisma.$transaction(async (tx) => {
       id: leadId,
     },
     data: {
-      status: nextStatus,
+      stage: nextStage,
     },
   });
 
   await tx.auditEvent.create({
-    data: buildLeadStatusAuditEvent({
+    data: buildLeadStageAuditEvent({
       context,
       updatedLead,
     }),
@@ -830,9 +830,11 @@ All transactional/system sends go through the BTLS `TransactionalEmailProvider` 
 export interface TransactionalEmailProvider {
   sendTransactionalEmail(
     input: TransactionalEmailInput,
-  ): Promise<EmailDeliveryResult>;
+  ): Promise<TransactionalEmailResult>;
 }
 ```
+
+`TransactionalEmailResult` records provider acceptance, including provider message ID and acceptance time. Provider acceptance is not destination delivery; delivery requires separate owning-workflow evidence.
 
 Use Postmark templates for stable system messages such as:
 
