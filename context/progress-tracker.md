@@ -12,12 +12,37 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-09-14 — Feature 08 Slice 08.10 verified and complete |
+| Last updated | 2026-09-29 — Ubiquitous Language canonicalized; numbered-feature status unchanged |
 | Current phase | Phase 4 — Revenue Operations Foundation |
 | Current feature | Feature 08 — complete through Slice 08.10; exit gate passed |
 | Overall status | Features 01–08 complete; Feature 09 and later features not started |
 | MVP progress | Features 01–08 complete |
 | Next implementation target | Feature 09 — Lead Operations and Action Workspace (not started; requires its own architect approval) |
+
+---
+
+## Preparation — Ubiquitous Language canonicalization (2026-09-29)
+
+- Adopted the approved draft as `context/shared/ubiquitous-language.md`; preserved the supplied
+  `context/ubiquitous-language.md` review draft unchanged as input evidence, not current authority.
+- Verified repository HEAD matches the approved baseline
+  `7cbcb3243d0d326fee90fa4a98ee24fe24d0ada7`; no newer implementation change needs reconciliation.
+- Preserved D1's exact SearchKeyword identity and market-evidence boundary, D2's durable provenance
+  requirement and two approved ticketless paths, and Work Management ownership of Intervention history.
+- Made Lead Stage / `stage` / future `lead.stage_changed` explicit. Corrected only the identified
+  PropertyAccess, Lead Stage, transactional email result, Notification read, and WorkPackageTemplate
+  wording in current context. Existing MediaAsset explicit-relationship semantics already agree.
+- Added authoritative terminology discovery to AGENTS.md and the architecture read list without
+  changing architecture, schema, or feature-plan authority in their respective concerns.
+- Verification: full documentation diff and draft comparison reviewed; `git diff --check` and
+  new-file whitespace checks passed; read-only assertions verified D1/D2, terminology/discovery,
+  29 pinned evidence targets, current relative links, and documentation-only scope. No product code,
+  schema, migration, dependency, event registration, job, integration, or UI behavior changed.
+- Three-layer review: plan alignment PASS; system integrity PASS; documentation readiness PASS.
+  No unresolved critical/high finding or blocker to the next preparation stage.
+- Exact Search evidence fields, AUTO_GUARDED allowlist, Intervention persistence design, connected
+  mailboxes, voice/transcription, and Generated Job Brief remain deferred to their owning work.
+- Ready for Shared Contracts preparation; Shared Contracts and Feature 09 were not started.
 
 ---
 

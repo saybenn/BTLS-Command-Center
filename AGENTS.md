@@ -35,16 +35,19 @@ Before planning or implementing work, read the relevant files in this order:
 
 1. `context/project-overview.md`
 2. `context/architecture.md`
-3. `context/build-plan.md`
-4. `context/code-standards.md`
-5. `context/library-docs.md`
-6. `context/ui-tokens.md`
-7. `context/ui-rules.md`
-8. `context/ui-registry.md`
-9. `context/progress-tracker.md`
-10. `memory.md`, when restored by `/remember`
+3. `context/shared/ubiquitous-language.md`
+4. `context/build-plan.md`
+5. `context/code-standards.md`
+6. `context/library-docs.md`
+7. `context/ui-tokens.md`
+8. `context/ui-rules.md`
+9. `context/ui-registry.md`
+10. `context/progress-tracker.md`
+11. `memory.md`, when restored by `/remember`
 
 These files are authoritative.
+
+Ubiquitous Language owns canonical terminology. It does not overrule architecture on lifecycle or business policy, Prisma/migrations on represented database structure, or feature plans on sequencing. This establishes no new global precedence hierarchy; the conflict rule below still applies.
 
 Search Operations is governed by the Search Operations sections integrated into canonical `context/architecture.md` and Phase 11 of canonical `context/build-plan.md`. Do not create or rely on a second parallel Search Operations architecture or build plan.
 
@@ -252,7 +255,7 @@ Required guardrails:
 - `Customer` is the property-scoped operational end-customer parent.
 - `Contact` is a person associated with a Customer.
 - `Lead` is one commercial opportunity with sales-stage truth only.
-- Do not flatten Appointment, Estimate, Job, Invoice, Payment, next-action, stale, or overdue truth into Lead status.
+- Do not flatten Appointment, Estimate, Job, Invoice, Payment, next-action, stale, or overdue truth into Lead Stage.
 - Preserve the robust-underneath/simple-in-front path: Lead → Estimate → Start work → Work done → Record payment → Close.
 - `Conversation` and `Message` belong to Revenue Operations communication truth; a customer-facing Conversation requires Customer and primary Contact.
 - Lead, Estimate, Appointment, Job, Invoice, and Robin do not own Conversation.

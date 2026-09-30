@@ -135,7 +135,7 @@ Property branding must not override:
 - Borders outside the approved focus token
 - Success, warning, danger, or informational colors
 - Robin's intelligence-purple identity
-- Lead and ticket status meaning
+- Lead Stage and ticket status meaning
 - Typography
 - Spacing
 - Radius
@@ -1297,7 +1297,7 @@ feature-specific color family.
 
 Lead stages are limited to `NEW`, `CONTACTED`, `QUALIFIED`, `WON`, and `LOST`.
 Appointment, Estimate, Job, Invoice, Payment, next-action, and exception states retain
-their owning domain meaning and must not be flattened into one Lead-status table.
+their owning domain meaning and must not be flattened into one Lead Stage table.
 
 The final contextual mapping belongs in shared UI components, not repeated feature code.
 

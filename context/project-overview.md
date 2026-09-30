@@ -778,7 +778,7 @@ The Prisma schema is the executable source of truth. This section defines produc
 - `Contact` is one person associated with a Customer and carries communication endpoint/consent context.
 - `ServiceLocation` is an end-customer work location; optional `ServiceAsset` supplies basic equipment/item context.
 - `Lead` is one commercial opportunity with sales stages only.
-- `RevenueActivity`, `RevenueNote`, Tags, `NextRequiredAction`, `AttentionFlag`, and `BusinessException` preserve history, next work, contextual concerns, and deterministic operating conditions without flattening them into Lead status.
+- `RevenueActivity`, `RevenueNote`, Tags, `NextRequiredAction`, `AttentionFlag`, and `BusinessException` preserve history, next work, contextual concerns, and deterministic operating conditions without flattening them into Lead Stage.
 - `Conversation` belongs to a Customer and required primary Contact; `Message` may carry optional Lead/Estimate/Appointment/Job/Invoice context.
 - `EmployeeProfile` and `TimeEntry` support assignments and basic clock in/out without becoming payroll or HR.
 - `Appointment` is sales/evaluation scheduling; `JobVisit` is scheduled field fulfillment.
