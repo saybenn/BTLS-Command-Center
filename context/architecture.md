@@ -2400,7 +2400,7 @@ A `TopicCluster` organizes content production. A `SearchTopic` represents a sear
 
 #### SearchKeyword
 
-One normalized search query string and locale/language identity.
+One normalized search query identity within a property and language: `propertyId + normalizedQuery + languageCode`. Geographic/provider market context belongs to Search targeting and dated measurement/evidence, not SearchKeyword identity (approved D1).
 
 #### SearchKeywordCluster
 
@@ -5482,11 +5482,12 @@ Before beginning any task, Codex must read:
 1. `context/project-overview.md`
 2. `context/architecture.md`
 3. `context/shared/ubiquitous-language.md` for canonical terminology
-4. `context/build-plan.md`
-5. `context/code-standards.md`
-6. Relevant UI and feature context files
-7. For Search Operations work, the canonical Search Operations sections in this `architecture.md` and `build-plan.md`
-8. `context/progress-tracker.md`
+4. `context/shared/shared-contracts.md` for cross-domain ownership, consumer boundaries, shared invariants, and shared-change governance
+5. `context/build-plan.md`
+6. `context/code-standards.md`
+7. Relevant UI and feature context files
+8. For Search Operations work, the canonical Search Operations sections in this `architecture.md` and `build-plan.md`
+9. `context/progress-tracker.md`
 
 When the repository differs from this target architecture:
 

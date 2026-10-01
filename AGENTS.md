@@ -36,18 +36,29 @@ Before planning or implementing work, read the relevant files in this order:
 1. `context/project-overview.md`
 2. `context/architecture.md`
 3. `context/shared/ubiquitous-language.md`
-4. `context/build-plan.md`
-5. `context/code-standards.md`
-6. `context/library-docs.md`
-7. `context/ui-tokens.md`
-8. `context/ui-rules.md`
-9. `context/ui-registry.md`
-10. `context/progress-tracker.md`
-11. `memory.md`, when restored by `/remember`
+4. `context/shared/shared-contracts.md`
+5. `context/build-plan.md`
+6. `context/code-standards.md`
+7. `context/library-docs.md`
+8. `context/ui-tokens.md`
+9. `context/ui-rules.md`
+10. `context/ui-registry.md`
+11. `context/progress-tracker.md`
+12. `memory.md`, when restored by `/remember`
 
 These files are authoritative.
 
-Ubiquitous Language owns canonical terminology. It does not overrule architecture on lifecycle or business policy, Prisma/migrations on represented database structure, or feature plans on sequencing. This establishes no new global precedence hierarchy; the conflict rule below still applies.
+Authority follows the concern, not read order:
+
+- Ubiquitous Language owns canonical terminology.
+- Shared Contracts owns cross-domain ownership, consumer boundaries, shared invariants, and shared-change governance.
+- Architecture owns product/domain lifecycle, business policy, and intended relationships.
+- Prisma plus ordered migrations owns represented database structure.
+- Build/feature plans own sequencing.
+
+This is not an earlier-file-wins hierarchy. Surface genuine conflicts on these owned concerns using the conflict rule below.
+
+Apply the Shared Change Gate in `context/shared/shared-contracts.md`: private changes within approved feature/owner boundaries may continue locally; changes to or first establishment of shared contracts require a Shared Change Proposal and resolution by the product owner or explicitly delegated architecture authority. An implementation agent cannot approve its own conflicting shared-contract change. Only the affected work stops; unrelated authorized work may continue. Canonical contracts do not authorize parallel development or imply planned surfaces are implemented.
 
 Search Operations is governed by the Search Operations sections integrated into canonical `context/architecture.md` and Phase 11 of canonical `context/build-plan.md`. Do not create or rely on a second parallel Search Operations architecture or build plan.
 
