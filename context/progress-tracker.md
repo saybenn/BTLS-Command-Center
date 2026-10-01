@@ -12,12 +12,37 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-09-29 — Ubiquitous Language canonicalized; numbered-feature status unchanged |
+| Last updated | 2026-10-01 — Ubiquitous Language and Shared Contracts canonicalized; numbered-feature status unchanged |
 | Current phase | Phase 4 — Revenue Operations Foundation |
 | Current feature | Feature 08 — complete through Slice 08.10; exit gate passed |
 | Overall status | Features 01–08 complete; Feature 09 and later features not started |
 | MVP progress | Features 01–08 complete |
 | Next implementation target | Feature 09 — Lead Operations and Action Workspace (not started; requires its own architect approval) |
+
+---
+
+## Preparation — Shared Contracts canonicalization (2026-10-01)
+
+- Adopted the approved draft as `context/shared/shared-contracts.md`, preserving SC-01 through SC-16,
+  their ownership/classifications, producer/consumer boundaries, and T01–T12 obligations.
+- The Shared Change Gate is canonical governance. Shared use never grants shared mutation authority;
+  additive shared changes are not automatically safe. Private approved work may continue locally.
+- Verified remote `main` remains the audited `db7f6d61bf21bc331a055548fea7559b8486f5c1`.
+  The starting checkout at `5f26e57` had the same tracked tree; the documentation branch
+  `codex/canonicalize-shared-contracts` starts from the audited merge.
+- Added Shared Contracts discovery and authority by concern in AGENTS.md and synchronized the
+  architecture read list. Corrected only the residual SearchKeyword glossary's locale wording.
+- D1, D2, Lead Stage, planned/implemented/deferred distinctions, and explicitly uncontracted
+  details remain unchanged. Historical reports and the supplied draft/report remain input evidence.
+- Verification: complete diff and draft comparison, contract/test-obligation preservation,
+  discovery/authority checks, evidence targets, documentation scope, and `git diff --check`.
+  No product code, Prisma schema, migrations, dependencies, tests, API/event registrations,
+  jobs, integrations, or UI behavior changed; product test/build suites were not rerun.
+- Three-layer review: plan alignment PASS; system integrity PASS; documentation readiness PASS.
+  No unresolved critical/high finding or blocker to dependency mapping.
+- Next preparation stage: dependency mapping, not started. Ownership matrix, parallel-development
+  plan, Snitch File, parallel pilot, and parallel development remain not started. This adoption
+  does not establish readiness for sustained parallel development. Feature 09 remains not started.
 
 ---
 
