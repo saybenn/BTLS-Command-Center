@@ -720,7 +720,15 @@ Rules:
 
 **Package:** `openai`
 
-The OpenAI SDK is used behind `src/server/integrations/openai`.
+When implemented, use the OpenAI SDK behind `src/server/integrations/openai`.
+
+**Planned direction adopted 2026-10-02:** `consumer → BTLS AIModelGateway → OpenAI adapter`.
+Shared integrations owns this narrow model/structured-output boundary. It does not own
+Robin operating policy, grant permissions or execute domain mutations. No gateway or
+OpenAI implementation is claimed by this documentation; exact signatures and model choice
+remain feature architecture. No multi-provider routing is required. F12 establishes the
+minimum reasoning support for its Shadow gate; F13 completes live integration. Quick
+Capture can reuse the boundary without depending on Robin modes or live runtime.
 
 Feature modules, Quick Capture, and Robin tools do not instantiate provider clients directly.
 

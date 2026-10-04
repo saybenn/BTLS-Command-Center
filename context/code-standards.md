@@ -71,7 +71,7 @@ Examples:
 - Content Finding evaluation belongs in Content Intelligence
 - Content readiness rules belong in Smart Blog Studio
 - Search Finding evaluation, Search-target, fulfillment-cycle, and guarded Search execution rules belong in Search Operations
-- Robin action permissions belong in Robin
+- Robin operating policy belongs in Robin and narrows, but never grants, platform/domain permissions; Revenue owns its adapter and domain business rules
 - Tenant and permission rules belong in shared authorization infrastructure
 
 Do not scatter one workflow across UI components, route handlers, database triggers, and background jobs without a clear reason.
@@ -1113,6 +1113,16 @@ Robin must not convert unsupported knowledge, ambiguous context, provider uncert
 
 Robin implementations must not introduce ordinary phone-call recording, listening, ingestion, or transcription. Relevant call outcomes are supplied deliberately by a human through normal Revenue input or Quick Capture.
 
+### Execution-time controls and verification
+
+Revalidate authority, policy and business preconditions immediately before execution,
+including access, consent and takeover. Approval binds to the specific action/scope;
+material changes require a new decision. Takeover stops competing pending Robin work
+within its approved scope. Reconcile unknown external results before retry, preserving
+the shared provider uncertainty boundary. Verify effects using owning-service evidence;
+partial success does not justify repeating completed business effects. Exact expiry,
+concurrency, release/in-flight and fallback mechanics belong in F12/F13 architecture.
+
 ### 16.5 Log every material AI action
 
 Record:
@@ -1216,6 +1226,12 @@ same eligible Lead
 ```
 
 Also cover duplicate event retry, opt-out, unsupported questions, provider outage, property isolation, and automatic-mode capability denial. Feature 13 proves the non-scheduling path; Feature 14 adds scheduling and is the Robin 1.0 milestone. Later Feature 23 tools must not regress it.
+
+Cover execution-time access/policy/precondition changes, stale or materially edited
+approvals, scoped takeover, unknown-result reconciliation and verified partial outcomes.
+F12 must prove its own inspectable Shadow reasoning/evidence path before F13 live execution;
+evaluation readiness must not grant live authority. Exact test fixtures and thresholds
+remain part of the approved owning-feature plan.
 
 ### 18.5 End-to-end reliability
 

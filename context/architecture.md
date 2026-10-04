@@ -23,12 +23,19 @@ The BTLS MVP contains three product studios and six primary product components.
 ### Revenue Operations Studio
 
 4. **Revenue Operations / Command Center**
-5. **Robin AI Automation Agent**
 
 Revenue Operations is the supported service-business customer, sales, scheduling,
 field-operation, invoicing, payment-tracking, and lifecycle operating system inside
 BTLS. Its durable domain may be relationally rich, but the normal worker path must
 remain action driven and simple.
+
+### Horizontal resident subsystem
+
+5. **Robin AI Automation Agent**
+
+Robin is a first-class horizontal resident subsystem of Command Center, not a fourth
+Studio. Robin owns its core/runtime/policy; Revenue Operations owns its first integration.
+Robin 1.0 remains Revenue-first, with no cross-Studio Robin substrate in the MVP.
 
 ### Search Operations Studio
 
@@ -169,7 +176,7 @@ When Robin lacks supported knowledge, valid context, permission, or sufficient c
 | Runtime validation | Zod | Validation at all server and external trust boundaries |
 | File storage | Supabase Storage | Public media and private attachments |
 | Background jobs | Inngest | Durable jobs, schedules, retries, and event-driven workflows |
-| AI provider | OpenAI API behind a BTLS adapter | Robin reasoning plus bounded Quick Capture extraction and derived summaries |
+| AI provider | Narrow BTLS AIModelGateway with initial OpenAI adapter (planned) | Robin reasoning plus bounded Quick Capture extraction and derived summaries; no exact model or multi-provider routing selected |
 | Email | Postmark behind a BTLS adapter | Transactional and customer communication email |
 | SMS | Twilio behind a BTLS adapter | Permissioned Customer/Contact communication |
 | Calendar | Cronofy behind a BTLS adapter | Availability and external projection/synchronization of BTLS schedule truth |
@@ -263,7 +270,6 @@ No browser component, Server Action, Route Handler, job handler, or AI tool shou
 │   │   │   │   ├── smart-blog-studio/
 │   │   │   │   ├── content-intelligence/
 │   │   │   │   ├── search-operations/
-│   │   │   │   ├── robin/
 │   │   │   │   └── settings/
 │   │   │   └── layout.tsx
 │   │   │
@@ -490,6 +496,7 @@ No browser component, Server Action, Route Handler, job handler, or AI tool shou
 | Feature services | Business rules, workflow orchestration, transactions, audit/event dispatch | Rendering or provider SDK leakage |
 | `work-management/` | Shared Finding-to-work lifecycle | Website, Content, or Search rule calculation |
 | `revenue-operations/` | End-customer, opportunity, communication, scheduling, commercial, field-work, billing, operational-attention, time, and Quick Capture truth | Client tenancy, shared MediaAsset byte lifecycle, provider credentials, growth Findings, or general accounting/payroll |
+| `robin/` | Robin core/runtime/policy, approved knowledge and run/action/evaluation evidence; orchestration through approved integrations | Domain business truth, platform permission grants, provider credentials, or a cross-Studio MVP substrate |
 | `search-operations/` | Search strategy, recurring SEO fulfillment, Search-specific evidence/rules, portfolio exceptions, and bounded optimization requests | Duplicate analytics ingestion, duplicate tickets/interventions, billing truth, unrestricted site mutation |
 | `src/server/auth/` | Session resolution, capabilities, property access | Feature-specific business rules |
 | `src/server/database/` | Prisma client, tenant context, transaction helpers | Feature workflows |
@@ -873,6 +880,12 @@ Canonical distinctions:
 | `RobinConfiguration` | Property authority modes, Shadow Mode, enabled capabilities/tools, business hours, escalation policy, and operating settings | Property |
 | `RobinRun` | One agent reasoning/execution session | Customer/Lead context, property, configuration version |
 | `RobinAction` | Proposed/executed/suppressed typed tool action, approval/result, and handoff state/context where applicable | Robin run, approval, result |
+
+These are planned conceptual records, not a physical schema. Robin may own configuration,
+runs, actions/proposals, approvals/takeover state, Shadow evidence, knowledge/configuration
+references, reasoning/action provenance and verification evidence. Source references or
+historical evidence must never become competing live domain truth. Exact persistence,
+snapshot/reference, retention and knowledge lifecycle design belongs in F12/F13 architecture.
 
 Conversation and Message belong to Revenue Operations communication truth. Robin may
 consume them and send through the same authorized application services as a human, but
@@ -1315,6 +1328,16 @@ Every connection tracks:
 - Tokens never enter client-rendered data.
 - Refresh is handled inside the provider adapter.
 - Disconnecting revokes or clears credentials and pauses dependent jobs.
+
+### AI model provider boundary
+
+The planned AI boundary is `consumer → BTLS AIModelGateway → OpenAI adapter`. Shared
+integrations owns this narrow provider contract and adapter; Robin owns its use for Robin
+reasoning, not shared provider infrastructure. Authorization, policy and domain execution
+remain in BTLS application services. No exact gateway signature, model choice or
+multi-provider routing is adopted. F12 defines the minimum reasoning support required by
+its Shadow gate; F13 completes live runtime integration. Quick Capture may reuse the
+provider boundary without inheriting Robin modes or runtime.
 
 ### Communication and scheduling provider boundaries
 
@@ -1978,6 +2001,15 @@ they must not claim unsupported individual or multi-touch causation.
 
 ## 20. Robin Architecture
 
+**Adopted direction — 2026-10-02:** Robin is a first-class horizontal resident subsystem
+within the existing application, repository, database, authorization and deployment model.
+Revenue Operations is its first integration, not its owner. The
+[dedicated Robin architecture](robin/architecture.md) supplies subordinate detail; this
+root architecture, canonical Ubiquitous Language, Shared Contracts and build plan retain
+authority in their respective concerns. The dated Shared Change Gate resolution in
+[Shared Contracts](shared/shared-contracts.md#2026-10-02--robin-architecture-adoption-approved-resolution)
+records the approved adoption. Robin remains planned/unimplemented at that baseline.
+
 Robin 1.0 is the Revenue Response Sidekick. It is a controlled application agent focused first on preventing new Revenue opportunities and immediate follow-up work from falling through the cracks. Robin consumes authoritative Revenue Operations context and acts only through owning application services.
 
 ### Robin 1.0 primary domain
@@ -2008,9 +2040,31 @@ The versioned Business Knowledge Pack is bounded property-approved knowledge: bu
 
 ### Ownership boundary
 
+- **Robin core/runtime/policy:** Robin owns authority configuration, bounded approved
+  knowledge and its run/action/proposal/approval/takeover/Shadow/provenance/verification
+  evidence. Robin policy narrows platform/domain permission; it cannot grant it.
+- **Revenue adapter/integration:** Revenue owns its signals, authorized context,
+  implemented business commands, domain preconditions and business-result verification.
+  Robin coordinates approved calls and records its own evidence of those calls.
+- **Shared infrastructure:** existing owners retain authorization/RLS, shared property
+  knowledge, audit, events, jobs, Notification, media and integrations, including the
+  planned AIModelGateway. Horizontal identity does not make every Robin component shared.
+- **Future adapters:** Web Growth, Search and Work Management Robin adapters remain
+  deferred/not contracted. Their domain truth and existing execution policies are unchanged.
+
 Robin does not own Conversation, Message, Customer, Contact, Lead, Appointment, Estimate, Job, Invoice, Payment, NextRequiredAction, Quick Capture, AttentionFlag, BusinessException, Finding, or WorkTicket truth.
 
 Robin uses Twilio-backed SMS through normal Customer/Contact Conversation and Message services, preserving required primary Contact, consent, opt-out, routing, and provider correlation. It cannot fabricate acceptance/signature or Payment truth, directly mutate derived state, or invent tools for unfinished features. Quick Capture remains a separate text-based, always-previewed, human-confirmed input workflow and never uses Robin Automatic mode.
+
+### Robin-domain contract
+
+The conceptual Robin-domain contract is **Signals → Authorized Context → Approved
+Capabilities → Verification**. Revenue supplies eligible registered signals, purpose-scoped
+authorized context, implemented typed capabilities and owner-defined result verification.
+Robin preserves property scope, policy, validation and evidence. Conceptual agreement is
+not an implemented API, event registration, generic registry or cross-Studio framework;
+exact contracts pass the Shared Change Gate before independent reliance. Apply this only
+to a real approved integration.
 
 ### Modes
 
@@ -2042,13 +2096,38 @@ eligible Revenue event
 
 ### Lightweight handoff
 
+Before execution, revalidate authority, policy and relevant business preconditions,
+including access, consent and takeover. Approval binds to the specific action/scope;
+material changes require a new decision. Takeover stops competing pending Robin work
+within its approved scope. Unknown external outcomes require reconciliation before retry.
+Verify results through the owning service; a successful model/tool invocation is not proof
+of a business effect. Preserve partial outcomes without repeating an already completed
+effect. Exact expiry/concurrency, takeover release/in-flight handling and fallback routing
+remain F12/F13 design decisions.
+
 Robin 1.0 handoff uses RobinRun/RobinAction state plus generic Notification and links to the owning Revenue records. It preserves the reason Robin stopped, what Robin already did, relevant Customer/Lead/Conversation context, recommended human next action, optional configured recipient, and takeover state. It is not the generalized Robin 2.0 Handoff Package subsystem.
 
 Shared Notification remains feature-neutral; owning workflows supply source, recipient, subject, useful title/body, destination, and correlation context. Feature 10 baseline employee awareness and later Robin workflow-state notifications must avoid noisy duplicates for the same business condition. Lead ingestion never depends on Robin configuration. In Shadow Mode, intended handoffs/notifications are recorded as suppressed evaluation results rather than executed business effects.
 
 ### Scheduling boundary
 
+No later domain adapter becomes a prerequisite for Robin 1.0 because of Robin's
+horizontal identity.
+
 Only implemented, configured Appointment operations are exposed as typed tools. Normalize allowed availability; offer only valid options; revalidate a customer's selected slot and create through the owning Appointment service before confirming through communication services. Preserve mode, capability, consent, business-hour, property, and idempotency checks. Never invent availability or promise a time before successful BTLS creation. Cronofy remains a provider projection, not Appointment truth; unavailable or ambiguous provider/slot state requires handoff.
+
+### Interaction and client enablement
+
+Robin 1.0 uses contextual Revenue workflows plus activity, approval and handoff surfaces.
+A dedicated `/robin` workspace/navigation and normalized cross-Studio Attention system
+remain future decisions, not 1.0 requirements. Revenue retains its action/attention truth.
+
+Launch enablement is BTLS-assisted. Management/client approvers supply and approve
+business knowledge and capability-specific authority configuration; BTLS helps reuse
+existing SOPs, forms, spreadsheets and examples as inputs. No universal automated ingestion
+is promised. Shadow-ready and live-ready are separate concepts, not new schema states:
+readiness for evaluation does not authorize live execution. Detailed review/maintenance,
+readiness criteria and evaluation thresholds remain feature architecture work.
 
 ### Hard no-call boundary
 
@@ -5488,6 +5567,9 @@ Before beginning any task, Codex must read:
 7. Relevant UI and feature context files
 8. For Search Operations work, the canonical Search Operations sections in this `architecture.md` and `build-plan.md`
 9. `context/progress-tracker.md`
+
+For Robin-related work, also read `context/robin/architecture.md` as subordinate detail.
+It does not replace shared terminology/contracts, this root architecture or build sequencing.
 
 When the repository differs from this target architecture:
 

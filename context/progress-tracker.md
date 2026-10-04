@@ -12,7 +12,7 @@
 
 | Field | Value |
 |---|---|
-| Last updated | 2026-10-01 — Ubiquitous Language and Shared Contracts canonicalized; numbered-feature status unchanged |
+| Last updated | 2026-10-02 — Robin architecture reconciliation adopted in the working tree; documentation diff awaiting owner review; numbered-feature status unchanged |
 | Current phase | Phase 4 — Revenue Operations Foundation |
 | Current feature | Feature 08 — complete through Slice 08.10; exit gate passed |
 | Overall status | Features 01–08 complete; Feature 09 and later features not started |
@@ -20,6 +20,44 @@
 | Next implementation target | Feature 09 — Lead Operations and Action Workspace (not started; requires its own architect approval) |
 
 ---
+
+## Preparation — Robin architecture adoption (2026-10-02)
+
+- Owner approved the repository-aware reconciliation and controlled documentation adoption.
+  Preflight verified canonical main `7d211e2f9e6ee77755031674a2826a951ec65b10`, unchanged
+  from the Robin handoff/review. Features 01–08 remain complete; F09+ is not started.
+- Recorded the approved proposal/resolution within the existing Shared Change Gate section
+  of `context/shared/shared-contracts.md`; no new decision registry or ID scheme.
+- Adopted `context/robin/architecture.md` as subordinate detail, discoverable from AGENTS
+  and root/shared context. The supplied draft is retained as historical source evidence.
+- Robin owns core/runtime/policy and bounded evidence; Revenue owns its first integration
+  and business truth. SC-16 explicitly distinguishes those owners and shared infrastructure.
+- Adopted the four-part domain contract, narrow planned AIModelGateway/OpenAI boundary,
+  execution revalidation, specific-action approval, scoped takeover and unknown-result
+  reconciliation. Contextual UI and BTLS-assisted capability-specific onboarding preserve
+  separate Shadow-ready/live-ready concepts and all existing MVP limits.
+- Clarified F12 minimum evaluation/evidence foundation, F13 live non-scheduling runtime,
+  F14 Revenue scheduling then Robin integration/milestone, and F23 later Revenue expansion.
+  Feature numbering, declared dependencies and serial development governance are unchanged.
+- Updated `context/shared/dependency-analysis-draft.md` only as supporting evidence. The
+  dependency analysis exists; its canonical map remains unadopted and absent. Earlier
+  preparation notes saying analysis was not started are historical bookmarks.
+- No schema, migration, package, application/provider/runtime code, API/event/job/capability
+  registration or implemented UI changed. UI tokens and registry are unchanged; no imprint
+  is required. No Ownership Matrix, parallel pilot/development or F12/F13 implementation started.
+- Branch: `codex/adopt-robin-architecture`, based on verified main. Changes are uncommitted
+  and unstaged; commit/push requires approval of the completed documentation diff.
+- Validation: complete documentation diff and source-relative draft review passed; local
+  Markdown links/anchors and artifact authority checks passed. All 56 feature headings,
+  declared dependencies, unrelated feature sections, protected domain sections, inherited
+  shared rules and serial governance are unchanged. Original Robin source body and input
+  hashes were verified. Live main still matches the preflight baseline; implementation
+  files are unchanged. No unresolved critical/high documentation finding remains. Product
+  tests/build were not rerun because this adoption changes documentation only.
+- Next: owner review of the completed diff; commit/push only when approved. Dependency-map
+  canonicalization requires separate authorization, followed by separately authorized
+  Ownership Matrix/execution preparation. Feature 09 remains the next implementation target
+  and needs its own architect approval; do not start it as part of this preparation.
 
 ## Preparation — Shared Contracts canonicalization (2026-10-01)
 
@@ -232,8 +270,9 @@ No feature is in progress. Feature 08 is complete through Slice 08.10. Offered-s
 
 ## Immediate
 
-1. [ ] Preserve completed, uncommitted Feature 08 changes; commit or open a PR when requested.
-2. [ ] Run restore/architect and obtain approval before starting Feature 09.
+1. [ ] Review the uncommitted Robin documentation adoption; commit/push only after owner approval.
+2. [ ] Obtain separate authorization before canonicalizing the updated dependency map or starting Ownership Matrix/execution preparation.
+3. [ ] Run restore/architect and obtain approval before starting Feature 09; no implementation starts in this documentation task.
 
 ---
 
