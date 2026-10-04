@@ -1,60 +1,62 @@
-# Memory — Shared Contracts canonicalization
+# Memory — Robin architecture documentation adoption
 
-Last updated: 2026-10-01 (America/New_York)
+Last updated: 2026-10-02 (America/New_York)
 
 ## What was built
 
-Created `context/shared/shared-contracts.md` from the approved supplied draft.
-Updated AGENTS.md discovery/authority, the architecture SearchKeyword glossary and read list,
-and the progress tracker. SC-01–SC-16 and T01–T12 remain unchanged from the approved draft;
-adoption wording makes the approved Shared Change Gate canonical governance.
+Documentation only: adopted `context/robin/architecture.md` as subordinate detail and
+reconciled governing root/shared documents, Robin build descriptions and relevant
+standards. Updated the supporting dependency analysis without canonicalizing its map.
+Preserved the original Robin draft body under a historical-source banner.
 
 ## Decisions made
 
-No new product or implementation decision. D1, D2, Lead Stage, ownership distinctions,
-planned status, and uncontracted details remain governed by the canonical documents.
-The user explicitly approved replacing the previous Ubiquitous Language session memory.
+The owner explicitly approved the reconciliation report, controlled adoption and this
+memory update. The dated Shared Change Gate proposal/resolution is recorded in
+`context/shared/shared-contracts.md`. Follow that record and current governing documents;
+no separate decision registry, terminology authority or implementation plan was created.
 
 ## Problems solved
 
-Corrected the residual SearchKeyword glossary wording that implied geographic locale identity.
-Remote main remains the audited commit; the former checkout had identical tracked contents.
-The Windows shell sandbox hit its existing ACL-helper startup failure; approved escalated
-PowerShell commands worked. No sandbox configuration was changed.
+Confirmed both supplied drafts by their review hashes. Canonical main remains
+`7d211e2f9e6ee77755031674a2826a951ec65b10`, matching the handoff. Refreshed stale origin/main
+and created `codex/adopt-robin-architecture` from it; local main was left unchanged.
+The Windows shell sandbox's ACL startup issue required approved escalated commands.
+No sandbox configuration changed. A rejected out-of-order patch was reapplied in ordered
+sections; it did not introduce partial unrelated changes.
 
 ## Current state
 
-- Branch: `codex/canonicalize-shared-contracts`, based on audited main
-  `db7f6d61bf21bc331a055548fea7559b8486f5c1`.
-- Features 01–08 complete; Feature 09 and later remain not started.
-- Ubiquitous Language and Shared Contracts are canonicalized in the working tree.
-- Changes are uncommitted; no push, PR, deployment, or product implementation occurred.
-- Supplied untracked `context/shared-contracts.md` and
-  `context/BTLS_Shared_Contracts_Report.md` remain unchanged as historical input evidence,
-  not current governing sources. Use `context/shared/shared-contracts.md`.
-- Full diff/draft comparison, all 16 contract sections and 12 test-obligation preservation,
-  42 pinned evidence-file/line checks, relative links, governing discovery, deferred-status
-  review, whitespace, and documentation-scope checks passed.
-- Three-layer review: plan alignment PASS; system integrity PASS; documentation readiness PASS.
-  No unresolved critical/high findings. Product code, schema, migrations, tests, dependencies,
-  events, jobs, integrations, and UI behavior are unchanged.
-- Product test/build suites were not rerun for documentation-only adoption.
-  Existing implementation verification remains in historical Feature 08 evidence.
+- Features 01–08 complete; Feature 09+ and Robin remain unimplemented.
+- Adoption branch: `codex/adopt-robin-architecture`, HEAD at the verified main commit.
+- Documentation changes are uncommitted and unstaged; owner review of the completed diff
+  is required before commit/push. No PR or deployment was created.
+- No code, schema, migrations, dependencies, runtime/provider contracts, event/job/capability
+  registrations, UI tokens or UI registry changes. Product tests/build were not rerun.
+- Complete diff/source comparisons, local links/anchors, artifact authority, terminology,
+  ownership, sequencing and protected-boundary checks passed. Live main remains unchanged.
+  All 56 feature headings and declared dependencies are preserved; no critical/high
+  documentation finding remains. See the tracker and final report for validation scope.
+- `context/shared/dependency-analysis-draft.md` is supporting evidence only;
+  `context/shared/dependency-map.md` is absent. Ownership Matrix, execution protocols,
+  parallel pilot and parallel development have not started.
 
 ## Next session starts with
 
-1. Restore this memory and read current AGENTS.md governing context.
-2. Inspect Git state; preserve the uncommitted canonicalization and supplied input artifacts.
-3. Dependency mapping is the next preparation stage, not started. Begin only under its own
-   requested scope. Ownership matrix, parallel-development plan, Snitch File, parallel pilot,
-   and parallel development have not started; sustained parallel readiness is not established.
-4. Feature 09 requires its separate architect plan and approval before implementation.
+1. Restore context and inspect the current Git diff; preserve this adoption and source files.
+2. Obtain owner approval of the completed documentation diff before committing or pushing.
+3. Dependency-map canonicalization needs its own authorization. Do not infer permission
+   to begin Ownership Matrix, parallel preparation or product implementation.
+4. Feature 09 remains the next implementation target and requires its own architect plan
+   and approval. Do not jump to Features 12 or 13.
 
 ## Open questions
 
-None blocking dependency mapping. Exact Revenue outcome DTOs/queries/events and field projections,
-Intervention persistence, Search market-evidence columns, future provider selection, and concrete
-AUTO_GUARDED allowlists remain owning-feature work. Connected mailboxes, voice/transcription,
-Generated Job Brief, and integrated payment processing remain deferred.
+No remaining O1–O7 direction ruling. Exact schema, evidence retention/redaction/snapshots,
+knowledge lifecycle, approval/takeover mechanics, gateway interface/model, capability and
+event/job contracts, evaluation thresholds, Shadow/OFF behavior and notification fallback
+remain F12/F13 architecture decisions. Required shared geography is specified before first
+reliance without making full Feature 36 a Robin prerequisite.
 
-Plain English: The project now has an official rulebook for shared parts. The app did not change.
+Plain English: Robin now has a clear place in the rulebook. The app has not changed.
+The written changes still need review before they are saved as a Git commit.

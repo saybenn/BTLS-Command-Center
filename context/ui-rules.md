@@ -175,13 +175,17 @@ Use this primary order:
 
 1. Overview
 2. Revenue Operations
-3. Robin
-4. Website Intelligence
-5. Smart Blog Studio
-6. Content Intelligence
-7. Search Operations
-8. Work Management
-9. Settings
+3. Website Intelligence
+4. Smart Blog Studio
+5. Content Intelligence
+6. Search Operations
+7. Work Management
+8. Settings
+
+Robin 1.0 uses contextual Revenue activity, approval and handoff surfaces, with accessible
+settings. A dedicated `/robin` workspace and top-level Robin navigation remain later
+decisions, not MVP requirements. This changes planned navigation requirements only; it
+does not declare a new implemented UI pattern or normalized cross-Studio Attention model.
 
 Administrative items appear in a separate lower group:
 
@@ -969,6 +973,10 @@ notes, photos, files, ChangeOrder, or ServiceIssue into every simple flow.
 ## 20. Robin
 
 Robin should feel helpful and controlled.
+
+Use Revenue-owned action/attention context while keeping Robin mode, Shadow, approval,
+activity and takeover state visible. Robin's horizontal identity does not require a
+separate workspace or transfer ownership of Revenue attention records.
 
 ### Robin surfaces
 

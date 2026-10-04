@@ -561,6 +561,11 @@ Exit gate:
 
 Create Robin 1.0's property-specific knowledge and operating control plane.
 
+Robin owns the core/runtime/policy; Revenue owns its first adapter/integration and domain
+truth. The root/shared architecture and subordinate `context/robin/architecture.md` govern
+this boundary. F12 supplies configuration, bounded knowledge, capability controls and the
+minimum Shadow/evaluation foundation; it does not activate live response.
+
 Dependencies: Features 08–11.
 
 UI:
@@ -591,6 +596,18 @@ real/test eligible event
 
 Feature 12 proves the no-side-effect configuration/evaluation path; Feature 13 supplies live core response execution. Shadow Mode never invokes mutating application services or provider sends. Evaluation evidence is allowed; business mutations are not.
 
+F12 must provide enough authorized context loading, model-reasoning support through the
+planned narrow AIModelGateway/OpenAI boundary, validation and inspectable run/action
+evidence to pass this gate. F13 extends that foundation for live execution; F12 does not
+depend on F13. Exact gateway/evidence design remains owning-feature architecture, not a
+new schema or interface prescribed here. Shared geography, when referenced, must use its
+approved shared surface; the whole of F36 is not a prerequisite.
+
+Enablement is BTLS-assisted. Management/client approvers supply and approve knowledge and
+capability-specific authority using existing SOPs/forms/spreadsheets/examples where useful.
+Distinguish Shadow-ready from live-ready; no automatic ingestion or global authority grant
+is implied. Detailed knowledge lifecycle and readiness criteria remain F12/F13 design.
+
 ### Capability controls
 
 Independently anticipate new-Lead acknowledgment, knowledge-backed Q&A, missing-information collection, qualification, explicitly approved Lead-field updates, NextRequiredAction, bounded follow-up/re-engagement, human handoff, and Appointment scheduling once Feature 14 exists.
@@ -602,12 +619,19 @@ Tests/exit gate:
 - Capabilities toggle independently
 - Shadow Mode processes a real/test eligible scenario, preserves inspectable proposed/suppressed evidence, and produces zero customer-facing/business mutation effects
 - Property isolation passes; unimplemented tools cannot execute
+- Shadow readiness does not enable live effects; knowledge/authority approval is explicit
 
 ---
 
 ## 13 Robin Core Response, Runs, Approval, and Handoff
 
 Activate the non-scheduling Robin 1.0 Revenue Response Sidekick workflow.
+
+Extend F12's evaluation/evidence foundation into live Robin execution. Revenue retains
+adapter/domain contract ownership; shared integrations retains AIModelGateway/OpenAI
+ownership. Agree Signals → Authorized Context → Approved Capabilities → Verification
+before relying on exact contracts. Required UI is contextual Revenue activity, approval
+and handoff visibility; a dedicated `/robin` workspace/navigation is not required.
 
 Dependencies: Features 09 and 11–12. Feature 10 is present through Feature 11; test the live `lead.created` path.
 
@@ -619,7 +643,7 @@ UI:
 
 Logic/data:
 
-- OpenAI adapter, structured output, `RobinRun`, `RobinAction`, typed tool arguments, runtime validation, property authorization, mode, consent, duplicate, and business-hour checks
+- Live AIModelGateway/OpenAI integration, structured output, extension of F12's `RobinRun`/`RobinAction` evaluation foundation, typed tool arguments, runtime validation, property authorization, mode, consent, duplicate, and business-hour checks
 - Prompt/model/configuration/Knowledge Pack versions and normal application-service execution
 - React to eligible `lead.created`; load Customer/Contact/Lead/Conversation context; create a concise Lead summary; detect configured missing information
 - Send approved new-Lead acknowledgment through normal Twilio-backed Customer/Contact SMS services
@@ -635,6 +659,12 @@ Use `RobinRun` / `RobinAction`, handoff-required/result state, durable reason/co
 Handoff must explain why Robin stopped, what it already did, which Customer/Lead/Conversation is involved, what the human should probably do next, and who took over when applicable. Take Over makes human control explicit.
 
 Unsupported or materially uncertain interpretation reduces Robin's authority. Robin must hand off rather than invent an answer or unsupported business action.
+
+Revalidate authority, policy and preconditions at execution; bind approval to the specific
+action/scope. Takeover stops competing pending work within its approved scope. Reconcile
+unknown external outcomes before retry and verify business effects through owning services.
+Exact approval expiry/concurrency, takeover release/in-flight behavior and recipient/fallback
+mechanics remain F12/F13 architecture decisions.
 
 Tests/exit gate:
 
@@ -656,6 +686,9 @@ public Lead
 - Duplicate acknowledgment/follow-up and noisy baseline/Robin notifications are prevented
 - Consent/opt-out, business hours, unsupported Q&A handoff, provider failures, property isolation, typed validation, and no unfinished tool access pass
 - Message, RevenueActivity, RobinRun, RobinAction, Notification, and audit history remain correlated
+- Execution-time revocation/precondition changes, specific-action approval, scoped takeover,
+  unknown-result reconciliation and owner-verified partial outcomes are covered without
+  inventing business success or duplicating completed effects
 
 ---
 
@@ -685,6 +718,11 @@ rates, PTO, overtime engine, geofencing, or HR scope.
 ### Robin scheduling slice
 
 After the normal Appointment service exists, expose only required operations through approved typed Robin tools. This slice also depends on Features 12–13.
+
+Revenue owns Appointment/time services, scheduling policy and the Revenue adapter;
+Robin owns its orchestration/policy evidence. Verify through the scheduling owner. The
+base service comes first; this integration introduces no Robin platform milestone beyond
+the initial 1.0 milestone below and no cross-Studio prerequisite.
 
 Robin may determine whether the configured workflow permits scheduling, request normalized allowed availability, offer valid configured Appointment options, accept the customer's selection, create the Appointment through its owning service, confirm through the normal communication service, update relevant NextRequiredAction/context, and notify appropriate staff. Unavailable or ambiguous scheduling/provider state requires handoff.
 
@@ -888,6 +926,11 @@ completed Job can produce one controlled request.
 ## 23 Expanded Robin Revenue Automations
 
 Expand the already-operational Robin 1.0 onto Revenue services implemented after the Feature 14 milestone.
+
+This remains a bounded Revenue integration expansion, not activation of Robin core or a
+horizontal platform milestone. Revenue owns each exposed domain command and verification;
+Robin retains core/runtime/policy and orchestration evidence. Preserve execution-time
+revalidation, specific-action approval, scoped takeover and unknown-result reconciliation.
 
 Dependencies: Features 12–20 and 22. Feature 21 is explicitly not a dependency. Only implemented owning domain services may become Robin tools.
 

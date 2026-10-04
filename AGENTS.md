@@ -15,7 +15,14 @@ The MVP contains three product studios and one shared execution feature:
 ### Revenue Operations Studio
 
 4. Revenue Operations / Command Center
+
+### Horizontal Resident Subsystem
+
 5. Robin AI Automation Agent
+
+Robin owns its core/runtime/policy. Revenue Operations owns its first integration;
+Robin 1.0 remains the Revenue Response Sidekick. Horizontal identity does not authorize
+cross-Studio Robin infrastructure in the MVP or transfer any domain's business truth.
 
 ### Search Operations Studio
 
@@ -59,6 +66,12 @@ Authority follows the concern, not read order:
 This is not an earlier-file-wins hierarchy. Surface genuine conflicts on these owned concerns using the conflict rule below.
 
 Apply the Shared Change Gate in `context/shared/shared-contracts.md`: private changes within approved feature/owner boundaries may continue locally; changes to or first establishment of shared contracts require a Shared Change Proposal and resolution by the product owner or explicitly delegated architecture authority. An implementation agent cannot approve its own conflicting shared-contract change. Only the affected work stops; unrelated authorized work may continue. Canonical contracts do not authorize parallel development or imply planned surfaces are implemented.
+
+For Robin-related work, also read [context/robin/architecture.md](context/robin/architecture.md).
+It supplies adopted subordinate detail: root Architecture still owns product/domain policy,
+Ubiquitous Language owns terminology, Shared Contracts owns shared boundaries, and the
+build/feature plans own sequencing. Source drafts and dependency analysis are supporting
+evidence, not competing authorities or permission for parallel development.
 
 Search Operations is governed by the Search Operations sections integrated into canonical `context/architecture.md` and Phase 11 of canonical `context/build-plan.md`. Do not create or rely on a second parallel Search Operations architecture or build plan.
 
@@ -350,6 +363,13 @@ Use current official documentation for the installed version.
 ### AI and Robin
 
 Robin acts only through approved typed tools.
+
+The conceptual Robin-domain contract is Signals → Authorized Context → Approved
+Capabilities → Verification. Implement it only for an approved real integration. Robin
+policy narrows existing platform/domain permission; it never grants that permission.
+Revalidate authority, policy and preconditions before execution. Approval binds to the
+specific action/scope; takeover stops competing pending work within its approved scope;
+unknown external outcomes require reconciliation before retry.
 
 Required flow:
 

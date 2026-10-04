@@ -14,6 +14,11 @@ Follow current [AGENTS](../../AGENTS.md) and governing sources in their owned co
 
 **Classification:** PLATFORM-OWNED = identity/access foundation; SHARED-OWNED = common infrastructure or substrate with one owner; REVENUE-OWNED, SHARED-CONSUMED and GROWTH/SEARCH-OWNED, SHARED-CONSUMED retain their domain owner; LANE-LOCAL = private behavior under existing architecture; DEFERRED / NOT YET CONTRACTED = no permission to build or infer an interface. “Shared” never means everyone may write.
 
+SC-16 states its mixed ownership explicitly: horizontal Robin identity is not a blanket
+LANE-LOCAL classification or a transfer of every Robin component to shared infrastructure.
+Construction lane and semantic owner are different concerns; no new classification registry
+or parallel execution lane is established by this distinction.
+
 ## Rules inherited by every contract
 
 1. **Truth and schema:** the named owner controls source-record lifecycle and source schema. Consumers use the owner's authorized application-service/query surface; they do not update foreign-domain tables or create a second authority. A shared database is not shared write permission. Exact new service/query signatures must be established by the owning feature before consumers implement against them.
@@ -122,6 +127,13 @@ These are adopted governing rules consolidating approved boundaries. Planned con
 - **Extension / gate:** add adapters behind approved capability interfaces; changing shared signatures, result semantics/provider literals, sender mode, callback identity, or error/retry behavior requires review. New major/paid provider decisions remain governed by AGENTS. No lane-specific EmailProvider or credential store.
 - **Tests:** T08. ConnectedMailboxProvider, integrated PaymentProvider, and exact future Search vendors remain deferred; absence does not authorize substitutes.
 
+- **Planned AI boundary:** shared integrations owns the narrow BTLS `AIModelGateway` and
+  initial OpenAI adapter. Approved consumers use normalized model interaction/structured
+  output; authorization, Robin policy and domain execution remain outside the provider.
+  The exact interface and model are not selected; multi-provider routing is not in scope.
+  Reuse by Quick Capture does not import Robin modes or require Robin live execution.
+  This adopted direction is not an implemented provider contract or package installation.
+
 ## SC-10 — Customer communication and business delivery
 
 **REVENUE-OWNED, SHARED-CONSUMED · P. Owner:** Revenue communications/commercial workflows. **Consumers:** human Revenue UI, Robin through services, authorized reporting. **Schema:** Conversation, Message, owning Estimate/Invoice delivery and acceptance evidence when implemented. [E14]
@@ -187,7 +199,33 @@ These are adopted governing rules consolidating approved boundaries. Planned con
 
 ## SC-16 — Delegated action authority
 
-**LANE-LOCAL policy, shared-consumed service boundaries · P. Owners:** Robin owns its operating policy/history; Revenue owns Quick Capture and resulting business commands; Search owns optimization policy/actions; shared services retain their respective ownership. [E01] [E14] [E19]
+**Explicit mixed ownership · P.** Robin owns its horizontal resident core/runtime/policy
+and evidence. Revenue owns the first adapter/integration, source signals, authorized domain
+context, business commands and business-result verification; it does not own Robin itself.
+Revenue also owns Quick Capture. Search retains its optimization policy/actions. Shared
+authorization, knowledge, audit, events, jobs, Notification, media and integrations retain
+their respective owners. Domain-private integration/policy behavior can remain lane-local;
+the Robin core boundary is not classified wholesale as Revenue-local or shared platform
+infrastructure. Future cross-Studio Robin adapters remain deferred/not contracted. [E01] [E14] [E19]
+
+- **Robin-domain contract:** Signals → Authorized Context → Approved Capabilities →
+  Verification. Establish the narrow Revenue integration only where its real approved
+  services exist. Signals retain producer ownership; context is purpose/property scoped;
+  capabilities are implemented typed owning-service operations; verification uses the
+  owner's evidence and recovery rules. Exact exported contracts still require review before
+  independent reliance. No generic cross-Studio registry/framework is established.
+- **Robin-owned state boundary:** configuration, runs, actions/proposals, approvals/takeover
+  state, Shadow evidence, knowledge/configuration references, reasoning/action provenance
+  and verification evidence. Never duplicate live domain truth. Schema, snapshots,
+  retention and knowledge lifecycle remain F12/F13 design; shared audit/jobs/Notification
+  are not Robin-owned replacements.
+- **Execution and human controls:** Robin authority configuration cannot grant platform
+  permissions. Revalidate authority, policy and preconditions at execution, including access,
+  consent and takeover. Approval binds to the specific action/scope; material changes need
+  a new decision. Takeover stops competing pending Robin work within its approved scope.
+  Reconcile unknown external results before retry; verify effects through their owner and
+  preserve partial results without repeating completed effects. Exact expiry/concurrency,
+  release/in-flight handling and notification fallback remain feature architecture work.
 
 - **Input → output:** proposed typed action → validation, property/capability, operating policy and business checks → owning-service result plus appropriate audit/history. AI never grants permissions or directly writes records/calls provider SDKs.
 - Robin Off/Approval Required/Automatic are distinct from its Shadow evaluation overlay. Shadow suppresses business mutations, customer sends and intended handoff notices while retaining evaluation evidence. Quick Capture always shows before/after proposals and requires explicit confirmation; no automatic mode.
@@ -203,6 +241,7 @@ All cross-domain relationships below are architectural contracts, mostly planned
 | Producer → consumer | Truth/references required | Allowed use | Forbidden inference / absent capability |
 |---|---|---|---|
 | Revenue Lead → Growth/Search | Authorized propertyId, Lead ID, owner-defined Stage/outcome and relevant time; existing source/landing-page evidence and real links when available | Qualified/won/lost counts and supported source associations | One inquiry equals one Customer; unknown source equals organic; missing Revenue equals zero Leads. |
+| Revenue ↔ Robin (planned 1.0 integration) | Signals; authorized Customer/Contact/Lead/Conversation context; approved implemented capabilities; owner-defined verification, with property/source/result references | Robin proposes and orchestrates; Revenue services validate and mutate their own truth; Robin records its evidence | No foreign writes, platform permission grants, invented business effects or future tools. This conceptual contract freezes no DTO, event/job name or capability ID. |
 | Revenue Estimate → Growth/Search | Property, Estimate ID, relevant revision/acceptance evidence IDs and time; amount/unit/currency if exposed | Distinguish issued/delivered/accepted proposals | Sent/viewed means accepted, accepted value means collected, or superseded revision is current. Unavailable evidence remains unavailable. |
 | Revenue Job → Growth/Search | Property, Job ID, actual upstream references if present, authorization/fulfillment fact and time | Count supported authorized/completed work | JobExecution success means Job completion; every Job requires Estimate or visit. Do not invent missing links. |
 | Revenue Invoice → Growth/Search | Property, Invoice ID, document lifecycle and relevant time; related records and amount basis if exposed | Invoice context and owner-calculated balances | Issued value is collected revenue. Distinguish missing/denied from a true zero balance. |
@@ -236,6 +275,77 @@ The product owner or explicitly delegated architecture authority resolves genuin
 
 Stop only the affected work; unrelated authorized local work may continue. Do not weaken tests, rewrite applied migrations, broaden privileges, or manufacture records to bypass the gate. This document defines review scope, not a migration, Git, worktree, sequencing, or parallel-execution protocol.
 
+### 2026-10-02 — Robin architecture adoption: approved resolution
+
+**Authority and status:** The product owner approved O1–O7, the repository-aware
+reconciliation report, and controlled documentation adoption. This records that decision;
+it is not implementation-agent approval of a conflicting contract. Evidence baseline:
+canonical `main` at `7d211e2f9e6ee77755031674a2826a951ec65b10`.
+
+**Requested change and reason:** Give Robin an explicit horizontal resident identity while
+keeping Robin 1.0 Revenue-first. Reconcile product placement, SC-16's blanket LANE-LOCAL
+classification, the AI provider boundary, human controls, and required UI/onboarding
+surfaces without expanding the MVP.
+
+**Owning contracts and affected owners:** SC-16 governs Robin delegated-action boundaries;
+SC-09 governs the planned AI gateway and initial OpenAI adapter. Robin owns its
+core/runtime/policy and evidence. Revenue owns its adapter/integration, source signals,
+authorized domain context, business commands and business-result verification. Shared
+authorization, knowledge, audit, events, jobs, Notification, media and integrations retain
+their existing owners under SC-01–SC-10. Growth/Search and Work Management ownership is
+unchanged; future Robin adapters for those domains remain deferred/not contracted.
+
+**Approved resolution:**
+
+- Robin is a first-class horizontal resident subsystem of Command Center, not a fourth
+  Studio. Revenue is its first implemented integration in the planned build, not its
+  owner; no Robin integration is implemented at this evidence baseline.
+- The conceptual domain contract is **Signals → Authorized Context → Approved Capabilities
+  → Verification**, established only for a real approved integration. This authorizes no
+  generic cross-Studio framework or unrestricted access.
+- Robin may own configuration, runs, actions/proposals, approvals/takeover state, Shadow
+  evidence, knowledge/configuration references, reasoning/action provenance and
+  verification evidence. It must not duplicate live domain truth.
+- Shared integrations owns the narrow BTLS `AIModelGateway` boundary and initial OpenAI
+  adapter. No exact interface, model choice or multi-provider routing is selected here.
+- Revalidate authority, policy and preconditions before execution. Approval binds to the
+  specific action/scope. Takeover stops competing pending Robin work within its approved
+  scope. Unknown external outcomes require reconciliation before retry.
+- Robin 1.0 uses contextual Revenue surfaces with activity, approval and handoff visibility;
+  a dedicated `/robin` workspace/navigation is not required. No normalized cross-Studio
+  Attention system or generalized HandoffPackage is adopted.
+- Client enablement is BTLS-assisted. Management/client approvers supply and approve
+  knowledge and authority configuration, reusing SOPs/forms/spreadsheets/examples as
+  inputs. Shadow-ready and live-ready are separate concepts; authority is capability-specific.
+- Preserve F12 configuration/knowledge/evaluation, F13 live non-scheduling response,
+  F14 scheduling integration and initial milestone, and F23 bounded Revenue expansion.
+  F12 must supply the minimum reasoning/evidence foundation for its own Shadow gate;
+  no reverse dependency on F13 or Robin 2.0 prerequisite is created.
+
+**Affected artifacts and consumers:** Root architecture and the subordinate Robin detail,
+AGENTS, overview, canonical terminology/contracts, F12/F13/F14/F23 descriptions, relevant
+code/library/UI standards, supporting dependency analysis, tracker and memory. Planned
+RobinConfiguration/BusinessKnowledgePack/RobinRun/RobinAction and gateway concepts are
+affected at the architectural level only. Future Revenue consumers still need exact
+approved service, event, job, capability and Notification contracts before implementation.
+
+**Implementation and compatibility impact:** Documentation-only adoption now. No schema,
+migration, runtime, API, event, job, capability registration or provider implementation
+change; no package installation. Existing records, in-flight work, provider uncertainty
+handling and historical evidence are unchanged. No foreign-domain mutation rule changes,
+cross-Studio Robin substrate in MVP, or automatic parallel-development authorization.
+Existing serial governance, feature numbering, D1/D2 and all MVP deferrals remain binding.
+
+**Verification and remaining design:** Check documentation/ownership/authority consistency
+and unchanged implementation files now. Future T12 and owning-service tests must cover
+execution-time revocation/policy/precondition changes, action-bound approval, scoped
+takeover, unknown-result reconciliation, owner-verified/partial results, tenant denial and
+Shadow suppression. Exact schema, retention/deletion/redaction, snapshots, knowledge
+lifecycle, approval expiry/concurrency, takeover release/in-flight behavior, gateway
+signature/model, capability payloads, event/job names, evaluation thresholds, Shadow/OFF
+semantics and notification recipient/fallback mechanics remain F12/F13 architecture work.
+Remaining PROPOSED passages in the Robin source are not approved by this resolution.
+
 ## Minimum contract-test obligations
 
 Reuse current suites rather than creating a parallel testing framework. I means relevant coverage exists, not that every future obligation is tested. P tests are required when their first owning/consuming feature arrives; they are not implemented by this document.
@@ -253,7 +363,7 @@ Reuse current suites rather than creating a parallel testing framework. I means 
 | T09 — P | Shared page identity/normalization, healthy vs missing evidence, D1 identity with distinct market observations, compatible periods/grids. Prevent false joins and false performance claims. | Website/Search data surface changes and first cross-domain consumers. |
 | T10 — P | Domain diagnostic + shared review; template-version lineage; D2's normal/two alternative paths; reject missing/ungoverned provenance; scoped fleet history; completed work ≠ improved outcome. | Finding/Work Management/provenance/measurement changes or new consumers. |
 | T11 — P | Owner-only Revenue mutations; exact-revision acceptance; net Payment correction/reversal basis; no aggregate double counting; sensitive-field denial; unavailable ≠ zero; source joins retain provenance. | Outcome export/consumer/permission/attribution changes. |
-| T12 — P | Robin/Quick Capture/Search policy checks preserve owning-service authority; Shadow suppresses effects; AUTO_GUARDED rejects missing safeguards; no arbitrary ticketless execution. | Tool/automation class/policy/shared effect changes. |
+| T12 — P | Robin/Quick Capture/Search preserve owning-service authority; Shadow suppresses effects; AUTO_GUARDED rejects missing safeguards; no arbitrary ticketless execution. Robin additionally tests execution-time revocation/policy/preconditions, specific-action approval, scoped takeover, unknown-result reconciliation, owner verification/partial results and tenant denial. | Tool/automation class/policy/shared effect changes; exact implementation contracts remain owning-feature work. |
 
 Run affected fast tests during work and applicable database integration tests when persistence/security/durable behavior changes. At the owning feature's exit gate run the existing AGENTS-required suite, plus these affected contract cases; use browser tests for changed critical journeys. Do not broaden testing for unrelated private edits or create placeholder passing tests for unimplemented models.
 

@@ -97,13 +97,22 @@ The MVP contains three product studios.
 ### Group 2 — Revenue Operations Studio
 
 4. Revenue Operations / Command Center
-5. Robin AI Automation Agent
 
 Revenue Operations is the service-business operating core for Customers, opportunities,
 communication, scheduling, Estimates/acceptance, Jobs/field work, Invoices/Payments,
 next actions, operational exceptions, basic time tracking, and Quick Capture. Robin is a
 controlled consumer of the approved application services, not a separate owner of that
 business truth.
+
+### Horizontal Resident Subsystem — Robin
+
+5. Robin AI Automation Agent
+
+Robin is a first-class horizontal resident subsystem of Command Center, not a fourth
+Studio. Robin owns its core/runtime/policy; Revenue Operations owns its first integration,
+not Robin itself. Horizontal identity does not authorize cross-Studio Robin substrate in MVP.
+The [Robin architecture](robin/architecture.md) provides subordinate detail under the root
+architecture and shared authorities.
 
 Robin 1.0 is the Revenue Response Sidekick: its initial responsibility is immediate, bounded handling of new Revenue opportunities through approved communication, knowledge, qualification, next actions, scheduling, and human handoff. It becomes operational through Features 12–14, reaches its milestone after Feature 14, and expands onto later Revenue services in Feature 23. Feature 21 is a deferred post-MVP reservation and is not an MVP gate.
 
@@ -329,9 +338,6 @@ The exact route structure may evolve, but the MVP uses the following page famili
 /[propertyId]/revenue-operations/time
 → Own and authorized team time
 
-/[propertyId]/robin
-→ Robin activity, approvals, handoffs, and automation outcomes
-
 /[propertyId]/website-intelligence
 → Website Findings, evidence, data health, and raw metrics
 
@@ -427,13 +433,12 @@ The exact route structure may evolve, but the MVP uses the following page famili
 
 1. Overview
 2. Revenue Operations
-3. Robin
-4. Website Intelligence
-5. Smart Blog Studio
-6. Content Intelligence
-7. Search Operations
-8. Work Management
-9. Settings
+3. Website Intelligence
+4. Smart Blog Studio
+5. Content Intelligence
+6. Search Operations
+7. Work Management
+8. Settings
 
 ## Administrative Navigation
 
@@ -458,6 +463,11 @@ Contains:
 
 Navigation is capability-aware, but server authorization remains mandatory.
 
+Robin 1.0 uses contextual Revenue activity, approval and handoff surfaces. A dedicated
+`/[propertyId]/robin` workspace and top-level Robin navigation remain later decisions,
+not launch requirements. Robin settings remain required; this does not introduce a
+normalized cross-Studio Attention system.
+
 ---
 
 # Core User Flows
@@ -474,6 +484,12 @@ Navigation is capability-aware, but server authorization remains mandatory.
 8. Robin starts Off by default. Authorized onboarding may enable Shadow Mode to evaluate real eligible events without customer-facing or business mutation side effects before Approval Required or Automatic behavior is trusted.
 9. The property appears in authorized property directories and switchers.
 10. No new codebase or deployment is created.
+
+Robin enablement is BTLS-assisted: management/client approvers supply and approve bounded
+business knowledge and capability-specific authority configuration. Existing SOPs, forms,
+spreadsheets and examples can inform that configuration; automatic document ingestion is
+not promised. Shadow-ready and live-ready are separate concepts. Readiness for evaluation
+does not grant live authority, and optional integrations do not gate unrelated capabilities.
 
 ---
 
@@ -582,6 +598,11 @@ Navigation is capability-aware, but server authorization remains mandatory.
 11. Staff visibility includes what happened, what Robin already did, why Robin stopped or what it is waiting for, and a route into the owning Customer/Lead/Conversation.
 12. Message, RevenueActivity, RobinRun, RobinAction, Notification, and audit evidence remain traceable and idempotent.
 13. A human may take over at any time.
+
+Before execution, revalidate authority, policy and preconditions. Approval binds to the
+specific action/scope; takeover stops competing pending Robin work within its approved
+scope. Unknown external outcomes require reconciliation before retry, and owning-service
+evidence determines whether an action succeeded, remains pending, failed or is unverified.
 
 Every proposed Robin tool action is untrusted input: runtime validation, authorized property scope, capability, authority mode, consent/opt-out, business hours, context, and idempotency checks remain mandatory. Approval Required waits for human approval; Automatic uses only enabled, implemented tools. Robin owns no Revenue aggregate and never directly accesses Prisma, SQL, provider credentials, or unrestricted provider APIs. It cannot fabricate signature, acceptance, Payment, or other source truth.
 
